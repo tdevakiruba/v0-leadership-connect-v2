@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { signOutAction } from "@/app/actions/auth-actions"
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -43,13 +44,13 @@ export default function DashboardLayout({
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error("[v0] Sign out error:", error.message)
-      }
-      window.location.href = "/auth/login"
+      // Clear client-side auth state first
+      await supabase.auth.signOut()
+      
+      // Clear all cookies via server action and redirect
+      await signOutAction()
     } catch (err) {
-      console.error("[v0] Sign out exception:", err)
+      // Fallback: force redirect even if there's an error
       window.location.href = "/auth/login"
     }
   }
@@ -92,11 +93,11 @@ export default function DashboardLayout({
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all",
                     isActive 
-                      ? "bg-blue-50 text-blue-600 shadow-sm" 
+                      ? "bg-primary/10 text-primary shadow-sm" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  <Icon className={cn("h-5 w-5", isActive && "text-blue-600")} />
+                  <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
                   {item.name}
                 </Link>
               )
@@ -110,7 +111,7 @@ export default function DashboardLayout({
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all",
                 pathname === "/dashboard/settings"
-                  ? "bg-blue-50 text-blue-600"
+                  ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
@@ -176,7 +177,7 @@ export default function DashboardLayout({
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all",
                     isActive 
-                      ? "bg-blue-50 text-blue-600" 
+                      ? "bg-primary/10 text-primary" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
@@ -233,7 +234,7 @@ export default function DashboardLayout({
                 <input 
                   type="text"
                   placeholder="Search here..."
-                  className="w-full h-10 pl-10 pr-4 bg-muted border-0 rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  className="w-full h-10 pl-10 pr-4 bg-muted border-0 rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -242,9 +243,9 @@ export default function DashboardLayout({
             <div className="flex items-center gap-3">
               <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">
                 <Bell className="h-5 w-5" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-blue-600 rounded-full" />
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-primary rounded-full" />
               </button>
-              <div className="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">
+              <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-sm">
                 U
               </div>
             </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -20,47 +20,53 @@ import {
   Calendar,
   BookOpen,
   ArrowRight,
-  TrendingUp
+  Loader2,
+  Square,
+  CheckSquare
 } from "lucide-react"
 import Link from "next/link"
+import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
 
-// SIGNAL™ phase color configurations
+// SIGNAL™ phase color configurations - using distinct brand colors
 const signalPhases = [
   {
     letter: "S",
     name: "Self-Awareness",
     dayStart: 1,
     dayEnd: 15,
-    bgActive: "bg-blue-100",
-    textActive: "text-blue-600",
-    bgDone: "bg-blue-600",
+    bgActive: "bg-rose-100",
+    textActive: "text-rose-600",
+    bgDone: "bg-rose-600",
     textDone: "text-white",
-    progressActive: "bg-blue-500",
-    progressDone: "bg-blue-600",
+    progressActive: "bg-rose-500",
+    progressDone: "bg-rose-600",
+    borderActive: "border-rose-200",
   },
   {
     letter: "I",
     name: "Interpretation",
     dayStart: 16,
     dayEnd: 30,
-    bgActive: "bg-indigo-100",
-    textActive: "text-indigo-600",
-    bgDone: "bg-indigo-600",
+    bgActive: "bg-amber-100",
+    textActive: "text-amber-600",
+    bgDone: "bg-amber-600",
     textDone: "text-white",
-    progressActive: "bg-indigo-500",
-    progressDone: "bg-indigo-600",
+    progressActive: "bg-amber-500",
+    progressDone: "bg-amber-600",
+    borderActive: "border-amber-200",
   },
   {
     letter: "G",
     name: "Goals & Strategy",
     dayStart: 31,
     dayEnd: 45,
-    bgActive: "bg-violet-100",
-    textActive: "text-violet-600",
-    bgDone: "bg-violet-600",
+    bgActive: "bg-emerald-100",
+    textActive: "text-emerald-600",
+    bgDone: "bg-emerald-600",
     textDone: "text-white",
-    progressActive: "bg-violet-500",
-    progressDone: "bg-violet-600",
+    progressActive: "bg-emerald-500",
+    progressDone: "bg-emerald-600",
+    borderActive: "border-emerald-200",
   },
   {
     letter: "N",
@@ -73,32 +79,43 @@ const signalPhases = [
     textDone: "text-white",
     progressActive: "bg-cyan-500",
     progressDone: "bg-cyan-600",
+    borderActive: "border-cyan-200",
   },
   {
     letter: "A",
     name: "Action & Execution",
     dayStart: 61,
     dayEnd: 75,
-    bgActive: "bg-teal-100",
-    textActive: "text-teal-600",
-    bgDone: "bg-teal-600",
+    bgActive: "bg-violet-100",
+    textActive: "text-violet-600",
+    bgDone: "bg-violet-600",
     textDone: "text-white",
-    progressActive: "bg-teal-500",
-    progressDone: "bg-teal-600",
+    progressActive: "bg-violet-500",
+    progressDone: "bg-violet-600",
+    borderActive: "border-violet-200",
   },
   {
     letter: "L",
     name: "Leadership Identity",
     dayStart: 76,
     dayEnd: 90,
-    bgActive: "bg-sky-100",
-    textActive: "text-sky-600",
-    bgDone: "bg-sky-600",
+    bgActive: "bg-indigo-100",
+    textActive: "text-indigo-600",
+    bgDone: "bg-indigo-600",
     textDone: "text-white",
-    progressActive: "bg-sky-500",
-    progressDone: "bg-sky-600",
+    progressActive: "bg-indigo-500",
+    progressDone: "bg-indigo-600",
+    borderActive: "border-indigo-200",
   },
 ]
+
+interface ActionItem {
+  id: number
+  title: string
+  description: string
+  difficulty: 'easy' | 'medium' | 'bold'
+  isFromDB?: boolean
+}
 
 interface TodayDashboardProps {
   user: User
@@ -124,6 +141,8 @@ interface TodayDashboardProps {
     completed: boolean
     reflection_text: string | null
     ai_action: string | null
+    actions_completed?: number[]
+    ai_actions?: ActionItem[]
   } | null
   completedDays: number
   streak: number
@@ -143,11 +162,115 @@ export function TodayDashboard({
   const [reflection, setReflection] = useState(todayProgress?.reflection_text || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCompleted, setIsCompleted] = useState(todayProgress?.completed || false)
+  const [actions, setActions] = useState<ActionItem[]>([])
+  const [completedActions, setCompletedActions] = useState<number[]>(todayProgress?.actions_completed || [])
+  const [isLoadingActions, setIsLoadingActions] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
   const progressPercentage = Math.round((completedDays / 90) * 100)
   const firstName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "Leader"
+
+  // Get the current phase colors
+  const currentPhaseColors = signalPhases.find(
+    p => currentDay >= p.dayStart && currentDay <= p.dayEnd
+  ) || signalPhases[0]
+
+  // Load or generate actions on mount
+  useEffect(() => {
+    async function loadActions() {
+      if (!todayLesson) return
+
+      // If we have cached AI actions, use them
+      if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
+        // Add the DB action as the first item
+        const allActions: ActionItem[] = []
+        if (todayLesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+        allActions.push(...todayProgress.ai_actions)
+        setActions(allActions)
+        return
+      }
+
+      // Generate new actions
+      setIsLoadingActions(true)
+      try {
+        const result = await generateBoldActions(
+          currentDay,
+          todayLesson.focus_area,
+          todayLesson.focus_reframe_technique || todayLesson.focus_area,
+          todayLesson.action_for_today || ""
+        )
+
+        const allActions: ActionItem[] = []
+        
+        // Add the DB action as the first item
+        if (todayLesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+
+        // Add AI-generated actions with offset IDs
+        const aiActions = result.actions.map((action, index) => ({
+          ...action,
+          id: index + 1
+        }))
+        allActions.push(...aiActions)
+        
+        setActions(allActions)
+
+        // Save AI actions to database for caching
+        await saveActionsToProgress(currentDay, aiActions)
+      } catch (error) {
+        console.error('[v0] Error loading actions:', error)
+        // Fallback: just show the DB action
+        if (todayLesson.action_for_today) {
+          setActions([{
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          }])
+        }
+      } finally {
+        setIsLoadingActions(false)
+      }
+    }
+
+    loadActions()
+  }, [todayLesson, todayProgress?.ai_actions, currentDay])
+
+  const handleToggleAction = async (actionId: number) => {
+    if (!todayLesson) return
+
+    const isCurrentlyCompleted = completedActions.includes(actionId)
+    const newCompletedActions = isCurrentlyCompleted
+      ? completedActions.filter(id => id !== actionId)
+      : [...completedActions, actionId]
+    
+    setCompletedActions(newCompletedActions)
+
+    try {
+      await toggleActionCompleted(currentDay, actionId, !isCurrentlyCompleted)
+    } catch (error) {
+      // Revert on error
+      setCompletedActions(completedActions)
+      toast.error("Failed to update action")
+    }
+  }
 
   const handleComplete = async () => {
     if (!reflection.trim()) {
@@ -243,9 +366,6 @@ export function TodayDashboard({
   }
 
   const currentPhase = getSIGNALPhase(currentDay)
-  const currentPhaseColors = signalPhases.find(
-    p => currentDay >= p.dayStart && currentDay <= p.dayEnd
-  ) || signalPhases[0]
   
   // Generate week days for the calendar
   const today = new Date()
@@ -259,6 +379,19 @@ export function TodayDashboard({
       isPast: date < today && date.toDateString() !== today.toDateString(),
     }
   })
+
+  const actionsCompletedCount = completedActions.length
+  const totalActionsCount = actions.length
+  const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'easy': return 'bg-emerald-100 text-emerald-700'
+      case 'medium': return 'bg-amber-100 text-amber-700'
+      case 'bold': return 'bg-rose-100 text-rose-700'
+      default: return 'bg-slate-100 text-slate-700'
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -286,7 +419,7 @@ export function TodayDashboard({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">Continue Learning</h2>
-              <Link href="/dashboard/lessons" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+              <Link href="/dashboard/lessons" className={cn("text-sm hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
                 View all <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
@@ -294,12 +427,12 @@ export function TodayDashboard({
             {todayLesson && (
               <div className="grid sm:grid-cols-2 gap-4">
                 {/* Current Lesson Card */}
-                <div className="bg-card rounded-2xl p-5 border border-border hover:border-blue-200 hover:shadow-lg transition-all group">
+                <div className={cn("bg-card rounded-2xl p-5 border hover:shadow-lg transition-all group", currentPhaseColors.borderActive)}>
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-2.5 bg-blue-100 rounded-xl">
-                      <BookOpen className="h-5 w-5 text-blue-600" />
+                    <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
+                      <BookOpen className={cn("h-5 w-5", currentPhaseColors.textActive)} />
                     </div>
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">
+                    <span className={cn("px-2.5 py-1 text-xs font-medium rounded-full", currentPhaseColors.bgActive, currentPhaseColors.textActive)}>
                       Day {currentDay}
                     </span>
                   </div>
@@ -313,25 +446,25 @@ export function TodayDashboard({
                   <div className="mb-4">
                     <div className="flex items-center justify-between text-xs mb-1.5">
                       <span className="text-muted-foreground">{completedDays}/90 Lessons</span>
-                      <span className="text-blue-600 font-medium">{progressPercentage}%</span>
+                      <span className={cn("font-medium", currentPhaseColors.textActive)}>{progressPercentage}%</span>
                     </div>
-                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                    <div className={cn("h-2 rounded-full overflow-hidden", currentPhaseColors.bgActive)}>
                       <div 
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressDone)}
                         style={{ width: `${progressPercentage}%` }}
                       />
                     </div>
                   </div>
                   <Link 
                     href={`/dashboard/lessons/${currentDay}`}
-                    className="flex items-center gap-2 text-blue-600 text-sm font-medium group-hover:gap-3 transition-all"
+                    className={cn("flex items-center gap-2 text-sm font-medium group-hover:gap-3 transition-all", currentPhaseColors.textActive)}
                   >
                     {isCompleted ? "Review Lesson" : "Resume Lesson"} <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
 
                 {/* Next Lesson Preview */}
-                <div className="bg-card rounded-2xl p-5 border border-border hover:border-blue-200 hover:shadow-lg transition-all group">
+                <div className="bg-card rounded-2xl p-5 border border-border hover:shadow-lg transition-all group">
                   <div className="flex items-start justify-between mb-4">
                     <div className="p-2.5 bg-slate-100 rounded-xl">
                       <Target className="h-5 w-5 text-slate-500" />
@@ -355,7 +488,7 @@ export function TodayDashboard({
                     className={cn(
                       "flex items-center gap-2 text-sm font-medium transition-all",
                       isCompleted 
-                        ? "text-blue-600 group-hover:gap-3" 
+                        ? cn(currentPhaseColors.textActive, "group-hover:gap-3")
                         : "text-muted-foreground cursor-not-allowed"
                     )}
                   >
@@ -366,6 +499,101 @@ export function TodayDashboard({
               </div>
             )}
           </div>
+
+          {/* Today's Actions Section */}
+          {todayLesson && (
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={cn("p-2 rounded-lg", currentPhaseColors.bgActive)}>
+                    <Target className={cn("h-4 w-4", currentPhaseColors.textActive)} />
+                  </div>
+                  <h3 className="font-semibold text-foreground">Today&apos;s Actions</h3>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {actionsCompletedCount}/{totalActionsCount} completed
+                </span>
+              </div>
+
+              {/* Actions Progress */}
+              <div className="mb-4">
+                <div className={cn("h-2 rounded-full overflow-hidden bg-slate-100")}>
+                  <div 
+                    className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressActive)}
+                    style={{ width: `${actionsProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Actions List */}
+              {isLoadingActions ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className={cn("h-6 w-6 animate-spin", currentPhaseColors.textActive)} />
+                  <span className="ml-2 text-muted-foreground">Generating personalized actions...</span>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {actions.map((action) => {
+                    const isActionCompleted = completedActions.includes(action.id)
+                    return (
+                      <div 
+                        key={action.id}
+                        onClick={() => handleToggleAction(action.id)}
+                        className={cn(
+                          "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all",
+                          isActionCompleted 
+                            ? "bg-slate-50 border-slate-200" 
+                            : "bg-card border-border hover:border-slate-300 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex-shrink-0 mt-0.5">
+                          {isActionCompleted ? (
+                            <CheckSquare className={cn("h-5 w-5", currentPhaseColors.textActive)} />
+                          ) : (
+                            <Square className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className={cn(
+                              "font-medium text-sm",
+                              isActionCompleted ? "line-through text-muted-foreground" : "text-foreground"
+                            )}>
+                              {action.title}
+                            </h4>
+                            <span className={cn(
+                              "px-2 py-0.5 text-[10px] font-medium rounded-full uppercase",
+                              getDifficultyColor(action.difficulty)
+                            )}>
+                              {action.difficulty}
+                            </span>
+                            {action.isFromDB && (
+                              <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary/10 text-primary uppercase">
+                                Core
+                              </span>
+                            )}
+                          </div>
+                          <p className={cn(
+                            "text-sm",
+                            isActionCompleted ? "text-muted-foreground/70" : "text-muted-foreground"
+                          )}>
+                            {action.description}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {actions.length > 0 && !isLoadingActions && (
+                <p className="text-xs text-muted-foreground mt-4 text-center">
+                  <Sparkles className="h-3 w-3 inline mr-1" />
+                  Actions are personalized based on today&apos;s lesson theme
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Today's Reflection Section */}
           {todayLesson && (
@@ -378,8 +606,8 @@ export function TodayDashboard({
               </div>
               
               {todayLesson.thought_to_work_on && (
-                <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
-                  <p className="text-sm text-blue-800 leading-relaxed">
+                <div className={cn("rounded-xl p-4 mb-4 border", currentPhaseColors.bgActive, currentPhaseColors.borderActive)}>
+                  <p className={cn("text-sm leading-relaxed", currentPhaseColors.textActive)}>
                     <span className="font-semibold">Mindset prompt:</span> {todayLesson.thought_to_work_on}
                   </p>
                 </div>
@@ -395,8 +623,8 @@ export function TodayDashboard({
                   "w-full bg-muted text-foreground placeholder:text-muted-foreground",
                   "border border-border rounded-xl p-4",
                   "resize-none outline-none text-sm leading-relaxed",
-                  "focus:border-blue-300 focus:ring-2 focus:ring-blue-100",
-                  "transition-all duration-200"
+                  "focus:ring-2 transition-all duration-200",
+                  `focus:${currentPhaseColors.borderActive} focus:ring-${currentPhaseColors.bgActive}`
                 )}
               />
               
@@ -405,7 +633,11 @@ export function TodayDashboard({
                   <Button 
                     onClick={handleComplete} 
                     disabled={isSubmitting || !reflection.trim()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 h-auto font-medium shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all"
+                    className={cn(
+                      "text-white rounded-full px-6 py-2 h-auto font-medium shadow-lg transition-all",
+                      currentPhaseColors.bgDone,
+                      "hover:opacity-90"
+                    )}
                   >
                     <Play className="h-4 w-4 mr-2" />
                     {isSubmitting ? "Saving..." : "Complete Day"}
@@ -425,12 +657,12 @@ export function TodayDashboard({
           <div className="bg-card rounded-2xl p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-foreground">Your SIGNAL&trade; Journey</h3>
-              <Link href="/dashboard/journey" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+              <Link href="/dashboard/journey" className={cn("text-sm hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
                 Details <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {signalPhases.map((phase, i) => {
+              {signalPhases.map((phase) => {
                 const isActive = currentDay >= phase.dayStart && currentDay <= phase.dayEnd
                 const isDone = currentDay > phase.dayEnd
                 const completedInPhase = isDone 
@@ -444,7 +676,7 @@ export function TodayDashboard({
                     key={phase.letter} 
                     className={cn(
                       "bg-card rounded-xl p-4 border transition-all hover:shadow-md",
-                      isActive ? "border-blue-200 shadow-sm" : "border-border"
+                      isActive ? phase.borderActive + " shadow-sm" : "border-border"
                     )}
                   >
                     <div className="flex items-center gap-3 mb-3">
@@ -494,7 +726,7 @@ export function TodayDashboard({
           {/* User Profile Card */}
           <div className="bg-card rounded-2xl p-6 border border-border">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-14 w-14 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl font-semibold">
+              <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-semibold", currentPhaseColors.bgDone)}>
                 {firstName[0]?.toUpperCase()}
               </div>
               <div>
@@ -507,22 +739,22 @@ export function TodayDashboard({
             
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 bg-blue-50 rounded-xl">
-                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
+              <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
+                <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
                   <Flame className="h-4 w-4" />
                   {streak}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
               </div>
-              <div className="text-center p-3 bg-blue-50 rounded-xl">
-                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
+              <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
+                <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
                   <Sparkles className="h-4 w-4" />
                   {totalPoints}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Points</p>
               </div>
-              <div className="text-center p-3 bg-blue-50 rounded-xl">
-                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
+              <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
+                <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
                   <Trophy className="h-4 w-4" />
                   {completedDays}
                 </div>
@@ -547,9 +779,9 @@ export function TodayDashboard({
                     className={cn(
                       "w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-medium transition-all",
                       day.isToday 
-                        ? "bg-blue-600 text-white" 
+                        ? cn(currentPhaseColors.bgDone, "text-white")
                         : day.isPast && i < streak
-                          ? "bg-blue-100 text-blue-600"
+                          ? cn(currentPhaseColors.bgActive, currentPhaseColors.textActive)
                           : "bg-slate-100 text-muted-foreground"
                     )}
                   >
@@ -571,7 +803,7 @@ export function TodayDashboard({
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-blue-600 rounded-full transition-all"
+                    className={cn("h-full rounded-full transition-all", currentPhaseColors.progressDone)}
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
@@ -579,17 +811,14 @@ export function TodayDashboard({
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-muted-foreground">Current Phase</span>
-                  <span className={cn("font-medium", currentPhaseColors?.textActive || "text-foreground")}>
-                    {currentPhaseColors?.name || currentPhase?.name}
+                  <span className={cn("font-medium", currentPhaseColors.textActive)}>
+                    {currentPhaseColors.name}
                   </span>
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div 
-                    className={cn(
-                      "h-full rounded-full transition-all",
-                      currentPhaseColors?.progressActive || "bg-blue-500"
-                    )}
-                    style={{ width: `${((currentDay - (currentPhaseColors?.dayStart || 1)) / 15) * 100}%` }}
+                    className={cn("h-full rounded-full transition-all", currentPhaseColors.progressActive)}
+                    style={{ width: `${((currentDay - currentPhaseColors.dayStart) / 15) * 100}%` }}
                   />
                 </div>
               </div>
@@ -597,14 +826,14 @@ export function TodayDashboard({
           </div>
 
           {/* Achievement Teaser */}
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+          <div className={cn("rounded-2xl p-6 text-white", currentPhaseColors.bgDone)}>
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 bg-white/20 rounded-lg">
                 <Star className="h-5 w-5" />
               </div>
               <h3 className="font-semibold">Keep Going!</h3>
             </div>
-            <p className="text-sm text-blue-100 mb-4">
+            <p className="text-sm opacity-90 mb-4">
               Complete {7 - streak > 0 ? 7 - streak : 0} more days to unlock your weekly achievement badge.
             </p>
             <div className="flex items-center gap-2">

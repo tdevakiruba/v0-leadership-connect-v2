@@ -178,8 +178,8 @@ export function LeadershipLab({
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10">
-                    <Users className="h-6 w-6 text-blue-500" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/10">
+                    <Users className="h-6 w-6 text-cyan-500" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Teams</p>
