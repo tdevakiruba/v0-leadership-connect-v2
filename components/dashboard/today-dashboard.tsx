@@ -7,7 +7,22 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import type { User } from "@supabase/supabase-js"
-import { Flame, Zap, Target, CheckCircle2, Sparkles } from "lucide-react"
+import { 
+  Flame, 
+  Zap, 
+  Target, 
+  CheckCircle2, 
+  Sparkles, 
+  Play, 
+  Clock, 
+  Trophy,
+  Star,
+  Calendar,
+  BookOpen,
+  ArrowRight,
+  TrendingUp
+} from "lucide-react"
+import Link from "next/link"
 
 interface TodayDashboardProps {
   user: User
@@ -152,190 +167,223 @@ export function TodayDashboard({
   }
 
   const currentPhase = getSIGNALPhase(currentDay)
+  
+  // Generate week days for the calendar
+  const today = new Date()
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(today)
+    date.setDate(today.getDate() - today.getDay() + i)
+    return {
+      day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][i],
+      date: date.getDate(),
+      isToday: date.toDateString() === today.toDateString(),
+      isPast: date < today && date.toDateString() !== today.toDateString(),
+    }
+  })
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Hero Header with gradient */}
-      <header className="relative mb-10 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400 p-8 text-white overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-        
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium backdrop-blur-sm">
-              Day {currentDay} of 90
-            </span>
-            <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium backdrop-blur-sm">
-              {currentPhase?.name}
-            </span>
-          </div>
-          
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4 text-balance">
-            {todayLesson?.focus_reframe_technique || `Welcome back, ${firstName}`}
-          </h1>
-          
-          {/* Progress bar */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-              <div 
-                className="h-full bg-white transition-all duration-500 rounded-full"
-                style={{ width: `${progressPercentage}%` }}
-              />
+    <div className="min-h-screen">
+      {/* Main Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Welcome Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Welcome back, {firstName}!
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Continue your leadership journey. You&apos;re doing great!
+              </p>
             </div>
-            <span className="text-sm font-medium tabular-nums">{progressPercentage}%</span>
-          </div>
-          
-          {/* Stats pills */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
-              <Flame className="h-4 w-4 text-orange-300" />
-              <span className="font-medium">{streak}</span>
-              <span className="text-white/70 text-sm">day streak</span>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-yellow-300" />
-              <span className="font-medium">{totalPoints}</span>
-              <span className="text-white/70 text-sm">points</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
-              <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-              <span className="font-medium">{completedDays}</span>
-              <span className="text-white/70 text-sm">completed</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {todayLesson ? (
-        <div className="space-y-8">
-          {/* Focus area badge */}
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-              {todayLesson.focus_area}
-            </span>
           </div>
 
-          {/* Leader insight card */}
-          {todayLesson.leader_example && (
-            <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl p-6 border border-blue-100">
-              <div className="flex gap-4">
-                <div className="w-1 bg-blue-500 rounded-full flex-shrink-0" />
-                <div>
-                  <p className="text-lg leading-relaxed text-slate-700">
-                    {todayLesson.leader_example}
+          {/* Continue Learning Section */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">Continue Learning</h2>
+              <Link href="/dashboard/lessons" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                View all <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+            
+            {todayLesson && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {/* Current Lesson Card */}
+                <div className="bg-card rounded-2xl p-5 border border-border hover:border-blue-200 hover:shadow-lg transition-all group">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2.5 bg-blue-100 rounded-xl">
+                      <BookOpen className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">
+                      Day {currentDay}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                    {todayLesson.focus_reframe_technique || todayLesson.focus_area}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4 uppercase tracking-wide">
+                    {todayLesson.focus_area}
                   </p>
-                  {todayLesson.leader_context && (
-                    <p className="mt-3 text-sm text-slate-500 font-medium">
-                      {todayLesson.leader_context}
-                    </p>
-                  )}
+                  {/* Progress bar */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span className="text-muted-foreground">{completedDays}/90 Lessons</span>
+                      <span className="text-blue-600 font-medium">{progressPercentage}%</span>
+                    </div>
+                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        style={{ width: `${progressPercentage}%` }}
+                      />
+                    </div>
+                  </div>
+                  <Link 
+                    href={`/dashboard/lessons/${currentDay}`}
+                    className="flex items-center gap-2 text-blue-600 text-sm font-medium group-hover:gap-3 transition-all"
+                  >
+                    {isCompleted ? "Review Lesson" : "Resume Lesson"} <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
+
+                {/* Next Lesson Preview */}
+                <div className="bg-card rounded-2xl p-5 border border-border hover:border-blue-200 hover:shadow-lg transition-all group">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-2.5 bg-slate-100 rounded-xl">
+                      <Target className="h-5 w-5 text-slate-500" />
+                    </div>
+                    <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                      Day {Math.min(currentDay + 1, 90)}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">
+                    {currentPhase?.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4 uppercase tracking-wide">
+                    Next Session
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                    <Clock className="h-4 w-4" />
+                    <span>~10 min reading</span>
+                  </div>
+                  <button 
+                    disabled={!isCompleted}
+                    className={cn(
+                      "flex items-center gap-2 text-sm font-medium transition-all",
+                      isCompleted 
+                        ? "text-blue-600 group-hover:gap-3" 
+                        : "text-muted-foreground cursor-not-allowed"
+                    )}
+                  >
+                    {isCompleted ? "Start Now" : "Complete current lesson first"}
+                    {isCompleted && <ArrowRight className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Today's Reflection Section */}
+          {todayLesson && (
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Zap className="h-4 w-4 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-foreground">Today&apos;s Reflection</h3>
+              </div>
+              
+              {todayLesson.thought_to_work_on && (
+                <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
+                  <p className="text-sm text-blue-800 leading-relaxed">
+                    <span className="font-semibold">Mindset prompt:</span> {todayLesson.thought_to_work_on}
+                  </p>
+                </div>
+              )}
+              
+              <textarea
+                placeholder="What insight will you carry forward today?"
+                value={reflection}
+                onChange={(e) => setReflection(e.target.value)}
+                disabled={isCompleted}
+                rows={3}
+                className={cn(
+                  "w-full bg-muted text-foreground placeholder:text-muted-foreground",
+                  "border border-border rounded-xl p-4",
+                  "resize-none outline-none text-sm leading-relaxed",
+                  "focus:border-blue-300 focus:ring-2 focus:ring-blue-100",
+                  "transition-all duration-200"
+                )}
+              />
+              
+              <div className="mt-4 flex items-center justify-between">
+                {!isCompleted ? (
+                  <Button 
+                    onClick={handleComplete} 
+                    disabled={isSubmitting || !reflection.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 h-auto font-medium shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    {isSubmitting ? "Saving..." : "Complete Day"}
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2 text-emerald-600 font-medium">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Day completed
+                  </div>
+                )}
+                <span className="text-sm text-muted-foreground">+10 points on completion</span>
               </div>
             </div>
           )}
 
-          {/* Mindset & Action cards */}
-          <div className="grid md:grid-cols-2 gap-4">
-            {todayLesson.thought_to_work_on && (
-              <div className="bg-white rounded-xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50 transition-all">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="p-2 bg-amber-100 rounded-lg">
-                    <Zap className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                    Mindset
-                  </h3>
-                </div>
-                <p className="text-slate-700 leading-relaxed">
-                  {todayLesson.thought_to_work_on}
-                </p>
-              </div>
-            )}
-            {todayLesson.action_for_today && (
-              <div className="bg-white rounded-xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50 transition-all">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <Target className="h-4 w-4 text-emerald-600" />
-                  </div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                    Action
-                  </h3>
-                </div>
-                <p className="text-slate-700 leading-relaxed">
-                  {todayLesson.action_for_today}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Reflection card */}
-          <div className="bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">
-              Your Reflection
-            </h3>
-            <textarea
-              placeholder="What insight will you carry forward today?"
-              value={reflection}
-              onChange={(e) => setReflection(e.target.value)}
-              disabled={isCompleted}
-              rows={4}
-              className={cn(
-                "w-full bg-slate-50 text-slate-700 placeholder:text-slate-400",
-                "border border-slate-200 rounded-lg p-4",
-                "resize-none outline-none text-base leading-relaxed",
-                "focus:border-blue-300 focus:ring-2 focus:ring-blue-100",
-                "transition-all duration-200"
-              )}
-            />
-            
-            <div className="mt-4 flex items-center justify-between">
-              {!isCompleted ? (
-                <Button 
-                  onClick={handleComplete} 
-                  disabled={isSubmitting || !reflection.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-2 h-auto font-medium shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all"
-                >
-                  {isSubmitting ? "Saving..." : "Complete Day"}
-                </Button>
-              ) : (
-                <div className="flex items-center gap-2 text-emerald-600 font-medium">
-                  <CheckCircle2 className="h-5 w-5" />
-                  Day completed
-                </div>
-              )}
-              <span className="text-sm text-slate-400">+10 points on completion</span>
+          {/* SIGNAL Journey Progress */}
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-foreground">Your SIGNAL Journey</h3>
+              <Link href="/dashboard/journey" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                Details <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
-          </div>
-
-          {/* SIGNAL Progress */}
-          <div className="bg-gradient-to-r from-slate-50 to-blue-50/30 rounded-xl p-6 border border-slate-100">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">
-              Your SIGNAL Journey
-            </h3>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-6 gap-2">
               {["S", "I", "G", "N", "A", "L"].map((letter, i) => {
                 const dayRange = [1, 16, 31, 46, 61, 76][i]
                 const isActive = currentDay >= dayRange && currentDay < (dayRange + 15) || (i === 5 && currentDay >= 76)
                 const isDone = currentDay > dayRange + 14
                 const labels = ["Self", "Interpret", "Goals", "Navigate", "Action", "Lead"]
+                const progressInPhase = isActive 
+                  ? Math.min(((currentDay - dayRange) / 15) * 100, 100) 
+                  : isDone ? 100 : 0
                 return (
-                  <div key={letter} className="flex-1 text-center">
+                  <div key={letter} className="text-center">
                     <div 
                       className={cn(
-                        "w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold mb-2 transition-all",
-                        isActive ? "bg-blue-600 text-white shadow-lg shadow-blue-200" :
-                        isDone ? "bg-emerald-500 text-white" :
+                        "relative w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold mb-2 transition-all overflow-hidden",
+                        isActive ? "bg-blue-100 text-blue-600" :
+                        isDone ? "bg-blue-600 text-white" :
                         "bg-slate-100 text-slate-400"
                       )}
                     >
-                      {letter}
+                      {isActive && (
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 bg-blue-600 transition-all"
+                          style={{ height: `${progressInPhase}%` }}
+                        />
+                      )}
+                      <span className={cn("relative z-10", isActive && progressInPhase > 50 && "text-white")}>
+                        {letter}
+                      </span>
                     </div>
                     <span className={cn(
                       "text-xs font-medium",
                       isActive ? "text-blue-600" :
-                      isDone ? "text-emerald-600" :
-                      "text-slate-400"
+                      isDone ? "text-blue-600" :
+                      "text-muted-foreground"
                     )}>
                       {labels[i]}
                     </span>
@@ -345,11 +393,132 @@ export function TodayDashboard({
             </div>
           </div>
         </div>
-      ) : (
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-pulse text-slate-400">Loading your lesson...</div>
+
+        {/* Right Column - Sidebar */}
+        <div className="space-y-6">
+          {/* User Profile Card */}
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-14 w-14 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl font-semibold">
+                {firstName[0]?.toUpperCase()}
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">{profile?.full_name || firstName}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {profile?.title || "Leadership Learner"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-3 bg-blue-50 rounded-xl">
+                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
+                  <Flame className="h-4 w-4 text-orange-500" />
+                  {streak}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
+              </div>
+              <div className="text-center p-3 bg-amber-50 rounded-xl">
+                <div className="flex items-center justify-center gap-1 text-amber-600 font-bold text-lg">
+                  <Sparkles className="h-4 w-4" />
+                  {totalPoints}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Points</p>
+              </div>
+              <div className="text-center p-3 bg-emerald-50 rounded-xl">
+                <div className="flex items-center justify-center gap-1 text-emerald-600 font-bold text-lg">
+                  <Trophy className="h-4 w-4" />
+                  {completedDays}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Completed</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Weekly Streak Calendar */}
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-foreground">Weekly Streak</h3>
+              <span className="text-xs text-muted-foreground">
+                {today.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+              </span>
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+              {weekDays.map((day, i) => (
+                <div key={i} className="text-center">
+                  <span className="text-xs text-muted-foreground block mb-2">{day.day}</span>
+                  <div 
+                    className={cn(
+                      "w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-medium transition-all",
+                      day.isToday 
+                        ? "bg-blue-600 text-white" 
+                        : day.isPast && i < streak
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-slate-100 text-muted-foreground"
+                    )}
+                  >
+                    {day.date}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <h3 className="font-semibold text-foreground mb-4">Progress Overview</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Overall Progress</span>
+                  <span className="font-medium text-foreground">{progressPercentage}%</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-600 rounded-full transition-all"
+                    style={{ width: `${progressPercentage}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Current Phase</span>
+                  <span className="font-medium text-foreground">{currentPhase?.name}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-500 rounded-full transition-all"
+                    style={{ width: `${((currentDay - (currentPhase?.range[0] || 1)) / 15) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Achievement Teaser */}
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Star className="h-5 w-5" />
+              </div>
+              <h3 className="font-semibold">Keep Going!</h3>
+            </div>
+            <p className="text-sm text-blue-100 mb-4">
+              Complete {7 - streak > 0 ? 7 - streak : 0} more days to unlock your weekly achievement badge.
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-white rounded-full"
+                  style={{ width: `${Math.min((streak / 7) * 100, 100)}%` }}
+                />
+              </div>
+              <span className="text-sm font-medium">{Math.min(streak, 7)}/7</span>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
