@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { signOutAction } from "@/app/actions/auth-actions"
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -43,13 +44,13 @@ export default function DashboardLayout({
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error("[v0] Sign out error:", error.message)
-      }
-      window.location.href = "/auth/login"
+      // Clear client-side auth state first
+      await supabase.auth.signOut()
+      
+      // Clear all cookies via server action and redirect
+      await signOutAction()
     } catch (err) {
-      console.error("[v0] Sign out exception:", err)
+      // Fallback: force redirect even if there's an error
       window.location.href = "/auth/login"
     }
   }

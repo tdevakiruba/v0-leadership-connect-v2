@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { signOutAction } from "@/app/actions/auth-actions"
 import { toast } from "sonner"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
@@ -75,8 +76,16 @@ export function SettingsForm({ user, profile }: SettingsFormProps) {
   }
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/auth/login")
+    try {
+      // Clear client-side auth state first
+      await supabase.auth.signOut()
+      
+      // Clear all cookies via server action and redirect
+      await signOutAction()
+    } catch (err) {
+      // Fallback: force redirect even if there's an error
+      window.location.href = "/auth/login"
+    }
   }
 
   return (
