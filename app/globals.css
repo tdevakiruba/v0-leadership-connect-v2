@@ -5,47 +5,48 @@
 
 :root {
   /* Leadership Reboot - Premium Executive Palette */
-  /* Navy/Charcoal base with electric blue accent */
+  /* Navy blue brand color matching the Reboot logo */
   --background: oklch(0.98 0.005 250);
   --foreground: oklch(0.15 0.02 250);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.15 0.02 250);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.02 250);
-  --primary: oklch(0.45 0.15 250);
+  --primary: oklch(0.35 0.12 250);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.96 0.01 250);
   --secondary-foreground: oklch(0.25 0.03 250);
   --muted: oklch(0.95 0.01 250);
   --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.55 0.18 220);
+  --accent: oklch(0.35 0.12 250);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.90 0.01 250);
   --input: oklch(0.92 0.01 250);
-  --ring: oklch(0.55 0.18 220);
-  --chart-1: oklch(0.55 0.18 220);
-  --chart-2: oklch(0.60 0.15 180);
-  --chart-3: oklch(0.45 0.15 250);
-  --chart-4: oklch(0.70 0.15 140);
-  --chart-5: oklch(0.65 0.12 300);
+  --ring: oklch(0.35 0.12 250);
+  --chart-1: oklch(0.55 0.18 15);
+  --chart-2: oklch(0.65 0.18 55);
+  --chart-3: oklch(0.60 0.18 155);
+  --chart-4: oklch(0.55 0.15 195);
+  --chart-5: oklch(0.55 0.18 280);
   --radius: 0.75rem;
   --sidebar: oklch(0.18 0.025 250);
   --sidebar-foreground: oklch(0.95 0.01 250);
-  --sidebar-primary: oklch(0.55 0.18 220);
+  --sidebar-primary: oklch(0.35 0.12 250);
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.25 0.03 250);
   --sidebar-accent-foreground: oklch(0.95 0.01 250);
   --sidebar-border: oklch(0.28 0.03 250);
-  --sidebar-ring: oklch(0.55 0.18 220);
+  --sidebar-ring: oklch(0.35 0.12 250);
   
-  /* Custom Leadership Reboot tokens */
-  --signal-awareness: oklch(0.55 0.18 220);
-  --signal-interpretation: oklch(0.60 0.15 180);
-  --signal-alignment: oklch(0.70 0.15 140);
-  --signal-execution: oklch(0.65 0.20 40);
-  --signal-identity: oklch(0.55 0.15 300);
+  /* SIGNAL™ Phase Colors - Distinct brand colors for each phase */
+  --signal-s: oklch(0.55 0.18 15);
+  --signal-i: oklch(0.65 0.18 55);
+  --signal-g: oklch(0.60 0.18 155);
+  --signal-n: oklch(0.55 0.15 195);
+  --signal-a: oklch(0.55 0.18 280);
+  --signal-l: oklch(0.50 0.18 265);
 }
 
 .dark {
@@ -122,12 +123,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* SIGNAL Model colors */
-  --color-signal-awareness: var(--signal-awareness);
-  --color-signal-interpretation: var(--signal-interpretation);
-  --color-signal-alignment: var(--signal-alignment);
-  --color-signal-execution: var(--signal-execution);
-  --color-signal-identity: var(--signal-identity);
+  /* SIGNAL™ Model phase colors */
+  --color-signal-s: var(--signal-s);
+  --color-signal-i: var(--signal-i);
+  --color-signal-g: var(--signal-g);
+  --color-signal-n: var(--signal-n);
+  --color-signal-a: var(--signal-a);
+  --color-signal-l: var(--signal-l);
 }
 
 @layer base {
