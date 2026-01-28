@@ -88,28 +88,71 @@ export function TodayDashboard({
 
     setIsSubmitting(true)
     try {
-      const { error } = await supabase
-        .from("user_progress")
-        .upsert({
-          user_id: user.id,
-          day_number: currentDay,
-          completed: true,
-          completed_at: new Date().toISOString(),
-          reflection_text: reflection,
-          points_awarded: 10,
-          streak_count: streak + 1,
-        }, {
-          onConflict: "user_id,day_number"
-        })
+      // Get the current session to ensure we have a valid auth token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        console.error("[v0] Session error:", sessionError)
+        toast.error("Session expired. Please log in again.")
+        router.push("/auth/login")
+        return
+      }
 
-      if (error) throw error
+      const userId = session.user.id
+
+      // Check if progress already exists
+      const { data: existingProgress, error: checkError } = await supabase
+        .from("user_progress")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("day_number", currentDay)
+        .maybeSingle()
+
+      if (checkError) {
+        console.error("[v0] Check error:", checkError)
+        throw checkError
+      }
+
+      let progressError;
+      
+      if (existingProgress) {
+        // Update existing progress
+        const { error } = await supabase
+          .from("user_progress")
+          .update({
+            completed: true,
+            completed_at: new Date().toISOString(),
+            reflection_text: reflection,
+            points_awarded: 10,
+            streak_count: streak + 1,
+          })
+          .eq("id", existingProgress.id)
+        progressError = error
+      } else {
+        // Insert new progress
+        const { error } = await supabase
+          .from("user_progress")
+          .insert({
+            user_id: userId,
+            day_number: currentDay,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            reflection_text: reflection,
+            points_awarded: 10,
+            streak_count: streak + 1,
+          })
+        progressError = error
+      }
+
+      if (progressError) throw progressError
 
       setIsCompleted(true)
       toast.success("Day completed! +10 points earned")
       router.refresh()
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("[v0] Error completing day:", error)
-      toast.error("Failed to save progress")
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.error(`Failed to save progress: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
     }
