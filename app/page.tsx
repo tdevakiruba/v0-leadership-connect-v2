@@ -22,7 +22,7 @@ const features = [
   },
   {
     icon: Brain,
-    title: "SIGNAL Framework",
+    title: "SIGNAL\u2122 Framework",
     description: "Our proprietary methodology covering Self-awareness, Interpretation, Goals, Navigation, Action, and Leadership identity."
   },
   {
@@ -33,7 +33,7 @@ const features = [
   {
     icon: Award,
     title: "Certifications",
-    description: "Earn phase certificates and your SIGNAL Leadership Certification upon completion."
+    description: "Earn phase certificates and your SIGNAL\u2122 Leadership Certification upon completion."
   },
   {
     icon: TrendingUp,
@@ -48,12 +48,12 @@ const features = [
 ]
 
 const phases = [
-  { letter: "S", name: "Self-Awareness", days: "1-15", color: "bg-signal-awareness" },
-  { letter: "I", name: "Interpretation", days: "16-30", color: "bg-signal-interpretation" },
-  { letter: "G", name: "Goals & Strategy", days: "31-45", color: "bg-signal-alignment" },
-  { letter: "N", name: "Navigation", days: "46-60", color: "bg-signal-execution" },
-  { letter: "A", name: "Action & Execution", days: "61-75", color: "bg-signal-execution" },
-  { letter: "L", name: "Leadership Identity", days: "76-90", color: "bg-signal-identity" },
+  { letter: "S", name: "Self-Awareness", days: "1-15", description: "Understand your mental patterns and leadership triggers" },
+  { letter: "I", name: "Interpretation", days: "16-30", description: "Reframe challenges as opportunities for growth" },
+  { letter: "G", name: "Goals & Strategy", days: "31-45", description: "Align vision with actionable strategic intent" },
+  { letter: "N", name: "Navigation", days: "46-60", description: "Lead through complexity and organizational change" },
+  { letter: "A", name: "Action & Execution", days: "61-75", description: "Drive results with decisive leadership action" },
+  { letter: "L", name: "Leadership Identity", days: "76-90", description: "Cement your evolved leadership presence" },
 ]
 
 const leaders = [
@@ -78,7 +78,7 @@ export default function LandingPage() {
               Features
             </Link>
             <Link href="#signal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              SIGNAL Model
+              SIGNAL&#8482; Model
             </Link>
             <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
@@ -112,7 +112,7 @@ export default function LandingPage() {
               <span className="text-primary"> Think, Behave, and Influence</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
-              Leadership Reboot is a 90-day guided system that uses the SIGNAL framework, 
+              Leadership Reboot is a 90-day guided system that uses the SIGNAL&#8482; framework, 
               micro-content, daily reflection, and performance-aligned action to elevate 
               senior executives and top industry leaders.
             </p>
@@ -124,9 +124,9 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="#signal">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
-                  Explore the SIGNAL Model
-                </Button>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
+                Explore the SIGNAL&#8482; Model
+              </Button>
               </Link>
             </div>
             <p className="text-sm text-muted-foreground mt-6">
@@ -182,10 +182,10 @@ export default function LandingPage() {
       </section>
 
       {/* SIGNAL Model Section */}
-      <section id="signal" className="py-24 bg-muted/30">
+      <section id="signal" className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-4">The SIGNAL Model</Badge>
+            <Badge variant="outline" className="mb-4">The SIGNAL&#8482; Model</Badge>
             <h2 className="text-3xl font-bold tracking-tight mb-4">
               A Proven Framework for Leadership Excellence
             </h2>
@@ -194,22 +194,28 @@ export default function LandingPage() {
               creating lasting change in how you lead.
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
-            {phases.map((phase) => (
-              <Card key={phase.letter} className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="flex items-center gap-4 p-6">
-                    <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${phase.color} text-white text-2xl font-bold`}>
-                      {phase.letter}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{phase.name}</h3>
-                      <p className="text-sm text-muted-foreground">Days {phase.days}</p>
-                    </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="grid gap-0 border rounded-xl overflow-hidden bg-card shadow-sm">
+              {phases.map((phase, index) => (
+                <div 
+                  key={phase.letter} 
+                  className={`flex items-center gap-6 p-6 ${index !== phases.length - 1 ? 'border-b' : ''}`}
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary text-xl font-bold shrink-0">
+                    {phase.letter}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h3 className="font-semibold text-foreground">{phase.name}</h3>
+                      <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                        Days {phase.days}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{phase.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -252,7 +258,7 @@ export default function LandingPage() {
           </h2>
           <p className="text-primary-foreground/80 max-w-xl mx-auto mb-8">
             Join thousands of senior leaders who have transformed their leadership 
-            presence with the SIGNAL framework.
+            presence with the SIGNAL&#8482; framework.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/auth/sign-up">
