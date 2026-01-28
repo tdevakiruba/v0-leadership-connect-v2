@@ -34,13 +34,13 @@ const signalPhases = [
     name: "Self-Awareness",
     dayStart: 1,
     dayEnd: 15,
-    bgActive: "bg-rose-100",
-    textActive: "text-rose-600",
-    bgDone: "bg-rose-600",
+    bgActive: "bg-lime-100",
+    textActive: "text-lime-600",
+    bgDone: "bg-lime-600",
     textDone: "text-white",
-    progressActive: "bg-rose-500",
-    progressDone: "bg-rose-600",
-    borderActive: "border-rose-200",
+    progressActive: "bg-lime-500",
+    progressDone: "bg-lime-600",
+    borderActive: "border-lime-200",
   },
   {
     letter: "I",
@@ -388,7 +388,7 @@ export function TodayDashboard({
     switch (difficulty) {
       case 'easy': return 'bg-emerald-100 text-emerald-700'
       case 'medium': return 'bg-amber-100 text-amber-700'
-      case 'bold': return 'bg-rose-100 text-rose-700'
+      case 'bold': return 'bg-violet-100 text-violet-700'
       default: return 'bg-slate-100 text-slate-700'
     }
   }

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -18,10 +18,17 @@ import {
   Circle, 
   Lock,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  Target,
+  Square,
+  CheckSquare,
+  Loader2,
+  Sparkles
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { toast } from "sonner"
 
 interface Lesson {
   id: string
@@ -36,6 +43,16 @@ interface Lesson {
 interface Progress {
   day_number: number
   completed: boolean
+  actions_completed?: number[]
+  ai_actions?: ActionItem[]
+}
+
+interface ActionItem {
+  id: number
+  title: string
+  description: string
+  difficulty: 'easy' | 'medium' | 'bold'
+  isFromDB?: boolean
 }
 
 interface LessonsListProps {
@@ -52,12 +69,26 @@ const focusAreas = [
   "Leadership Identity"
 ]
 
+// SIGNAL™ phase color configurations
+const signalPhaseColors = [
+  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-lime-500", text: "text-white", bgLight: "bg-lime-100", textLight: "text-lime-600" },
+  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-amber-500", text: "text-white", bgLight: "bg-amber-100", textLight: "text-amber-600" },
+  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-emerald-500", text: "text-white", bgLight: "bg-emerald-100", textLight: "text-emerald-600" },
+  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-cyan-500", text: "text-white", bgLight: "bg-cyan-100", textLight: "text-cyan-600" },
+  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-violet-500", text: "text-white", bgLight: "bg-violet-100", textLight: "text-violet-600" },
+  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-indigo-500", text: "text-white", bgLight: "bg-indigo-100", textLight: "text-indigo-600" },
+]
+
+const getPhaseForDay = (day: number) => {
+  return signalPhaseColors.find(p => day >= p.dayStart && day <= p.dayEnd) || signalPhaseColors[0]
+}
+
 const focusAreaColors: Record<string, string> = {
-  "Awareness": "bg-signal-awareness text-white",
-  "Interpretation": "bg-signal-interpretation text-white",
-  "Alignment": "bg-signal-alignment text-foreground",
-  "Execution": "bg-signal-execution text-white",
-  "Leadership Identity": "bg-signal-identity text-white",
+  "Awareness": "bg-lime-500 text-white",
+  "Interpretation": "bg-amber-500 text-white",
+  "Alignment": "bg-emerald-500 text-white",
+  "Execution": "bg-cyan-500 text-white",
+  "Leadership Identity": "bg-violet-500 text-white",
 }
 
 export function LessonsList({ lessons, progress }: LessonsListProps) {
@@ -126,29 +157,33 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
 
       {/* Progress Overview */}
       <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {phases.map(phase => {
-          const phaseCompleted = Array.from({ length: phase.range[1] - phase.range[0] + 1 }, (_, i) => phase.range[0] + i)
+        {signalPhaseColors.map(phase => {
+          const phaseCompleted = Array.from({ length: phase.dayEnd - phase.dayStart + 1 }, (_, i) => phase.dayStart + i)
             .filter(day => completedDays.has(day)).length
-          const phaseTotal = phase.range[1] - phase.range[0] + 1
+          const phaseTotal = phase.dayEnd - phase.dayStart + 1
           const percentage = Math.round((phaseCompleted / phaseTotal) * 100)
+          const isActive = currentDay >= phase.dayStart && currentDay <= phase.dayEnd
 
           return (
-            <Card key={phase.letter} className="overflow-hidden">
+            <Card key={phase.letter} className={cn("overflow-hidden", isActive && "ring-2 ring-offset-2", isActive && `ring-${phase.bg.replace('bg-', '')}`)}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
+                  <div className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-full font-bold",
+                    isActive ? `${phase.bg} ${phase.text}` : `${phase.bgLight} ${phase.textLight}`
+                  )}>
                     {phase.letter}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{phase.name}</p>
+                    <p className={cn("text-xs font-medium truncate", isActive && phase.textLight)}>{phase.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {phaseCompleted}/{phaseTotal} days
                     </p>
                   </div>
                 </div>
-                <div className="mt-3 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className={cn("mt-3 h-1.5 rounded-full overflow-hidden", phase.bgLight)}>
                   <div 
-                    className="h-full bg-primary transition-all duration-300"
+                    className={cn("h-full transition-all duration-300", phase.bg)}
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
@@ -164,13 +199,15 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
           const isCompleted = completedDays.has(lesson.day_number)
           const isCurrent = lesson.day_number === currentDay
           const isLocked = lesson.day_number > currentDay && !isCompleted
+          const lessonPhase = getPhaseForDay(lesson.day_number)
 
           return (
             <Card 
               key={lesson.id}
               className={cn(
                 "group transition-all hover:shadow-md",
-                isCurrent && "ring-2 ring-accent",
+                isCurrent && "ring-2",
+                isCurrent && lessonPhase.bg.replace('bg-', 'ring-'),
                 isLocked && "opacity-60"
               )}
             >
@@ -178,24 +215,24 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     {isCompleted ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle2 className={cn("h-5 w-5 flex-shrink-0", lessonPhase.textLight)} />
                     ) : isLocked ? (
                       <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                     ) : (
-                      <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      <Circle className={cn("h-5 w-5 flex-shrink-0", lessonPhase.textLight)} />
                     )}
                     <span className="text-sm font-medium">Day {lesson.day_number}</span>
                     {isCurrent && (
-                      <Badge variant="secondary" className="text-xs">Current</Badge>
+                      <Badge className={cn("text-xs", lessonPhase.bgLight, lessonPhase.textLight)}>Current</Badge>
                     )}
                   </div>
                   <Badge 
                     className={cn(
                       "text-xs",
-                      focusAreaColors[lesson.focus_area] || "bg-muted text-muted-foreground"
+                      lessonPhase.bg, lessonPhase.text
                     )}
                   >
-                    {lesson.focus_area}
+                    {lessonPhase.letter}
                   </Badge>
                 </div>
                 <CardTitle className="text-base line-clamp-2 mt-2">
@@ -212,7 +249,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                   <Button 
                     variant={isCurrent ? "default" : "outline"} 
                     size="sm" 
-                    className="w-full"
+                    className={cn("w-full", isCurrent && lessonPhase.bg)}
                     disabled={isLocked}
                   >
                     {isCompleted ? "Review" : isCurrent ? "Start Today" : "View"}
