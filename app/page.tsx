@@ -250,6 +250,138 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <Badge variant="outline" className="mb-4">Pricing</Badge>
+            <h2 className="text-3xl font-bold tracking-tight mb-4">
+              Choose Your Leadership Journey
+            </h2>
+            <p className="text-muted-foreground">
+              Whether you are an individual leader or transforming an entire organization, 
+              we have a path for you.
+            </p>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-3 max-w-6xl mx-auto">
+            {/* Self-Paced Tier */}
+            <Card className="relative flex flex-col">
+              <CardContent className="flex flex-col flex-1 pt-6">
+                <div className="mb-6">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Individual</p>
+                  <h3 className="text-xl font-bold mb-2">Self-Paced</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Leadership Reboot SIGNAL&#8482; - 90 Days
+                  </p>
+                </div>
+                <div className="mb-6">
+                  <span className="text-3xl font-bold">Contact Us</span>
+                  <p className="text-sm text-muted-foreground mt-1">for pricing</p>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {[
+                    "Self-paced 90-day curriculum",
+                    "Daily SIGNAL\u2122 reflections",
+                    "AI-generated leadership actions",
+                    "Weekly Office Hours (40 min)",
+                    "Monthly Virtual Keynotes",
+                    "Community Forum access",
+                    "Completion Certificate + Digital Credential"
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/auth/sign-up" className="mt-auto">
+                  <Button variant="outline" className="w-full bg-transparent">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Team Pack Tier */}
+            <Card className="relative flex flex-col border-primary shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+              </div>
+              <CardContent className="flex flex-col flex-1 pt-6">
+                <div className="mb-6">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Teams</p>
+                  <h3 className="text-xl font-bold mb-2">Leadership Team Cohort&#8482;</h3>
+                  <p className="text-sm text-muted-foreground">
+                    For 5-15 leaders
+                  </p>
+                </div>
+                <div className="mb-6">
+                  <span className="text-3xl font-bold">Contact Us</span>
+                  <p className="text-sm text-muted-foreground mt-1">for pricing</p>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {[
+                    "Everything in Self-Paced, plus:",
+                    "Weekly cohort facilitation",
+                    "Team scenario labs",
+                    "Manager dashboards",
+                    "Completion reporting",
+                    "Priority support"
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/auth/sign-up" className="mt-auto">
+                  <Button className="w-full">
+                    Contact Sales
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Enterprise Tier */}
+            <Card className="relative flex flex-col">
+              <CardContent className="flex flex-col flex-1 pt-6">
+                <div className="mb-6">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Enterprise</p>
+                  <h3 className="text-xl font-bold mb-2">Enterprise License</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Unlimited or seat-based access
+                  </p>
+                </div>
+                <div className="mb-6">
+                  <span className="text-3xl font-bold">Custom</span>
+                  <p className="text-sm text-muted-foreground mt-1">pricing upon request</p>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {[
+                    "Everything in Team Cohort, plus:",
+                    "Identity-managed SSO (Google/Microsoft/SAML/OIDC)",
+                    "Manager roll-up dashboards",
+                    "Performance analytics",
+                    "Certificate completion tracking",
+                    "Concierge support"
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/auth/sign-up" className="mt-auto">
+                  <Button variant="outline" className="w-full bg-transparent">
+                    Contact Sales
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
