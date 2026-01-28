@@ -98,45 +98,69 @@ export function LessonDetail({
 
     setIsSubmitting(true)
     try {
-      // Ensure profile exists before saving progress (handles edge case where trigger didn't run)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .upsert({
-            id: userId,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || null,
-          }, {
-            onConflict: "id"
-          })
-
-        if (profileError) {
-          console.error("[v0] Error ensuring profile exists:", profileError)
-        }
+      // Get the current session to ensure we have a valid auth token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        console.error("[v0] Session error:", sessionError)
+        toast.error("Session expired. Please log in again.")
+        router.push("/auth/login")
+        return
       }
 
-      const { error } = await supabase
-        .from("user_progress")
-        .upsert({
-          user_id: userId,
-          day_number: lesson.day_number,
-          completed: true,
-          completed_at: new Date().toISOString(),
-          reflection_text: reflection,
-          points_awarded: 10,
-        }, {
-          onConflict: "user_id,day_number"
-        })
+      const currentUserId = session.user.id
 
-      if (error) throw error
+      // Check if progress already exists
+      const { data: existingProgress, error: checkError } = await supabase
+        .from("user_progress")
+        .select("id")
+        .eq("user_id", currentUserId)
+        .eq("day_number", lesson.day_number)
+        .maybeSingle()
+
+      if (checkError) {
+        console.error("[v0] Check error:", checkError)
+        throw checkError
+      }
+
+      let progressError;
+      
+      if (existingProgress) {
+        // Update existing progress
+        const { error } = await supabase
+          .from("user_progress")
+          .update({
+            completed: true,
+            completed_at: new Date().toISOString(),
+            reflection_text: reflection,
+            points_awarded: 10,
+          })
+          .eq("id", existingProgress.id)
+        progressError = error
+      } else {
+        // Insert new progress
+        const { error } = await supabase
+          .from("user_progress")
+          .insert({
+            user_id: currentUserId,
+            day_number: lesson.day_number,
+            completed: true,
+            completed_at: new Date().toISOString(),
+            reflection_text: reflection,
+            points_awarded: 10,
+          })
+        progressError = error
+      }
+
+      if (progressError) throw progressError
 
       setIsCompleted(true)
       toast.success("Lesson completed! +10 points earned")
       router.refresh()
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("[v0] Error completing lesson:", error)
-      toast.error("Failed to save progress")
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.error(`Failed to save progress: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
     }
