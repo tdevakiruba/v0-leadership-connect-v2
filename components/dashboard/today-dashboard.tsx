@@ -1,4 +1,4 @@
-"use client"
+r"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-// SIGNAL phase color configurations
+// SIGNAL™ phase color configurations
 const signalPhases = [
   {
     letter: "S",
@@ -421,10 +421,10 @@ export function TodayDashboard({
             </div>
           )}
 
-          {/* SIGNAL Journey Progress */}
+          {/* SIGNAL™ Journey Progress */}
           <div className="bg-card rounded-2xl p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Your SIGNAL Journey</h3>
+              <h3 className="font-semibold text-foreground">Your SIGNAL&trade; Journey</h3>
               <Link href="/dashboard/journey" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 Details <ArrowRight className="h-3 w-3" />
               </Link>

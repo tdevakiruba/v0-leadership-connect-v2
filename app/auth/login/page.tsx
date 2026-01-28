@@ -93,7 +93,7 @@ export default function LoginPage() {
           
           <div className="space-y-8">
             <blockquote className="text-2xl font-light leading-relaxed text-balance">
-              &ldquo;Transform how you think, behave, and influence in just 90 days using the SIGNAL model.&rdquo;
+              &ldquo;Transform how you think, behave, and influence in just 90 days using the SIGNAL&trade; model.&rdquo;
             </blockquote>
             
             <div className="grid grid-cols-6 gap-3">

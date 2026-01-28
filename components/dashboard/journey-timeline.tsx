@@ -108,7 +108,7 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Your 90-Day Journey</h1>
           <p className="text-muted-foreground mt-1">
-            Track your transformation through the SIGNAL leadership framework
+            Track your transformation through the SIGNAL&trade; leadership framework
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -155,7 +155,7 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         </CardContent>
       </Card>
 
-      {/* SIGNAL Phases */}
+      {/* SIGNAL™ Phases */}
       <div className="grid gap-4 lg:grid-cols-6">
         {phases.map((phase, index) => {
           const phaseDays = Array.from(
