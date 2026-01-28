@@ -10,7 +10,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Leadership Reboot | 90-Day Executive Transformation',
-  description: 'A 90-day guided system that transforms how leaders think, behave, and influence using the SIGNAL™ model, micro-content, daily reflection, and performance-aligned action.',
+  description: 'A 90-day guided system that transforms how leaders think, behave, and influence using the SIGNAL™ model, micro-content, daily reflection, and performance-aligned action. Leadership Reboot SIGNAL™ model is designed to take the mindset shifts we discover in our workshops and turn them into permanent habits.Think of the workshop as the spark that lights the fire, and the Reboot Signal™ as the fuel that keeps it burning for the long haul.',
   keywords: ['leadership', 'executive coaching', 'SIGNAL™ model', 'leadership development', 'management training'],
     generator: 'v0.app'
 }
