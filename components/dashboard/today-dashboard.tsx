@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-// SIGNAL phase color configurations
+// SIGNAL™ phase color configurations
 const signalPhases = [
   {
     letter: "S",
@@ -421,10 +421,10 @@ export function TodayDashboard({
             </div>
           )}
 
-          {/* SIGNAL Journey Progress */}
+          {/* SIGNAL™ Journey Progress */}
           <div className="bg-card rounded-2xl p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Your SIGNAL Journey</h3>
+              <h3 className="font-semibold text-foreground">Your SIGNAL&trade; Journey</h3>
               <Link href="/dashboard/journey" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 Details <ArrowRight className="h-3 w-3" />
               </Link>
@@ -509,20 +509,20 @@ export function TodayDashboard({
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center p-3 bg-blue-50 rounded-xl">
                 <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
-                  <Flame className="h-4 w-4 text-orange-500" />
+                  <Flame className="h-4 w-4" />
                   {streak}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
               </div>
-              <div className="text-center p-3 bg-amber-50 rounded-xl">
-                <div className="flex items-center justify-center gap-1 text-amber-600 font-bold text-lg">
+              <div className="text-center p-3 bg-blue-50 rounded-xl">
+                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
                   <Sparkles className="h-4 w-4" />
                   {totalPoints}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Points</p>
               </div>
-              <div className="text-center p-3 bg-emerald-50 rounded-xl">
-                <div className="flex items-center justify-center gap-1 text-emerald-600 font-bold text-lg">
+              <div className="text-center p-3 bg-blue-50 rounded-xl">
+                <div className="flex items-center justify-center gap-1 text-blue-600 font-bold text-lg">
                   <Trophy className="h-4 w-4" />
                   {completedDays}
                 </div>

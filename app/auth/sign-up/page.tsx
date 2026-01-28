@@ -122,7 +122,7 @@ export default function SignUpPage() {
             
             <div className="p-6 rounded-xl bg-white/10 backdrop-blur-sm">
               <p className="text-lg font-light italic mb-4 text-balance">
-                &ldquo;This program fundamentally changed how I approach leadership challenges. The SIGNAL framework is now embedded in my daily decision-making.&rdquo;
+                &ldquo;This program fundamentally changed how I approach leadership challenges. The SIGNAL&trade; framework is now embedded in my daily decision-making.&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">

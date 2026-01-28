@@ -44,7 +44,7 @@ const certificates = [
     id: "phase-s",
     name: "Self-Awareness Mastery",
     phase: "S",
-    description: "Completed the Self-Awareness phase of the SIGNAL leadership framework",
+    description: "Completed the Self-Awareness phase of the SIGNAL™ leadership framework",
     requirement: 15,
     startDay: 1,
     endDay: 15,
@@ -108,8 +108,8 @@ const certificates = [
   },
   {
     id: "full-completion",
-    name: "SIGNAL Leadership Certification",
-    phase: "SIGNAL",
+    name: "SIGNAL™ Leadership Certification",
+    phase: "SIGNAL™",
     description: "Completed the entire 90-day Leadership Reboot program",
     requirement: 90,
     startDay: 1,
@@ -201,9 +201,9 @@ export function CertificatesView({
         </CardContent>
       </Card>
 
-      {/* SIGNAL Certificates */}
+      {/* SIGNAL™ Certificates */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">SIGNAL Phase Certificates</h2>
+        <h2 className="text-lg font-semibold mb-4">SIGNAL&trade; Phase Certificates</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {certificates.map(cert => {
             const status = getCertificateStatus(cert)
@@ -336,7 +336,7 @@ export function CertificatesView({
             <h2 className="text-2xl font-bold mb-2">Congratulations, {profile?.full_name || "Leader"}!</h2>
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               You have successfully completed the 90-day Leadership Reboot program 
-              and earned your SIGNAL Leadership Certification.
+              and earned your SIGNAL&trade; Leadership Certification.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg">
