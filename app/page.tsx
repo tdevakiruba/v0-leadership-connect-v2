@@ -128,9 +128,9 @@ export default function LandingPage() {
               <span className="text-primary"> Think, Behave, and Influence</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
-              Leadership Reboot is a 90-day guided system that uses the SIGNAL&#8482; framework, 
+              Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework, 
               micro-content, daily reflection, and performance-aligned action to elevate 
-              senior executives and top industry leaders.
+              senior executives and top industry leaders. Leadership Reboot SIGNAL™ model is designed to take the mindset shifts we discover in our workshops and turn them into permanent habits.Think of the workshop as the spark that lights the fire, and the Reboot Signal™ as the fuel that keeps it burning for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/auth/sign-up">
@@ -257,7 +257,7 @@ export default function LandingPage() {
             {[
               { step: "1", title: "Read", desc: "Start with a leadership insight from a world-class leader" },
               { step: "2", title: "Reflect", desc: "Apply the thought exercise to your current challenges" },
-              { step: "3", title: "Act", desc: "Complete your daily action and track your progress" },
+              { step: "3", title: "Act", desc: "Complete your daily action to change your mindset and track your progress" },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg mx-auto mb-4">
@@ -297,7 +297,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">$99</span>
+                    <span className="text-3xl font-bold">$199</span>
                     <span className="text-lg text-muted-foreground line-through">$299</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">one-time payment</p>
@@ -306,7 +306,7 @@ export default function LandingPage() {
                   {[
                     "Self-paced 90-day curriculum",
                     "Daily SIGNAL\u2122 reflections",
-                    "AI-generated leadership actions",
+                    "Mindset Shift leadership actions",
                     "Weekly Office Hours (40 min)",
                     "Monthly Virtual Keynotes",
                     "Community Forum access",
@@ -340,15 +340,15 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">Pricing Upon Request</span>
+                  <span className="text-xl font-bold">Pricing Upon Request</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
                     "Everything in Self-Paced, plus:",
-                    "Weekly cohort facilitation",
+                    "Weekly Online cohort facilitation",
                     "Team scenario labs",
                     "Manager dashboards",
-                    "Completion reporting",
+                    "Completion Certificate + Digital Credential",
                     "Priority support"
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm">
@@ -376,7 +376,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">Pricing Upon Request</span>
+                  <span className="text-xl font-bold">Pricing Upon Request</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
