@@ -24,6 +24,82 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+// SIGNAL phase color configurations
+const signalPhases = [
+  {
+    letter: "S",
+    name: "Self-Awareness",
+    dayStart: 1,
+    dayEnd: 15,
+    bgActive: "bg-blue-100",
+    textActive: "text-blue-600",
+    bgDone: "bg-blue-600",
+    textDone: "text-white",
+    progressActive: "bg-blue-500",
+    progressDone: "bg-blue-600",
+  },
+  {
+    letter: "I",
+    name: "Interpretation",
+    dayStart: 16,
+    dayEnd: 30,
+    bgActive: "bg-indigo-100",
+    textActive: "text-indigo-600",
+    bgDone: "bg-indigo-600",
+    textDone: "text-white",
+    progressActive: "bg-indigo-500",
+    progressDone: "bg-indigo-600",
+  },
+  {
+    letter: "G",
+    name: "Goals & Strategy",
+    dayStart: 31,
+    dayEnd: 45,
+    bgActive: "bg-violet-100",
+    textActive: "text-violet-600",
+    bgDone: "bg-violet-600",
+    textDone: "text-white",
+    progressActive: "bg-violet-500",
+    progressDone: "bg-violet-600",
+  },
+  {
+    letter: "N",
+    name: "Navigation",
+    dayStart: 46,
+    dayEnd: 60,
+    bgActive: "bg-cyan-100",
+    textActive: "text-cyan-600",
+    bgDone: "bg-cyan-600",
+    textDone: "text-white",
+    progressActive: "bg-cyan-500",
+    progressDone: "bg-cyan-600",
+  },
+  {
+    letter: "A",
+    name: "Action & Execution",
+    dayStart: 61,
+    dayEnd: 75,
+    bgActive: "bg-teal-100",
+    textActive: "text-teal-600",
+    bgDone: "bg-teal-600",
+    textDone: "text-white",
+    progressActive: "bg-teal-500",
+    progressDone: "bg-teal-600",
+  },
+  {
+    letter: "L",
+    name: "Leadership Identity",
+    dayStart: 76,
+    dayEnd: 90,
+    bgActive: "bg-sky-100",
+    textActive: "text-sky-600",
+    bgDone: "bg-sky-600",
+    textDone: "text-white",
+    progressActive: "bg-sky-500",
+    progressDone: "bg-sky-600",
+  },
+]
+
 interface TodayDashboardProps {
   user: User
   profile: {
@@ -167,6 +243,9 @@ export function TodayDashboard({
   }
 
   const currentPhase = getSIGNALPhase(currentDay)
+  const currentPhaseColors = signalPhases.find(
+    p => currentDay >= p.dayStart && currentDay <= p.dayEnd
+  ) || signalPhases[0]
   
   // Generate week days for the calendar
   const today = new Date()
@@ -350,43 +429,59 @@ export function TodayDashboard({
                 Details <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
-            <div className="grid grid-cols-6 gap-2">
-              {["S", "I", "G", "N", "A", "L"].map((letter, i) => {
-                const dayRange = [1, 16, 31, 46, 61, 76][i]
-                const isActive = currentDay >= dayRange && currentDay < (dayRange + 15) || (i === 5 && currentDay >= 76)
-                const isDone = currentDay > dayRange + 14
-                const labels = ["Self", "Interpret", "Goals", "Navigate", "Action", "Lead"]
-                const progressInPhase = isActive 
-                  ? Math.min(((currentDay - dayRange) / 15) * 100, 100) 
-                  : isDone ? 100 : 0
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {signalPhases.map((phase, i) => {
+                const isActive = currentDay >= phase.dayStart && currentDay <= phase.dayEnd
+                const isDone = currentDay > phase.dayEnd
+                const completedInPhase = isDone 
+                  ? 15 
+                  : isActive 
+                    ? Math.max(0, currentDay - phase.dayStart)
+                    : 0
+                
                 return (
-                  <div key={letter} className="text-center">
-                    <div 
-                      className={cn(
-                        "relative w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold mb-2 transition-all overflow-hidden",
-                        isActive ? "bg-blue-100 text-blue-600" :
-                        isDone ? "bg-blue-600 text-white" :
-                        "bg-slate-100 text-slate-400"
-                      )}
-                    >
-                      {isActive && (
-                        <div 
-                          className="absolute bottom-0 left-0 right-0 bg-blue-600 transition-all"
-                          style={{ height: `${progressInPhase}%` }}
-                        />
-                      )}
-                      <span className={cn("relative z-10", isActive && progressInPhase > 50 && "text-white")}>
-                        {letter}
-                      </span>
+                  <div 
+                    key={phase.letter} 
+                    className={cn(
+                      "bg-card rounded-xl p-4 border transition-all hover:shadow-md",
+                      isActive ? "border-blue-200 shadow-sm" : "border-border"
+                    )}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div 
+                        className={cn(
+                          "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all",
+                          isDone 
+                            ? `${phase.bgDone} ${phase.textDone}` 
+                            : isActive 
+                              ? `${phase.bgActive} ${phase.textActive}` 
+                              : "bg-slate-100 text-slate-400"
+                        )}
+                      >
+                        {phase.letter}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className={cn(
+                          "text-xs font-semibold truncate",
+                          isActive ? phase.textActive : isDone ? "text-foreground" : "text-muted-foreground"
+                        )}>
+                          {phase.name}
+                        </h4>
+                        <p className="text-[10px] text-muted-foreground">
+                          {completedInPhase}/15 days
+                        </p>
+                      </div>
                     </div>
-                    <span className={cn(
-                      "text-xs font-medium",
-                      isActive ? "text-blue-600" :
-                      isDone ? "text-blue-600" :
-                      "text-muted-foreground"
-                    )}>
-                      {labels[i]}
-                    </span>
+                    {/* Progress bar */}
+                    <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                      <div 
+                        className={cn(
+                          "h-full rounded-full transition-all duration-500",
+                          isDone ? phase.progressDone : isActive ? phase.progressActive : "bg-slate-200"
+                        )}
+                        style={{ width: `${(completedInPhase / 15) * 100}%` }}
+                      />
+                    </div>
                   </div>
                 )
               })}
@@ -484,12 +579,17 @@ export function TodayDashboard({
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-muted-foreground">Current Phase</span>
-                  <span className="font-medium text-foreground">{currentPhase?.name}</span>
+                  <span className={cn("font-medium", currentPhaseColors?.textActive || "text-foreground")}>
+                    {currentPhaseColors?.name || currentPhase?.name}
+                  </span>
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-emerald-500 rounded-full transition-all"
-                    style={{ width: `${((currentDay - (currentPhase?.range[0] || 1)) / 15) * 100}%` }}
+                    className={cn(
+                      "h-full rounded-full transition-all",
+                      currentPhaseColors?.progressActive || "bg-blue-500"
+                    )}
+                    style={{ width: `${((currentDay - (currentPhaseColors?.dayStart || 1)) / 15) * 100}%` }}
                   />
                 </div>
               </div>
