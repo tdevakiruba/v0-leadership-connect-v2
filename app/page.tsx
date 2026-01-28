@@ -275,8 +275,11 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">Contact Us</span>
-                  <p className="text-sm text-muted-foreground mt-1">for pricing</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold">$99</span>
+                    <span className="text-lg text-muted-foreground line-through">$299</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">one-time payment</p>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
@@ -316,8 +319,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">Contact Us</span>
-                  <p className="text-sm text-muted-foreground mt-1">for pricing</p>
+                  <span className="text-3xl font-bold">Pricing Upon Request</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
@@ -353,8 +355,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold">Custom</span>
-                  <p className="text-sm text-muted-foreground mt-1">pricing upon request</p>
+                  <span className="text-3xl font-bold">Pricing Upon Request</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
