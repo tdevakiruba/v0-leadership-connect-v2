@@ -27,8 +27,17 @@ export default function DashboardLayout({
   const supabase = createClient()
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/auth/login")
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error("[v0] Sign out error:", error.message)
+      }
+      // Force navigation even if there's an error
+      window.location.href = "/auth/login"
+    } catch (err) {
+      console.error("[v0] Sign out exception:", err)
+      window.location.href = "/auth/login"
+    }
   }
 
   return (
