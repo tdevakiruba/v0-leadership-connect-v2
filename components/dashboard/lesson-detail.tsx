@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { 
   Quote,
   Lightbulb,
@@ -15,13 +14,17 @@ import {
   ArrowRight,
   ArrowLeft,
   Lock,
-  BookOpen
+  BookOpen,
+  Square,
+  CheckSquare,
+  Loader2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
+import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
 
 interface Lesson {
   id: string
@@ -41,6 +44,16 @@ interface Progress {
   reflection_text: string | null
   ai_action: string | null
   completed_at: string | null
+  actions_completed?: number[]
+  ai_actions?: ActionItem[]
+}
+
+interface ActionItem {
+  id: number
+  title: string
+  description: string
+  difficulty: 'easy' | 'medium' | 'bold'
+  isFromDB?: boolean
 }
 
 interface AdjacentLesson {
@@ -57,20 +70,27 @@ interface LessonDetailProps {
   nextLesson: AdjacentLesson | null
 }
 
-const focusAreaColors: Record<string, string> = {
-  "Awareness": "bg-signal-awareness text-white",
-  "Interpretation": "bg-signal-interpretation text-white",
-  "Alignment": "bg-signal-alignment text-foreground",
-  "Execution": "bg-signal-execution text-white",
-  "Leadership Identity": "bg-signal-identity text-white",
+// SIGNAL™ phase color configurations
+const signalPhaseColors = [
+  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-lime-500", text: "text-white", bgLight: "bg-lime-100", textLight: "text-lime-600", border: "border-lime-200" },
+  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-amber-500", text: "text-white", bgLight: "bg-amber-100", textLight: "text-amber-600", border: "border-amber-200" },
+  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-emerald-500", text: "text-white", bgLight: "bg-emerald-100", textLight: "text-emerald-600", border: "border-emerald-200" },
+  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-cyan-500", text: "text-white", bgLight: "bg-cyan-100", textLight: "text-cyan-600", border: "border-cyan-200" },
+  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-violet-500", text: "text-white", bgLight: "bg-violet-100", textLight: "text-violet-600", border: "border-violet-200" },
+  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-indigo-500", text: "text-white", bgLight: "bg-indigo-100", textLight: "text-indigo-600", border: "border-indigo-200" },
+]
+
+const getPhaseForDay = (day: number) => {
+  return signalPhaseColors.find(p => day >= p.dayStart && day <= p.dayEnd) || signalPhaseColors[0]
 }
 
-const phaseInfo: Record<string, { letter: string; name: string }> = {
-  "Awareness": { letter: "S", name: "Self-Awareness" },
-  "Interpretation": { letter: "I", name: "Interpretation" },
-  "Alignment": { letter: "G", name: "Goals & Strategy" },
-  "Execution": { letter: "A", name: "Action & Execution" },
-  "Leadership Identity": { letter: "L", name: "Leadership Identity" },
+const getDifficultyColor = (difficulty: string) => {
+  switch (difficulty) {
+    case 'easy': return 'bg-emerald-100 text-emerald-700'
+    case 'medium': return 'bg-amber-100 text-amber-700'
+    case 'bold': return 'bg-violet-100 text-violet-700'
+    default: return 'bg-slate-100 text-slate-700'
+  }
 }
 
 export function LessonDetail({
@@ -84,11 +104,107 @@ export function LessonDetail({
   const [reflection, setReflection] = useState(progress?.reflection_text || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCompleted, setIsCompleted] = useState(progress?.completed || false)
+  const [actions, setActions] = useState<ActionItem[]>([])
+  const [completedActions, setCompletedActions] = useState<number[]>(progress?.actions_completed || [])
+  const [isLoadingActions, setIsLoadingActions] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
   const isLocked = lesson.day_number > currentDay
-  const phase = phaseInfo[lesson.focus_area] || { letter: "?", name: lesson.focus_area }
+  const phase = getPhaseForDay(lesson.day_number)
+
+  // Load or generate actions on mount
+  useEffect(() => {
+    async function loadActions() {
+      if (!lesson) return
+
+      // If we have cached AI actions, use them
+      if (progress?.ai_actions && progress.ai_actions.length > 0) {
+        const allActions: ActionItem[] = []
+        if (lesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: lesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+        allActions.push(...progress.ai_actions)
+        setActions(allActions)
+        return
+      }
+
+      // Generate new actions
+      setIsLoadingActions(true)
+      try {
+        const result = await generateBoldActions(
+          lesson.day_number,
+          lesson.focus_area,
+          lesson.focus_reframe_technique || lesson.focus_area,
+          lesson.action_for_today || ""
+        )
+
+        const allActions: ActionItem[] = []
+        
+        if (lesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: lesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+
+        const aiActions = result.actions.map((action, index) => ({
+          ...action,
+          id: index + 1
+        }))
+        allActions.push(...aiActions)
+        
+        setActions(allActions)
+
+        // Save AI actions to database for caching
+        await saveActionsToProgress(lesson.day_number, aiActions)
+      } catch (error) {
+        console.error('[v0] Error loading actions:', error)
+        if (lesson.action_for_today) {
+          setActions([{
+            id: 0,
+            title: "Today's Core Action",
+            description: lesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          }])
+        }
+      } finally {
+        setIsLoadingActions(false)
+      }
+    }
+
+    loadActions()
+  }, [lesson, progress?.ai_actions])
+
+  const handleToggleAction = async (actionId: number) => {
+    const isCurrentlyCompleted = completedActions.includes(actionId)
+    const newCompletedActions = isCurrentlyCompleted
+      ? completedActions.filter(id => id !== actionId)
+      : [...completedActions, actionId]
+    
+    setCompletedActions(newCompletedActions)
+
+    try {
+      await toggleActionCompleted(lesson.day_number, actionId, !isCurrentlyCompleted)
+    } catch (error) {
+      setCompletedActions(completedActions)
+      toast.error("Failed to update action")
+    }
+  }
+
+  const actionsCompletedCount = completedActions.length
+  const totalActionsCount = actions.length
+  const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
 
   const handleComplete = async () => {
     if (!reflection.trim()) {
@@ -222,16 +338,16 @@ export function LessonDetail({
 
       {/* Header */}
       <div className="flex items-start gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-2xl font-bold text-primary flex-shrink-0">
+        <div className={cn(
+          "flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold flex-shrink-0",
+          phase.bg, phase.text
+        )}>
           {phase.letter}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <Badge className={cn(
-              "text-xs font-medium",
-              focusAreaColors[lesson.focus_area] || "bg-primary text-primary-foreground"
-            )}>
-              {lesson.focus_area}
+            <Badge className={cn("text-xs font-medium", phase.bg, phase.text)}>
+              {phase.name}
             </Badge>
             <span className="text-sm text-muted-foreground">Day {lesson.day_number} of 90</span>
             {isCompleted && (
@@ -244,7 +360,7 @@ export function LessonDetail({
           <h1 className="text-2xl font-bold mt-2 text-balance">
             {lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className={cn("mt-1", phase.textLight)}>
             {phase.name} Phase
           </p>
         </div>
@@ -299,22 +415,101 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* Action for Today */}
-          {lesson.action_for_today && (
-            <Card>
-              <CardHeader className="pb-3">
+          {/* Today's Actions Section */}
+          <Card className={cn("border", phase.border)}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Target className="h-5 w-5 text-accent" />
-                  Today's Action
+                  <div className={cn("p-1.5 rounded-lg", phase.bgLight)}>
+                    <Target className={cn("h-4 w-4", phase.textLight)} />
+                  </div>
+                  Today&apos;s Actions
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
-                  {lesson.action_for_today}
+                <span className="text-sm text-muted-foreground">
+                  {actionsCompletedCount}/{totalActionsCount} completed
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Actions Progress */}
+              <div className="mb-4">
+                <div className={cn("h-2 rounded-full overflow-hidden", phase.bgLight)}>
+                  <div 
+                    className={cn("h-full rounded-full transition-all duration-500", phase.bg)}
+                    style={{ width: `${actionsProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Actions List */}
+              {isLoadingActions ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className={cn("h-6 w-6 animate-spin", phase.textLight)} />
+                  <span className="ml-2 text-muted-foreground">Generating personalized actions...</span>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {actions.map((action) => {
+                    const isActionCompleted = completedActions.includes(action.id)
+                    return (
+                      <div 
+                        key={action.id}
+                        onClick={() => handleToggleAction(action.id)}
+                        className={cn(
+                          "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all",
+                          isActionCompleted 
+                            ? "bg-slate-50 border-slate-200" 
+                            : "bg-card border-border hover:border-slate-300 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex-shrink-0 mt-0.5">
+                          {isActionCompleted ? (
+                            <CheckSquare className={cn("h-5 w-5", phase.textLight)} />
+                          ) : (
+                            <Square className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <h4 className={cn(
+                              "font-medium text-sm",
+                              isActionCompleted ? "line-through text-muted-foreground" : "text-foreground"
+                            )}>
+                              {action.title}
+                            </h4>
+                            <span className={cn(
+                              "px-2 py-0.5 text-[10px] font-medium rounded-full uppercase",
+                              getDifficultyColor(action.difficulty)
+                            )}>
+                              {action.difficulty}
+                            </span>
+                            {action.isFromDB && (
+                              <span className={cn("px-2 py-0.5 text-[10px] font-medium rounded-full uppercase", phase.bgLight, phase.textLight)}>
+                                Core
+                              </span>
+                            )}
+                          </div>
+                          <p className={cn(
+                            "text-sm",
+                            isActionCompleted ? "text-muted-foreground/70" : "text-muted-foreground"
+                          )}>
+                            {action.description}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {actions.length > 0 && !isLoadingActions && (
+                <p className="text-xs text-muted-foreground mt-4 text-center">
+                  <Sparkles className="h-3 w-3 inline mr-1" />
+                  Actions are personalized based on today&apos;s lesson theme
                 </p>
-              </CardContent>
-            </Card>
-          )}
+              )}
+            </CardContent>
+          </Card>
 
           {/* Reflection */}
           <Card>
@@ -358,7 +553,7 @@ export function LessonDetail({
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Progress Card */}
-          <Card>
+          <Card className={cn("border", phase.border)}>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Day Progress</CardTitle>
             </CardHeader>
@@ -367,7 +562,7 @@ export function LessonDetail({
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full",
-                    lesson.leader_example ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
+                    lesson.leader_example ? cn(phase.bgLight, phase.textLight) : "bg-muted text-muted-foreground"
                   )}>
                     {lesson.leader_example ? <CheckCircle2 className="h-4 w-4" /> : "1"}
                   </div>
@@ -376,7 +571,7 @@ export function LessonDetail({
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full",
-                    lesson.thought_to_work_on ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
+                    lesson.thought_to_work_on ? cn(phase.bgLight, phase.textLight) : "bg-muted text-muted-foreground"
                   )}>
                     {lesson.thought_to_work_on ? <CheckCircle2 className="h-4 w-4" /> : "2"}
                   </div>
@@ -385,16 +580,16 @@ export function LessonDetail({
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full",
-                    lesson.action_for_today ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
+                    actionsCompletedCount > 0 ? cn(phase.bgLight, phase.textLight) : "bg-muted text-muted-foreground"
                   )}>
-                    {lesson.action_for_today ? <CheckCircle2 className="h-4 w-4" /> : "3"}
+                    {actionsCompletedCount > 0 ? <CheckCircle2 className="h-4 w-4" /> : "3"}
                   </div>
-                  <span className="text-sm">Plan your action</span>
+                  <span className="text-sm">Complete actions ({actionsCompletedCount}/{totalActionsCount})</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full",
-                    isCompleted ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
+                    isCompleted ? cn(phase.bgLight, phase.textLight) : "bg-muted text-muted-foreground"
                   )}>
                     {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : "4"}
                   </div>

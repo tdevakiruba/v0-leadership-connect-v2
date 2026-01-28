@@ -41,7 +41,7 @@
   --sidebar-ring: oklch(0.35 0.12 250);
   
   /* SIGNAL™ Phase Colors - Distinct brand colors for each phase */
-  --signal-s: oklch(0.55 0.18 15);
+  --signal-s: oklch(0.65 0.20 130);
   --signal-i: oklch(0.65 0.18 55);
   --signal-g: oklch(0.60 0.18 155);
   --signal-n: oklch(0.55 0.15 195);
