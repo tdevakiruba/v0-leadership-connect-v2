@@ -130,7 +130,7 @@ export default function LandingPage() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
               Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework, 
               micro-content, daily reflection, and performance-aligned action to elevate 
-              senior executives and top industry leaders. Leadership Reboot SIGNAL™ model is designed to take the mindset shifts we discover in our workshops and turn them into permanent habits.Think of the workshop as the spark that lights the fire, and the Reboot Signal™ as the fuel that keeps it burning for the long haul.
+              senior executives and top industry leaders. Designed to take the mindset shifts we discover in our workshops and turn them into permanent habits. Think of the workshop as the spark that lights the fire, and the Leadership Reboot SIGNAL™ as the fuel that keeps it burning for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/auth/sign-up">
@@ -340,7 +340,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-xl font-bold">Pricing Upon Request</span>
+                  <span className="text-xl font-bold">Call for pricing</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
@@ -376,7 +376,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-xl font-bold">Pricing Upon Request</span>
+                  <span className="text-xl font-bold">Connect for pricing</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
