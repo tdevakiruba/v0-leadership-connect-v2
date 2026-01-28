@@ -139,7 +139,7 @@ export default function DashboardLayout({
         <div className="flex flex-col h-full pt-5 pb-4 overflow-y-auto">
           {/* Logo & Close */}
           <div className="flex items-center justify-between px-6 mb-8">
-            <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
+            <Link href="/" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
               <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">LR</span>
               </div>

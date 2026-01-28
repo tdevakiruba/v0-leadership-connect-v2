@@ -82,12 +82,12 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.1),transparent)]" />
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
           <div>
-            <div className="flex items-center gap-3 mb-2">
+            <Link href="/" className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
                 <Zap className="w-6 h-6 text-accent-foreground" />
               </div>
               <span className="text-2xl font-bold tracking-tight">Leadership Reboot</span>
-            </div>
+            </Link>
             <p className="text-primary-foreground/70 text-sm">90-Day Executive Transformation</p>
           </div>
           
@@ -136,12 +136,12 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-8">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-2">
+            <Link href="/" className="inline-flex items-center justify-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Zap className="w-6 h-6 text-primary-foreground" />
               </div>
               <span className="text-2xl font-bold tracking-tight text-foreground">Leadership Reboot</span>
-            </div>
+            </Link>
           </div>
 
           <Card className="border-0 shadow-xl">
