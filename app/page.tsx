@@ -1,7 +1,9 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { OAuthHandler } from "@/components/auth/oauth-handler"
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -64,6 +66,11 @@ const leaders = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* OAuth Handler - catches code parameter from SSO redirect */}
+      <Suspense fallback={null}>
+        <OAuthHandler />
+      </Suspense>
+      
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">

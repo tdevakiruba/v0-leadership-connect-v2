@@ -1,7 +1,5 @@
 'use client'
 
-import React from "react"
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -45,10 +43,15 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setIsGoogleLoading(true)
+    const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     })
     if (error) {
@@ -59,10 +62,11 @@ export default function LoginPage() {
 
   async function handleAppleLogin() {
     setIsAppleLoading(true)
+    const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
       },
     })
     if (error) {
@@ -92,7 +96,7 @@ export default function LoginPage() {
               &ldquo;Transform how you think, behave, and influence in just 90 days using the SIGNAL model.&rdquo;
             </blockquote>
             
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-6 gap-3">
               {['S', 'I', 'G', 'N', 'A', 'L'].map((letter, i) => (
                 <div 
                   key={letter}
