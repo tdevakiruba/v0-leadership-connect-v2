@@ -376,7 +376,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-xl font-bold">Connect for pricing</span>
+                  <span className="text-xl font-bold">Call for pricing</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {[
