@@ -186,8 +186,13 @@ export default function LandingPage() {
       </section>
 
       {/* SIGNAL Model Section */}
-      <section id="signal" className="py-24 bg-background">
-        <div className="container mx-auto px-4">
+      <section id="signal" className="py-24 relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/signal-background.png')" }}
+        />
+        <div className="absolute inset-0 bg-background/60" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">The SIGNAL&#8482; Model</Badge>
             <h2 className="text-3xl font-bold tracking-tight mb-4">
