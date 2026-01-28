@@ -41,18 +41,21 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
-              Leadership Reboot
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">LR</span>
+              </div>
+              <span className="font-semibold text-slate-800 hidden sm:block">Leadership Reboot</span>
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-1 bg-slate-100 rounded-full p-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || 
                   (item.href !== "/dashboard" && pathname.startsWith(item.href))
@@ -61,10 +64,10 @@ export default function DashboardLayout({
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "text-sm transition-colors",
+                      "px-4 py-2 text-sm font-medium rounded-full transition-all",
                       isActive 
-                        ? "text-foreground" 
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-white text-blue-600 shadow-sm" 
+                        : "text-slate-600 hover:text-slate-900"
                     )}
                   >
                     {item.name}
@@ -74,37 +77,37 @@ export default function DashboardLayout({
             </nav>
 
             {/* Right side */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link 
                 href="/dashboard/settings"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden md:block"
+                className="text-sm text-slate-500 hover:text-slate-700 transition-colors hidden md:block"
               >
                 Settings
               </Link>
               <button 
                 onClick={handleSignOut}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden md:block"
+                className="text-sm text-slate-500 hover:text-slate-700 transition-colors hidden md:block"
               >
                 Sign out
               </button>
               
               {/* Mobile menu button */}
               <button 
-                className="md:hidden p-2 -m-2"
+                className="md:hidden p-2 -m-2 text-slate-600"
                 onClick={() => setMenuOpen(!menuOpen)}
               >
                 <div className="w-5 h-4 flex flex-col justify-between">
                   <span className={cn(
-                    "block h-px bg-foreground transition-transform origin-center",
-                    menuOpen && "translate-y-1.5 rotate-45"
+                    "block h-0.5 bg-current transition-transform origin-center rounded-full",
+                    menuOpen && "translate-y-[7px] rotate-45"
                   )} />
                   <span className={cn(
-                    "block h-px bg-foreground transition-opacity",
+                    "block h-0.5 bg-current transition-opacity rounded-full",
                     menuOpen && "opacity-0"
                   )} />
                   <span className={cn(
-                    "block h-px bg-foreground transition-transform origin-center",
-                    menuOpen && "-translate-y-1.5 -rotate-45"
+                    "block h-0.5 bg-current transition-transform origin-center rounded-full",
+                    menuOpen && "-translate-y-[7px] -rotate-45"
                   )} />
                 </div>
               </button>
@@ -114,8 +117,8 @@ export default function DashboardLayout({
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="md:hidden border-t border-border/50 bg-background">
-            <div className="max-w-6xl mx-auto px-6 py-4 space-y-3">
+          <div className="md:hidden border-t border-slate-100 bg-white">
+            <div className="max-w-6xl mx-auto px-6 py-4 space-y-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || 
                   (item.href !== "/dashboard" && pathname.startsWith(item.href))
@@ -125,25 +128,25 @@ export default function DashboardLayout({
                     href={item.href}
                     onClick={() => setMenuOpen(false)}
                     className={cn(
-                      "block text-sm py-1",
-                      isActive ? "text-foreground" : "text-muted-foreground"
+                      "block px-4 py-2 rounded-lg text-sm font-medium",
+                      isActive ? "bg-blue-50 text-blue-600" : "text-slate-600"
                     )}
                   >
                     {item.name}
                   </Link>
                 )
               })}
-              <div className="pt-3 border-t border-border/50 space-y-3">
+              <div className="pt-3 mt-3 border-t border-slate-100 space-y-1">
                 <Link 
                   href="/dashboard/settings"
                   onClick={() => setMenuOpen(false)}
-                  className="block text-sm text-muted-foreground py-1"
+                  className="block px-4 py-2 rounded-lg text-sm text-slate-600"
                 >
                   Settings
                 </Link>
                 <button 
                   onClick={() => { handleSignOut(); setMenuOpen(false); }}
-                  className="block text-sm text-muted-foreground py-1"
+                  className="block w-full text-left px-4 py-2 rounded-lg text-sm text-slate-600"
                 >
                   Sign out
                 </button>
@@ -154,7 +157,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Page content */}
-      <main className="max-w-6xl mx-auto px-6 lg:px-8 py-12">
+      <main className="max-w-6xl mx-auto px-6 lg:px-8 py-8">
         {children}
       </main>
     </div>
