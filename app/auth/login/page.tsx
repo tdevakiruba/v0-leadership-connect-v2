@@ -92,7 +92,7 @@ export default function LoginPage() {
               &ldquo;Transform how you think, behave, and influence in just 90 days using the SIGNAL model.&rdquo;
             </blockquote>
             
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-6 gap-3">
               {['S', 'I', 'G', 'N', 'A', 'L'].map((letter, i) => (
                 <div 
                   key={letter}
