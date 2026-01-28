@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import type { User } from "@supabase/supabase-js"
+import { Flame, Zap, Target, CheckCircle2, Sparkles } from "lucide-react"
 
 interface TodayDashboardProps {
   user: User
@@ -153,83 +154,124 @@ export function TodayDashboard({
   const currentPhase = getSIGNALPhase(currentDay)
 
   return (
-    <div className="max-w-4xl">
-      {/* Header */}
-      <header className="mb-12">
-        <p className="text-muted-foreground mb-1">Day {currentDay} of 90</p>
-        <h1 className="text-4xl font-light tracking-tight mb-6 text-balance">
-          {todayLesson?.focus_reframe_technique || `Welcome back, ${firstName}`}
-        </h1>
+    <div className="max-w-5xl mx-auto">
+      {/* Hero Header with gradient */}
+      <header className="relative mb-10 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400 p-8 text-white overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
         
-        {/* Progress bar */}
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-foreground/80 transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium backdrop-blur-sm">
+              Day {currentDay} of 90
+            </span>
+            <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium backdrop-blur-sm">
+              {currentPhase?.name}
+            </span>
           </div>
-          <span className="text-sm text-muted-foreground tabular-nums">{progressPercentage}%</span>
-        </div>
-        
-        {/* Minimal stats */}
-        <div className="flex gap-6 mt-4 text-sm">
-          <span className="text-muted-foreground">{streak} day streak</span>
-          <span className="text-muted-foreground">{totalPoints} pts</span>
-          <span className="text-muted-foreground">{currentPhase?.name}</span>
+          
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4 text-balance">
+            {todayLesson?.focus_reframe_technique || `Welcome back, ${firstName}`}
+          </h1>
+          
+          {/* Progress bar */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+              <div 
+                className="h-full bg-white transition-all duration-500 rounded-full"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <span className="text-sm font-medium tabular-nums">{progressPercentage}%</span>
+          </div>
+          
+          {/* Stats pills */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <Flame className="h-4 w-4 text-orange-300" />
+              <span className="font-medium">{streak}</span>
+              <span className="text-white/70 text-sm">day streak</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <Sparkles className="h-4 w-4 text-yellow-300" />
+              <span className="font-medium">{totalPoints}</span>
+              <span className="text-white/70 text-sm">points</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+              <span className="font-medium">{completedDays}</span>
+              <span className="text-white/70 text-sm">completed</span>
+            </div>
+          </div>
         </div>
       </header>
 
       {todayLesson ? (
-        <div className="space-y-12">
-          {/* Focus area label */}
-          <div>
-            <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+        <div className="space-y-8">
+          {/* Focus area badge */}
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
               {todayLesson.focus_area}
             </span>
           </div>
 
-          {/* Leader insight */}
+          {/* Leader insight card */}
           {todayLesson.leader_example && (
-            <blockquote className="border-l-2 border-foreground/20 pl-6">
-              <p className="text-lg leading-relaxed text-foreground/90">
-                {todayLesson.leader_example}
-              </p>
-              {todayLesson.leader_context && (
-                <cite className="block mt-3 text-sm text-muted-foreground not-italic">
-                  {todayLesson.leader_context}
-                </cite>
-              )}
-            </blockquote>
+            <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl p-6 border border-blue-100">
+              <div className="flex gap-4">
+                <div className="w-1 bg-blue-500 rounded-full flex-shrink-0" />
+                <div>
+                  <p className="text-lg leading-relaxed text-slate-700">
+                    {todayLesson.leader_example}
+                  </p>
+                  {todayLesson.leader_context && (
+                    <p className="mt-3 text-sm text-slate-500 font-medium">
+                      {todayLesson.leader_context}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Mindset & Action */}
-          <div className="grid sm:grid-cols-2 gap-8">
+          {/* Mindset & Action cards */}
+          <div className="grid md:grid-cols-2 gap-4">
             {todayLesson.thought_to_work_on && (
-              <div>
-                <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3">
-                  Mindset
-                </h3>
-                <p className="text-foreground/80 leading-relaxed">
+              <div className="bg-white rounded-xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50 transition-all">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-2 bg-amber-100 rounded-lg">
+                    <Zap className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    Mindset
+                  </h3>
+                </div>
+                <p className="text-slate-700 leading-relaxed">
                   {todayLesson.thought_to_work_on}
                 </p>
               </div>
             )}
             {todayLesson.action_for_today && (
-              <div>
-                <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3">
-                  Action
-                </h3>
-                <p className="text-foreground/80 leading-relaxed">
+              <div className="bg-white rounded-xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50 transition-all">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-2 bg-emerald-100 rounded-lg">
+                    <Target className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    Action
+                  </h3>
+                </div>
+                <p className="text-slate-700 leading-relaxed">
                   {todayLesson.action_for_today}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Reflection */}
-          <div className="pt-8 border-t border-border/50">
-            <h3 className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-4">
+          {/* Reflection card */}
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">
               Your Reflection
             </h3>
             <textarea
@@ -239,62 +281,64 @@ export function TodayDashboard({
               disabled={isCompleted}
               rows={4}
               className={cn(
-                "w-full bg-transparent text-foreground placeholder:text-muted-foreground/50",
-                "border-0 border-b border-border/50 focus:border-foreground/30",
-                "resize-none outline-none py-3 text-base leading-relaxed",
-                "transition-colors duration-200"
+                "w-full bg-slate-50 text-slate-700 placeholder:text-slate-400",
+                "border border-slate-200 rounded-lg p-4",
+                "resize-none outline-none text-base leading-relaxed",
+                "focus:border-blue-300 focus:ring-2 focus:ring-blue-100",
+                "transition-all duration-200"
               )}
             />
             
-            <div className="mt-6">
+            <div className="mt-4 flex items-center justify-between">
               {!isCompleted ? (
                 <Button 
                   onClick={handleComplete} 
                   disabled={isSubmitting || !reflection.trim()}
-                  variant="outline"
-                  className="rounded-full px-6"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-2 h-auto font-medium shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all"
                 >
                   {isSubmitting ? "Saving..." : "Complete Day"}
                 </Button>
               ) : (
-                <p className="text-sm text-muted-foreground">Day completed</p>
+                <div className="flex items-center gap-2 text-emerald-600 font-medium">
+                  <CheckCircle2 className="h-5 w-5" />
+                  Day completed
+                </div>
               )}
+              <span className="text-sm text-slate-400">+10 points on completion</span>
             </div>
           </div>
 
           {/* SIGNAL Progress */}
-          <div className="pt-8">
-            <div className="flex gap-1">
+          <div className="bg-gradient-to-r from-slate-50 to-blue-50/30 rounded-xl p-6 border border-slate-100">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">
+              Your SIGNAL Journey
+            </h3>
+            <div className="flex gap-2">
               {["S", "I", "G", "N", "A", "L"].map((letter, i) => {
                 const dayRange = [1, 16, 31, 46, 61, 76][i]
                 const isActive = currentDay >= dayRange && currentDay < (dayRange + 15) || (i === 5 && currentDay >= 76)
                 const isDone = currentDay > dayRange + 14
+                const labels = ["Self", "Interpret", "Goals", "Navigate", "Action", "Lead"]
                 return (
-                  <div 
-                    key={letter}
-                    className={cn(
-                      "flex-1 py-2 text-center text-xs font-medium transition-colors",
-                      isActive ? "text-foreground" :
-                      isDone ? "text-foreground/60" :
-                      "text-muted-foreground/40"
-                    )}
-                  >
-                    {letter}
-                  </div>
-                )
-              })}
-            </div>
-            <div className="flex gap-1 mt-1">
-              {[1, 16, 31, 46, 61, 76].map((start, i) => {
-                const end = i === 5 ? 90 : start + 14
-                const segmentProgress = currentDay >= end ? 100 : 
-                  currentDay >= start ? ((currentDay - start + 1) / (end - start + 1)) * 100 : 0
-                return (
-                  <div key={start} className="flex-1 h-0.5 bg-muted rounded-full overflow-hidden">
+                  <div key={letter} className="flex-1 text-center">
                     <div 
-                      className="h-full bg-foreground/60 transition-all duration-300"
-                      style={{ width: `${segmentProgress}%` }}
-                    />
+                      className={cn(
+                        "w-full aspect-square rounded-xl flex items-center justify-center text-lg font-bold mb-2 transition-all",
+                        isActive ? "bg-blue-600 text-white shadow-lg shadow-blue-200" :
+                        isDone ? "bg-emerald-500 text-white" :
+                        "bg-slate-100 text-slate-400"
+                      )}
+                    >
+                      {letter}
+                    </div>
+                    <span className={cn(
+                      "text-xs font-medium",
+                      isActive ? "text-blue-600" :
+                      isDone ? "text-emerald-600" :
+                      "text-slate-400"
+                    )}>
+                      {labels[i]}
+                    </span>
                   </div>
                 )
               })}
@@ -302,7 +346,9 @@ export function TodayDashboard({
           </div>
         </div>
       ) : (
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-pulse text-slate-400">Loading your lesson...</div>
+        </div>
       )}
     </div>
   )
