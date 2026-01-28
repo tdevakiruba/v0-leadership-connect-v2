@@ -88,6 +88,21 @@ export function TodayDashboard({
 
     setIsSubmitting(true)
     try {
+      // Ensure profile exists before saving progress (handles edge case where trigger didn't run)
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || null,
+        }, {
+          onConflict: "id"
+        })
+
+      if (profileError) {
+        console.error("[v0] Error ensuring profile exists:", profileError)
+      }
+
       const { error } = await supabase
         .from("user_progress")
         .upsert({
