@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import { Loader2, ArrowRight, Zap } from 'lucide-react'
+import { Loader2, ArrowRight } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -83,9 +84,13 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
           <div>
             <Link href="/" className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                <Zap className="w-6 h-6 text-accent-foreground" />
-              </div>
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={40} 
+                height={40}
+                className="rounded-lg"
+              />
               <span className="text-2xl font-bold tracking-tight">Leadership Reboot</span>
             </Link>
             <p className="text-primary-foreground/70 text-sm">90-Day Executive Transformation</p>
@@ -137,9 +142,13 @@ export default function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <Link href="/" className="inline-flex items-center justify-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Zap className="w-6 h-6 text-primary-foreground" />
-              </div>
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={40} 
+                height={40}
+                className="rounded-lg"
+              />
               <span className="text-2xl font-bold tracking-tight text-foreground">Leadership Reboot</span>
             </Link>
           </div>
