@@ -1,7 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AlertCircle, ArrowRight, Zap } from 'lucide-react'
+import { AlertCircle, ArrowRight } from 'lucide-react'
 
 export default async function AuthErrorPage({
   searchParams,
@@ -14,12 +15,16 @@ export default async function AuthErrorPage({
     <div className="min-h-screen flex items-center justify-center p-8 bg-background">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="w-6 h-6 text-primary-foreground" />
-            </div>
+          <Link href="/" className="flex items-center justify-center gap-3 mb-2">
+            <Image 
+              src="/reboot-logo.png" 
+              alt="Leadership Reboot" 
+              width={40} 
+              height={40}
+              className="rounded-lg"
+            />
             <span className="text-2xl font-bold tracking-tight text-foreground">Leadership Reboot</span>
-          </div>
+          </Link>
         </div>
 
         <Card className="border-0 shadow-xl">

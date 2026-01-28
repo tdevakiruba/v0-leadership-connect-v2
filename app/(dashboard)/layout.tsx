@@ -3,6 +3,7 @@
 import React from "react"
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -60,10 +61,14 @@ export default function DashboardLayout({
         <div className="flex flex-col flex-grow bg-card border-r border-border pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 px-6 mb-8">
-            <Link href="/dashboard" className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
-                <span className="text-white font-bold text-lg">LR</span>
-              </div>
+            <Link href="/" className="flex items-center gap-3">
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={40} 
+                height={40}
+                className="rounded-xl"
+              />
               <div>
                 <span className="font-semibold text-foreground block leading-tight">Leadership</span>
                 <span className="text-xs text-muted-foreground">Reboot Program</span>
@@ -139,10 +144,14 @@ export default function DashboardLayout({
         <div className="flex flex-col h-full pt-5 pb-4 overflow-y-auto">
           {/* Logo & Close */}
           <div className="flex items-center justify-between px-6 mb-8">
-            <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
-              <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">LR</span>
-              </div>
+            <Link href="/" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={40} 
+                height={40}
+                className="rounded-xl"
+              />
               <span className="font-semibold text-foreground">Leadership Reboot</span>
             </Link>
             <button onClick={() => setSidebarOpen(false)} className="p-2 -m-2 text-muted-foreground">

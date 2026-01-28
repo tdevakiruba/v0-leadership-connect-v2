@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -75,9 +76,13 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <span className="text-lg font-bold text-primary-foreground">S</span>
-            </div>
+            <Image 
+              src="/reboot-logo.png" 
+              alt="Leadership Reboot" 
+              width={36} 
+              height={36}
+              className="rounded-lg"
+            />
             <span className="font-semibold">Leadership Reboot</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
@@ -438,12 +443,16 @@ export default function LandingPage() {
       <footer className="border-t py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-sm font-bold text-primary-foreground">S</span>
-              </div>
+            <Link href="/" className="flex items-center gap-2">
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={32} 
+                height={32}
+                className="rounded-lg"
+              />
               <span className="font-semibold">Leadership Reboot</span>
-            </div>
+            </Link>
             <nav className="flex items-center gap-6 text-sm text-muted-foreground">
               <Link href="#" className="hover:text-foreground transition-colors">Privacy</Link>
               <Link href="#" className="hover:text-foreground transition-colors">Terms</Link>
