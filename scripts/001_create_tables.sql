@@ -1,6 +1,10 @@
 -- Leadership Reboot Database Schema
 -- Run this script to create all required tables
 
+-- =====================================================
+-- PHASE 1: Create all tables first (no RLS policies)
+-- =====================================================
+
 -- (1) profiles - extends Supabase auth.users
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -13,14 +17,6 @@ create table if not exists public.profiles (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
-
-alter table public.profiles enable row level security;
-
-create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
-create policy "profiles_insert_own" on public.profiles for insert with check (auth.uid() = id);
-create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
-create policy "profiles_delete_own" on public.profiles for delete using (auth.uid() = id);
-create policy "profiles_select_public" on public.profiles for select using (true);
 
 -- (2) daily_lessons - 90-day curriculum content
 create table if not exists public.daily_lessons (
@@ -37,17 +33,25 @@ create table if not exists public.daily_lessons (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
-alter table public.daily_lessons enable row level security;
-
-create policy "daily_lessons_select_all" on public.daily_lessons for select using (true);
-create policy "daily_lessons_admin_insert" on public.daily_lessons for insert with check (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
-create policy "daily_lessons_admin_update" on public.daily_lessons for update using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+-- (3) teams - supports enterprise deployment
+create table if not exists public.teams (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- (3) user_progress - tracks each day's completion state
+-- (4) team_members
+create table if not exists public.team_members (
+  id uuid primary key default gen_random_uuid(),
+  team_id uuid not null references public.teams(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  role text default 'member' check (role in ('member', 'team_lead')),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(team_id, user_id)
+);
+
+-- (5) user_progress - tracks each day's completion state
 create table if not exists public.user_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -62,8 +66,58 @@ create table if not exists public.user_progress (
   unique(user_id, day_number)
 );
 
+-- =====================================================
+-- PHASE 2: Enable RLS on all tables
+-- =====================================================
+
+alter table public.profiles enable row level security;
+alter table public.daily_lessons enable row level security;
+alter table public.teams enable row level security;
+alter table public.team_members enable row level security;
 alter table public.user_progress enable row level security;
 
+-- =====================================================
+-- PHASE 3: Create RLS policies (all tables exist now)
+-- =====================================================
+
+-- Profiles policies
+create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
+create policy "profiles_insert_own" on public.profiles for insert with check (auth.uid() = id);
+create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
+create policy "profiles_delete_own" on public.profiles for delete using (auth.uid() = id);
+create policy "profiles_select_public" on public.profiles for select using (true);
+
+-- Daily lessons policies
+create policy "daily_lessons_select_all" on public.daily_lessons for select using (true);
+create policy "daily_lessons_admin_insert" on public.daily_lessons for insert with check (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "daily_lessons_admin_update" on public.daily_lessons for update using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+
+-- Teams policies
+create policy "teams_select_member" on public.teams for select using (
+  exists (select 1 from public.team_members where team_id = teams.id and user_id = auth.uid())
+);
+create policy "teams_insert_admin" on public.teams for insert with check (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+
+-- Team members policies
+create policy "team_members_select_member" on public.team_members for select using (
+  exists (select 1 from public.team_members tm where tm.team_id = team_members.team_id and tm.user_id = auth.uid())
+);
+create policy "team_members_insert_lead" on public.team_members for insert with check (
+  exists (
+    select 1 from public.team_members tm 
+    where tm.team_id = team_members.team_id 
+    and tm.user_id = auth.uid() 
+    and tm.role = 'team_lead'
+  ) or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+
+-- User progress policies
 create policy "user_progress_select_own" on public.user_progress for select using (auth.uid() = user_id);
 create policy "user_progress_insert_own" on public.user_progress for insert with check (auth.uid() = user_id);
 create policy "user_progress_update_own" on public.user_progress for update using (auth.uid() = user_id);
@@ -78,47 +132,6 @@ create policy "user_progress_team_lead_select" on public.user_progress for selec
     and tm1.role in ('team_lead', 'admin')
     and tm2.user_id = user_progress.user_id
   )
-);
-
--- (4) teams - supports enterprise deployment
-create table if not exists public.teams (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  description text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
-alter table public.teams enable row level security;
-
-create policy "teams_select_member" on public.teams for select using (
-  exists (select 1 from public.team_members where team_id = teams.id and user_id = auth.uid())
-);
-create policy "teams_insert_admin" on public.teams for insert with check (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
-
--- (5) team_members
-create table if not exists public.team_members (
-  id uuid primary key default gen_random_uuid(),
-  team_id uuid not null references public.teams(id) on delete cascade,
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  role text default 'member' check (role in ('member', 'team_lead')),
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  unique(team_id, user_id)
-);
-
-alter table public.team_members enable row level security;
-
-create policy "team_members_select_member" on public.team_members for select using (
-  exists (select 1 from public.team_members tm where tm.team_id = team_members.team_id and tm.user_id = auth.uid())
-);
-create policy "team_members_insert_lead" on public.team_members for insert with check (
-  exists (
-    select 1 from public.team_members tm 
-    where tm.team_id = team_members.team_id 
-    and tm.user_id = auth.uid() 
-    and tm.role = 'team_lead'
-  ) or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
 
 -- (6) scenarios - leadership lab discussion board
