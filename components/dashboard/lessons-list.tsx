@@ -69,14 +69,14 @@ const focusAreas = [
   "Leadership Identity"
 ]
 
-// SIGNAL™ phase color configurations
+// SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhaseColors = [
-  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-lime-500", text: "text-white", bgLight: "bg-lime-100", textLight: "text-lime-600" },
-  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-amber-500", text: "text-white", bgLight: "bg-amber-100", textLight: "text-amber-600" },
-  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-emerald-500", text: "text-white", bgLight: "bg-emerald-100", textLight: "text-emerald-600" },
-  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-cyan-500", text: "text-white", bgLight: "bg-cyan-100", textLight: "text-cyan-600" },
-  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-violet-500", text: "text-white", bgLight: "bg-violet-100", textLight: "text-violet-600" },
-  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-indigo-500", text: "text-white", bgLight: "bg-indigo-100", textLight: "text-indigo-600" },
+  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-signal-s", text: "text-white", bgLight: "bg-signal-s-light", textLight: "text-signal-s" },
+  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-signal-i", text: "text-white", bgLight: "bg-signal-i-light", textLight: "text-signal-i" },
+  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-signal-g", text: "text-white", bgLight: "bg-signal-g-light", textLight: "text-signal-g" },
+  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-signal-n", text: "text-white", bgLight: "bg-signal-n-light", textLight: "text-signal-n" },
+  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-signal-a", text: "text-white", bgLight: "bg-signal-a-light", textLight: "text-signal-a" },
+  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-signal-l", text: "text-white", bgLight: "bg-signal-l-light", textLight: "text-signal-l" },
 ]
 
 const getPhaseForDay = (day: number) => {
@@ -84,11 +84,11 @@ const getPhaseForDay = (day: number) => {
 }
 
 const focusAreaColors: Record<string, string> = {
-  "Awareness": "bg-lime-500 text-white",
-  "Interpretation": "bg-amber-500 text-white",
-  "Alignment": "bg-emerald-500 text-white",
-  "Execution": "bg-cyan-500 text-white",
-  "Leadership Identity": "bg-violet-500 text-white",
+  "Awareness": "bg-signal-s text-white",
+  "Interpretation": "bg-signal-i text-white",
+  "Alignment": "bg-signal-g text-white",
+  "Execution": "bg-signal-n text-white",
+  "Leadership Identity": "bg-signal-l text-white",
 }
 
 export function LessonsList({ lessons, progress }: LessonsListProps) {

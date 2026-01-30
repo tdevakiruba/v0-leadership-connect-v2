@@ -40,48 +40,67 @@ interface JourneyTimelineProps {
   progress: JourneyProgress[]
 }
 
+// SIGNAL™ phases with Monochromatic Blue-Teal Gradient Palette
 const phases = [
   { 
     letter: "S", 
     name: "Self-Awareness", 
     description: "Discover your authentic leadership style and blind spots",
     range: [1, 15],
-    color: "signal-awareness"
+    color: "signal-s",
+    bgLight: "bg-signal-s-light",
+    bg: "bg-signal-s",
+    text: "text-signal-s"
   },
   { 
     letter: "I", 
     name: "Interpretation", 
     description: "Reframe challenges as opportunities for growth",
     range: [16, 30],
-    color: "signal-interpretation"
+    color: "signal-i",
+    bgLight: "bg-signal-i-light",
+    bg: "bg-signal-i",
+    text: "text-signal-i"
   },
   { 
     letter: "G", 
     name: "Goals & Strategy", 
     description: "Align your vision with actionable strategies",
     range: [31, 45],
-    color: "signal-alignment"
+    color: "signal-g",
+    bgLight: "bg-signal-g-light",
+    bg: "bg-signal-g",
+    text: "text-signal-g"
   },
   { 
     letter: "N", 
     name: "Navigation", 
     description: "Navigate complexity with clarity and purpose",
     range: [46, 60],
-    color: "signal-execution"
+    color: "signal-n",
+    bgLight: "bg-signal-n-light",
+    bg: "bg-signal-n",
+    text: "text-signal-n"
   },
   { 
     letter: "A", 
     name: "Action & Execution", 
     description: "Execute with precision and adaptability",
     range: [61, 75],
-    color: "signal-execution"
+    color: "signal-a",
+    bgLight: "bg-signal-a-light",
+    bg: "bg-signal-a",
+    text: "text-signal-a"
   },
   { 
     letter: "L", 
     name: "Leadership Identity", 
     description: "Embody your transformed leadership presence",
     range: [76, 90],
-    color: "signal-identity"
+    color: "signal-l",
+    bgLight: "bg-signal-l-light",
+    bg: "bg-signal-l",
+    text: "text-signal-l"
   },
 ]
 
@@ -140,10 +159,10 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
                     className="flex flex-col items-center"
                     style={{ position: 'relative', left: `${phaseStart - index * 16.67}%` }}
                   >
-                    <div className={cn(
-                      "h-2 w-2 rounded-full",
-                      currentDay >= phase.range[0] ? `bg-${phase.color}` : "bg-muted"
-                    )} />
+                <div className={cn(
+                  "h-2 w-2 rounded-full",
+                  currentDay >= phase.range[0] ? phase.bg : "bg-muted"
+                )} />
                     <span className="text-xs text-muted-foreground mt-1 hidden sm:block">
                       {phase.letter}
                     </span>
@@ -181,14 +200,14 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
             >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full font-bold text-lg",
-                    isPastPhase ? "bg-green-500 text-white" :
-                    isCurrentPhase ? "bg-accent text-accent-foreground" :
-                    "bg-muted text-muted-foreground"
-                  )}>
-                    {isPastPhase ? <CheckCircle2 className="h-5 w-5" /> : phase.letter}
-                  </div>
+                <div className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full font-bold text-lg",
+                  isPastPhase ? `${phase.bg} text-white` :
+                  isCurrentPhase ? `${phase.bg} text-white` :
+                  `${phase.bgLight} ${phase.text}`
+                )}>
+                  {isPastPhase ? <CheckCircle2 className="h-5 w-5" /> : phase.letter}
+                </div>
                   {isCurrentPhase && (
                     <Badge variant="secondary" className="text-xs">Active</Badge>
                   )}
@@ -202,16 +221,15 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
                     <span className="text-muted-foreground">{phaseCompleted}/{phaseTotal}</span>
                     <span className="font-medium">{phaseProgress}%</span>
                   </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className={cn(
-                        "h-full transition-all duration-300",
-                        isPastPhase ? "bg-green-500" :
-                        isCurrentPhase ? "bg-accent" : "bg-primary"
-                      )}
-                      style={{ width: `${phaseProgress}%` }}
-                    />
-                  </div>
+                <div className={cn("h-1.5 rounded-full overflow-hidden", phase.bgLight)}>
+                  <div 
+                    className={cn(
+                      "h-full transition-all duration-300",
+                      phase.bg
+                    )}
+                    style={{ width: `${phaseProgress}%` }}
+                  />
+                </div>
                 </div>
               </CardContent>
             </Card>
@@ -257,9 +275,10 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
                   href={isLocked ? "#" : `/dashboard/lessons/${day}`}
                   className={cn(
                     "aspect-square flex flex-col items-center justify-center rounded-lg text-sm font-medium transition-all",
-                    isCompleted && "bg-green-500 text-white",
-                    isCurrent && "bg-accent text-accent-foreground ring-2 ring-accent ring-offset-2",
-                    !isCompleted && !isCurrent && !isLocked && "bg-muted hover:bg-muted/80",
+                    isCompleted && `${phases[activePhase].bg} text-white`,
+                    isCurrent && `${phases[activePhase].bg} text-white ring-2 ring-offset-2`,
+                    isCurrent && `ring-[color:var(--${phases[activePhase].color})]`,
+                    !isCompleted && !isCurrent && !isLocked && `${phases[activePhase].bgLight} hover:opacity-80`,
                     isLocked && "bg-muted/50 text-muted-foreground cursor-not-allowed"
                   )}
                   onClick={(e) => isLocked && e.preventDefault()}
@@ -299,8 +318,8 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10">
-                <Star className="h-6 w-6 text-yellow-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-s-light">
+                <Star className="h-6 w-6 text-signal-s" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Points</p>
@@ -312,8 +331,8 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                <CheckCircle2 className="h-6 w-6 text-green-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-i-light">
+                <CheckCircle2 className="h-6 w-6 text-signal-i" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Days Completed</p>
@@ -325,8 +344,8 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/10">
-                <Target className="h-6 w-6 text-cyan-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-g-light">
+                <Target className="h-6 w-6 text-signal-g" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Phases Completed</p>
@@ -338,8 +357,8 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
-                <Calendar className="h-6 w-6 text-purple-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-n-light">
+                <Calendar className="h-6 w-6 text-signal-n" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Days Remaining</p>

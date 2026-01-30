@@ -70,14 +70,14 @@ interface LessonDetailProps {
   nextLesson: AdjacentLesson | null
 }
 
-// SIGNAL™ phase color configurations
+// SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhaseColors = [
-  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-lime-500", text: "text-white", bgLight: "bg-lime-100", textLight: "text-lime-600", border: "border-lime-200" },
-  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-amber-500", text: "text-white", bgLight: "bg-amber-100", textLight: "text-amber-600", border: "border-amber-200" },
-  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-emerald-500", text: "text-white", bgLight: "bg-emerald-100", textLight: "text-emerald-600", border: "border-emerald-200" },
-  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-cyan-500", text: "text-white", bgLight: "bg-cyan-100", textLight: "text-cyan-600", border: "border-cyan-200" },
-  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-violet-500", text: "text-white", bgLight: "bg-violet-100", textLight: "text-violet-600", border: "border-violet-200" },
-  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-indigo-500", text: "text-white", bgLight: "bg-indigo-100", textLight: "text-indigo-600", border: "border-indigo-200" },
+  { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-signal-s", text: "text-white", bgLight: "bg-signal-s-light", textLight: "text-signal-s", border: "border-signal-s/30" },
+  { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-signal-i", text: "text-white", bgLight: "bg-signal-i-light", textLight: "text-signal-i", border: "border-signal-i/30" },
+  { letter: "G", name: "Goals & Strategy", dayStart: 31, dayEnd: 45, bg: "bg-signal-g", text: "text-white", bgLight: "bg-signal-g-light", textLight: "text-signal-g", border: "border-signal-g/30" },
+  { letter: "N", name: "Navigation", dayStart: 46, dayEnd: 60, bg: "bg-signal-n", text: "text-white", bgLight: "bg-signal-n-light", textLight: "text-signal-n", border: "border-signal-n/30" },
+  { letter: "A", name: "Action & Execution", dayStart: 61, dayEnd: 75, bg: "bg-signal-a", text: "text-white", bgLight: "bg-signal-a-light", textLight: "text-signal-a", border: "border-signal-a/30" },
+  { letter: "L", name: "Leadership Identity", dayStart: 76, dayEnd: 90, bg: "bg-signal-l", text: "text-white", bgLight: "bg-signal-l-light", textLight: "text-signal-l", border: "border-signal-l/30" },
 ]
 
 const getPhaseForDay = (day: number) => {
@@ -86,9 +86,9 @@ const getPhaseForDay = (day: number) => {
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
-    case 'easy': return 'bg-emerald-100 text-emerald-700'
-    case 'medium': return 'bg-amber-100 text-amber-700'
-    case 'bold': return 'bg-violet-100 text-violet-700'
+    case 'easy': return 'bg-signal-s-light text-signal-s'
+    case 'medium': return 'bg-signal-g-light text-signal-g'
+    case 'bold': return 'bg-signal-l-light text-signal-l'
     default: return 'bg-slate-100 text-slate-700'
   }
 }
@@ -403,7 +403,7 @@ export function LessonDetail({
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Lightbulb className="h-5 w-5 text-yellow-500" />
+                  <Lightbulb className="h-5 w-5 text-signal-i" />
                   Thought to Work On
                 </CardTitle>
               </CardHeader>
@@ -541,7 +541,7 @@ export function LessonDetail({
                   <CheckCircle2 className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <div className="flex items-center gap-2 text-green-600 p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center gap-2 text-signal-g p-3 bg-signal-g-light rounded-lg">
                   <CheckCircle2 className="h-5 w-5" />
                   <span className="font-medium">Lesson Completed on {new Date(progress?.completed_at || "").toLocaleDateString()}</span>
                 </div>

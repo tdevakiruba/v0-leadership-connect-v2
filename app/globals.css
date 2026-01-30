@@ -40,13 +40,21 @@
   --sidebar-border: oklch(0.28 0.03 250);
   --sidebar-ring: oklch(0.35 0.12 250);
   
-  /* SIGNAL™ Phase Colors - Distinct brand colors for each phase */
-  --signal-s: oklch(0.65 0.20 130);
-  --signal-i: oklch(0.65 0.18 55);
-  --signal-g: oklch(0.60 0.18 155);
-  --signal-n: oklch(0.55 0.15 195);
-  --signal-a: oklch(0.55 0.18 280);
-  --signal-l: oklch(0.50 0.18 265);
+  /* SIGNAL™ Phase Colors - Monochromatic Blue-Teal Gradient Palette */
+  --signal-s: oklch(0.70 0.14 195);    /* Lightest teal - Self-Awareness */
+  --signal-i: oklch(0.62 0.15 200);    /* Light teal - Interpretation */
+  --signal-g: oklch(0.55 0.16 210);    /* Teal - Goals & Strategy */
+  --signal-n: oklch(0.48 0.16 220);    /* Blue-teal - Navigation */
+  --signal-a: oklch(0.42 0.15 230);    /* Blue - Action & Execution */
+  --signal-l: oklch(0.35 0.14 240);    /* Deep blue - Leadership Identity */
+  
+  /* SIGNAL™ Phase Colors - Light variants for backgrounds */
+  --signal-s-light: oklch(0.95 0.04 195);
+  --signal-i-light: oklch(0.93 0.05 200);
+  --signal-g-light: oklch(0.91 0.05 210);
+  --signal-n-light: oklch(0.89 0.05 220);
+  --signal-a-light: oklch(0.87 0.04 230);
+  --signal-l-light: oklch(0.85 0.04 240);
 }
 
 .dark {
@@ -130,6 +138,13 @@
   --color-signal-n: var(--signal-n);
   --color-signal-a: var(--signal-a);
   --color-signal-l: var(--signal-l);
+  /* SIGNAL™ Model phase light colors */
+  --color-signal-s-light: var(--signal-s-light);
+  --color-signal-i-light: var(--signal-i-light);
+  --color-signal-g-light: var(--signal-g-light);
+  --color-signal-n-light: var(--signal-n-light);
+  --color-signal-a-light: var(--signal-a-light);
+  --color-signal-l-light: var(--signal-l-light);
 }
 
 @layer base {
