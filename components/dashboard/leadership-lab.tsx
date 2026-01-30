@@ -165,8 +165,8 @@ export function LeadershipLab({
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                    <Target className="h-6 w-6 text-green-500" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-g-light">
+                    <Target className="h-6 w-6 text-signal-g" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Days Completed</p>
@@ -178,8 +178,8 @@ export function LeadershipLab({
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/10">
-                    <Users className="h-6 w-6 text-cyan-500" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-n-light">
+                    <Users className="h-6 w-6 text-signal-n" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Teams</p>
@@ -191,8 +191,8 @@ export function LeadershipLab({
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <TrendingUp className="h-6 w-6 text-purple-500" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-a-light">
+                    <TrendingUp className="h-6 w-6 text-signal-a" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Rank</p>
@@ -266,9 +266,9 @@ export function LeadershipLab({
                     <div key={member.id} className="flex items-center gap-3">
                       <div className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
-                        index === 0 ? "bg-yellow-500 text-white" :
-                        index === 1 ? "bg-gray-400 text-white" :
-                        index === 2 ? "bg-amber-600 text-white" :
+                        index === 0 ? "bg-signal-s text-white" :
+                        index === 1 ? "bg-signal-g text-white" :
+                        index === 2 ? "bg-signal-n text-white" :
                         "bg-muted text-muted-foreground"
                       )}>
                         {index + 1}
@@ -319,7 +319,7 @@ export function LeadershipLab({
                           <CardTitle className="flex items-center gap-2">
                             {team.name}
                             {team.role === "team_lead" && (
-                              <Crown className="h-4 w-4 text-yellow-500" />
+                              <Crown className="h-4 w-4 text-signal-s" />
                             )}
                           </CardTitle>
                           <CardDescription className="mt-1">
@@ -362,7 +362,7 @@ export function LeadershipLab({
                                     {member.full_name || member.email}
                                   </p>
                                   {member.teamRole === "team_lead" && (
-                                    <Crown className="h-3 w-3 text-yellow-500" />
+                                    <Crown className="h-3 w-3 text-signal-s" />
                                   )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
@@ -441,9 +441,9 @@ export function LeadershipLab({
                     >
                       <div className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold",
-                        index === 0 ? "bg-yellow-500 text-white" :
-                        index === 1 ? "bg-gray-400 text-white" :
-                        index === 2 ? "bg-amber-600 text-white" :
+                        index === 0 ? "bg-signal-s text-white" :
+                        index === 1 ? "bg-signal-g text-white" :
+                        index === 2 ? "bg-signal-n text-white" :
                         "bg-muted text-muted-foreground"
                       )}>
                         {index + 1}

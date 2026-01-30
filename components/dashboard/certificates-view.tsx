@@ -39,6 +39,7 @@ interface CertificatesViewProps {
   progress: UserProgress[]
 }
 
+// SIGNAL™ Certificates with Monochromatic Blue-Teal Gradient Palette
 const certificates = [
   {
     id: "phase-s",
@@ -48,7 +49,10 @@ const certificates = [
     requirement: 15,
     startDay: 1,
     endDay: 15,
-    color: "signal-awareness",
+    color: "signal-s",
+    bg: "bg-signal-s",
+    bgLight: "bg-signal-s-light",
+    text: "text-signal-s",
     icon: "S"
   },
   {
@@ -59,7 +63,10 @@ const certificates = [
     requirement: 30,
     startDay: 16,
     endDay: 30,
-    color: "signal-interpretation",
+    color: "signal-i",
+    bg: "bg-signal-i",
+    bgLight: "bg-signal-i-light",
+    text: "text-signal-i",
     icon: "I"
   },
   {
@@ -70,7 +77,10 @@ const certificates = [
     requirement: 45,
     startDay: 31,
     endDay: 45,
-    color: "signal-alignment",
+    color: "signal-g",
+    bg: "bg-signal-g",
+    bgLight: "bg-signal-g-light",
+    text: "text-signal-g",
     icon: "G"
   },
   {
@@ -81,7 +91,10 @@ const certificates = [
     requirement: 60,
     startDay: 46,
     endDay: 60,
-    color: "signal-execution",
+    color: "signal-n",
+    bg: "bg-signal-n",
+    bgLight: "bg-signal-n-light",
+    text: "text-signal-n",
     icon: "N"
   },
   {
@@ -92,7 +105,10 @@ const certificates = [
     requirement: 75,
     startDay: 61,
     endDay: 75,
-    color: "signal-execution",
+    color: "signal-a",
+    bg: "bg-signal-a",
+    bgLight: "bg-signal-a-light",
+    text: "text-signal-a",
     icon: "A"
   },
   {
@@ -103,7 +119,10 @@ const certificates = [
     requirement: 90,
     startDay: 76,
     endDay: 90,
-    color: "signal-identity",
+    color: "signal-l",
+    bg: "bg-signal-l",
+    bgLight: "bg-signal-l-light",
+    text: "text-signal-l",
     icon: "L"
   },
   {
@@ -114,7 +133,10 @@ const certificates = [
     requirement: 90,
     startDay: 1,
     endDay: 90,
-    color: "primary",
+    color: "signal-l",
+    bg: "bg-signal-l",
+    bgLight: "bg-signal-l-light",
+    text: "text-signal-l",
     icon: "★"
   }
 ]
@@ -166,11 +188,11 @@ export function CertificatesView({
         </div>
         <div className="flex items-center gap-4">
           <Badge variant="secondary" className="gap-1.5 py-1.5 px-3">
-            <Trophy className="h-4 w-4 text-yellow-500" />
+            <Trophy className="h-4 w-4 text-signal-s" />
             {earnedCertificates.length} Certificates
           </Badge>
           <Badge variant="secondary" className="gap-1.5 py-1.5 px-3">
-            <Star className="h-4 w-4 text-yellow-500" />
+            <Star className="h-4 w-4 text-signal-s" />
             {earnedMilestones.length} Milestones
           </Badge>
         </div>
@@ -220,17 +242,17 @@ export function CertificatesView({
               >
                 {status.isEarned && (
                   <div className="absolute top-3 right-3">
-                    <CheckCircle2 className="h-6 w-6 text-green-500" />
+                    <CheckCircle2 className="h-6 w-6 text-signal-g" />
                   </div>
                 )}
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold",
-                      status.isEarned 
-                        ? `bg-${cert.color} text-white` 
-                        : "bg-muted text-muted-foreground"
-                    )}>
+<div className={cn(
+                    "flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold",
+                    status.isEarned 
+                      ? `${cert.bg} text-white` 
+                      : `${cert.bgLight} ${cert.text}`
+                  )}>
                       {cert.icon}
                     </div>
                     <div>
@@ -314,7 +336,7 @@ export function CertificatesView({
                       </p>
                     </div>
                     {isEarned && (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-signal-g flex-shrink-0" />
                     )}
                   </div>
                 )

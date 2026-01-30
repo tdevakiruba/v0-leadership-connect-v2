@@ -50,13 +50,14 @@ const features = [
   }
 ]
 
+// SIGNAL™ phases with Monochromatic Blue-Teal Gradient Palette
 const phases = [
-  { letter: "S", name: "Self-Awareness", days: "1-15", description: "Understand your mental patterns and leadership triggers" },
-  { letter: "I", name: "Interpretation", days: "16-30", description: "Reframe challenges as opportunities for growth" },
-  { letter: "G", name: "Goals & Strategy", days: "31-45", description: "Align vision with actionable strategic intent" },
-  { letter: "N", name: "Navigation", days: "46-60", description: "Lead through complexity and organizational change" },
-  { letter: "A", name: "Action & Execution", days: "61-75", description: "Drive results with decisive leadership action" },
-  { letter: "L", name: "Leadership Identity", days: "76-90", description: "Cement your evolved leadership presence" },
+  { letter: "S", name: "Self-Awareness", days: "1-15", description: "Understand your mental patterns and leadership triggers", bg: "bg-signal-s", bgLight: "bg-signal-s-light", text: "text-signal-s" },
+  { letter: "I", name: "Interpretation", days: "16-30", description: "Reframe challenges as opportunities for growth", bg: "bg-signal-i", bgLight: "bg-signal-i-light", text: "text-signal-i" },
+  { letter: "G", name: "Goals & Strategy", days: "31-45", description: "Align vision with actionable strategic intent", bg: "bg-signal-g", bgLight: "bg-signal-g-light", text: "text-signal-g" },
+  { letter: "N", name: "Navigation", days: "46-60", description: "Lead through complexity and organizational change", bg: "bg-signal-n", bgLight: "bg-signal-n-light", text: "text-signal-n" },
+  { letter: "A", name: "Action & Execution", days: "61-75", description: "Drive results with decisive leadership action", bg: "bg-signal-a", bgLight: "bg-signal-a-light", text: "text-signal-a" },
+  { letter: "L", name: "Leadership Identity", days: "76-90", description: "Cement your evolved leadership presence", bg: "bg-signal-l", bgLight: "bg-signal-l-light", text: "text-signal-l" },
 ]
 
 const leaders = [
@@ -222,13 +223,13 @@ export default function LandingPage() {
                   key={phase.letter} 
                   className={`flex items-center gap-6 p-6 ${index !== phases.length - 1 ? 'border-b' : ''}`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary text-xl font-bold shrink-0">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${phase.bg} text-white text-xl font-bold shrink-0`}>
                     {phase.letter}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="font-semibold text-foreground">{phase.name}</h3>
-                      <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                      <span className={`text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded`}>
                         Days {phase.days}
                       </span>
                     </div>

@@ -27,85 +27,85 @@ import {
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
 
-// SIGNAL™ phase color configurations - using distinct brand colors
+// SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhases = [
   {
     letter: "S",
     name: "Self-Awareness",
     dayStart: 1,
     dayEnd: 15,
-    bgActive: "bg-lime-100",
-    textActive: "text-lime-600",
-    bgDone: "bg-lime-600",
+    bgActive: "bg-signal-s-light",
+    textActive: "text-signal-s",
+    bgDone: "bg-signal-s",
     textDone: "text-white",
-    progressActive: "bg-lime-500",
-    progressDone: "bg-lime-600",
-    borderActive: "border-lime-200",
+    progressActive: "bg-signal-s/70",
+    progressDone: "bg-signal-s",
+    borderActive: "border-signal-s/30",
   },
   {
     letter: "I",
     name: "Interpretation",
     dayStart: 16,
     dayEnd: 30,
-    bgActive: "bg-amber-100",
-    textActive: "text-amber-600",
-    bgDone: "bg-amber-600",
+    bgActive: "bg-signal-i-light",
+    textActive: "text-signal-i",
+    bgDone: "bg-signal-i",
     textDone: "text-white",
-    progressActive: "bg-amber-500",
-    progressDone: "bg-amber-600",
-    borderActive: "border-amber-200",
+    progressActive: "bg-signal-i/70",
+    progressDone: "bg-signal-i",
+    borderActive: "border-signal-i/30",
   },
   {
     letter: "G",
     name: "Goals & Strategy",
     dayStart: 31,
     dayEnd: 45,
-    bgActive: "bg-emerald-100",
-    textActive: "text-emerald-600",
-    bgDone: "bg-emerald-600",
+    bgActive: "bg-signal-g-light",
+    textActive: "text-signal-g",
+    bgDone: "bg-signal-g",
     textDone: "text-white",
-    progressActive: "bg-emerald-500",
-    progressDone: "bg-emerald-600",
-    borderActive: "border-emerald-200",
+    progressActive: "bg-signal-g/70",
+    progressDone: "bg-signal-g",
+    borderActive: "border-signal-g/30",
   },
   {
     letter: "N",
     name: "Navigation",
     dayStart: 46,
     dayEnd: 60,
-    bgActive: "bg-cyan-100",
-    textActive: "text-cyan-600",
-    bgDone: "bg-cyan-600",
+    bgActive: "bg-signal-n-light",
+    textActive: "text-signal-n",
+    bgDone: "bg-signal-n",
     textDone: "text-white",
-    progressActive: "bg-cyan-500",
-    progressDone: "bg-cyan-600",
-    borderActive: "border-cyan-200",
+    progressActive: "bg-signal-n/70",
+    progressDone: "bg-signal-n",
+    borderActive: "border-signal-n/30",
   },
   {
     letter: "A",
     name: "Action & Execution",
     dayStart: 61,
     dayEnd: 75,
-    bgActive: "bg-violet-100",
-    textActive: "text-violet-600",
-    bgDone: "bg-violet-600",
+    bgActive: "bg-signal-a-light",
+    textActive: "text-signal-a",
+    bgDone: "bg-signal-a",
     textDone: "text-white",
-    progressActive: "bg-violet-500",
-    progressDone: "bg-violet-600",
-    borderActive: "border-violet-200",
+    progressActive: "bg-signal-a/70",
+    progressDone: "bg-signal-a",
+    borderActive: "border-signal-a/30",
   },
   {
     letter: "L",
     name: "Leadership Identity",
     dayStart: 76,
     dayEnd: 90,
-    bgActive: "bg-indigo-100",
-    textActive: "text-indigo-600",
-    bgDone: "bg-indigo-600",
+    bgActive: "bg-signal-l-light",
+    textActive: "text-signal-l",
+    bgDone: "bg-signal-l",
     textDone: "text-white",
-    progressActive: "bg-indigo-500",
-    progressDone: "bg-indigo-600",
-    borderActive: "border-indigo-200",
+    progressActive: "bg-signal-l/70",
+    progressDone: "bg-signal-l",
+    borderActive: "border-signal-l/30",
   },
 ]
 
@@ -386,9 +386,9 @@ export function TodayDashboard({
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-emerald-100 text-emerald-700'
-      case 'medium': return 'bg-amber-100 text-amber-700'
-      case 'bold': return 'bg-violet-100 text-violet-700'
+      case 'easy': return 'bg-signal-s-light text-signal-s'
+      case 'medium': return 'bg-signal-g-light text-signal-g'
+      case 'bold': return 'bg-signal-l-light text-signal-l'
       default: return 'bg-slate-100 text-slate-700'
     }
   }
@@ -599,8 +599,8 @@ export function TodayDashboard({
           {todayLesson && (
             <div className="bg-card rounded-2xl p-6 border border-border">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-amber-100 rounded-lg">
-                  <Zap className="h-4 w-4 text-amber-600" />
+                <div className="p-2 bg-signal-s-light rounded-lg">
+                  <Zap className="h-4 w-4 text-signal-s" />
                 </div>
                 <h3 className="font-semibold text-foreground">Today&apos;s Reflection</h3>
               </div>
@@ -643,7 +643,7 @@ export function TodayDashboard({
                     {isSubmitting ? "Saving..." : "Complete Day"}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 text-emerald-600 font-medium">
+                  <div className="flex items-center gap-2 text-signal-g font-medium">
                     <CheckCircle2 className="h-5 w-5" />
                     Day completed
                   </div>
