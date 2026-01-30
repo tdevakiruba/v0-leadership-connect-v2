@@ -54,7 +54,7 @@ export async function createCheckoutSession(productId: string) {
         userId: user.id,
         userEmail: user.email || "",
         productId: product.id,
-        durationDays: product.durationDays.toString(),
+        durationDays: product.duration.toString(),
       },
     })
 
