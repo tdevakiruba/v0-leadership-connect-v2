@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { LeadershipLab } from "@/components/dashboard/leadership-lab"
+import { DecisionLabSubmit } from "@/components/dashboard/decision-lab-submit"
 
 export default async function LabPage() {
   const supabase = await createClient()
@@ -11,12 +12,27 @@ export default async function LabPage() {
     redirect("/auth/login")
   }
 
-  // Get user profile
+  // Get user profile with role
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single()
+
+  // Check if user has elevated role (super_admin or cohort_leader)
+  const isElevatedUser = profile?.role === "super_admin" || profile?.role === "cohort_leader"
+
+  // For regular users, show the Decision Lab submission page
+  if (!isElevatedUser) {
+    return (
+      <DecisionLabSubmit
+        user={user}
+        profile={profile}
+      />
+    )
+  }
+
+  // For elevated users (super_admin, cohort_leader), show the full Leadership Lab
 
   // Get user's teams
   const { data: teamMemberships } = await supabase

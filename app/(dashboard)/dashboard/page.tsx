@@ -57,6 +57,16 @@ export default async function DashboardPage() {
   // Calculate total points
   const totalPoints = progress?.reduce((sum, p) => sum + (p.points_awarded || 0), 0) || 0
 
+  // Fetch next office hours
+  const { data: nextOfficeHours } = await supabase
+    .from("office_hours")
+    .select("*")
+    .eq("status", "upcoming")
+    .gte("scheduled_at", new Date().toISOString())
+    .order("scheduled_at", { ascending: true })
+    .limit(1)
+    .single()
+
   return (
     <TodayDashboard
       user={user}
@@ -67,6 +77,7 @@ export default async function DashboardPage() {
       completedDays={completedDays.length}
       streak={streak}
       totalPoints={totalPoints}
+      nextOfficeHours={nextOfficeHours}
     />
   )
 }

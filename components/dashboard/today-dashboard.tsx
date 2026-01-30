@@ -26,10 +26,43 @@ import {
   CheckSquare,
   TrendingUp,
   Quote,
-  ChevronRight
+  ChevronRight,
+  ExternalLink,
+  Video
 } from "lucide-react"
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+
+// Two-tone quote display component
+function QuoteDisplay({ quote }: { quote: string }) {
+  // Split quote roughly in half for two-tone effect, prioritizing natural break points
+  const words = quote.split(" ")
+  const midPoint = Math.ceil(words.length / 2)
+  
+  // Try to find a comma or natural break point near the middle
+  let breakIndex = midPoint
+  for (let i = midPoint - 2; i <= midPoint + 2 && i < words.length; i++) {
+    if (i > 0 && (words[i-1].includes(",") || words[i-1].includes("."))) {
+      breakIndex = i
+      break
+    }
+  }
+  
+  const firstPart = words.slice(0, breakIndex).join(" ")
+  const secondPart = words.slice(breakIndex).join(" ")
+  
+  return (
+    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-balance">
+      <span className="text-foreground">{firstPart}</span>
+      {secondPart && (
+        <>
+          {" "}
+          <span className="text-signal-s">{secondPart}</span>
+        </>
+      )}
+    </h2>
+  )
+}
 
 // SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhases = [
@@ -121,6 +154,15 @@ interface ActionItem {
   isFromDB?: boolean
 }
 
+interface OfficeHours {
+  id: string
+  title: string
+  scheduled_at: string
+  meeting_url: string
+  description: string | null
+  status: string
+}
+
 interface TodayDashboardProps {
   user: User
   profile: {
@@ -152,6 +194,7 @@ interface TodayDashboardProps {
   completedDays: number
   streak: number
   totalPoints: number
+  nextOfficeHours?: OfficeHours | null
 }
 
 export function TodayDashboard({
@@ -163,6 +206,7 @@ export function TodayDashboard({
   completedDays,
   streak,
   totalPoints,
+  nextOfficeHours,
 }: TodayDashboardProps) {
   const [reflection, setReflection] = useState(todayProgress?.reflection_text || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -404,22 +448,27 @@ export function TodayDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Quote of the Day - Executive Style */}
-          {todayLesson?.quote && (
-            <div className="relative bg-gradient-to-br from-card via-card to-signal-s-light/30 rounded-2xl p-8 border border-border card-executive overflow-hidden">
-              <Quote className="absolute top-4 left-4 h-8 w-8 text-signal-s/20" />
-              <Quote className="absolute bottom-4 right-4 h-8 w-8 text-signal-s/20 rotate-180" />
-              <div className="relative z-10">
-                <p className="quote-executive text-center px-8">
-                  {todayLesson.quote}
-                </p>
-                <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-                </div>
-              </div>
-            </div>
-          )}
+ {/* Quote of the Day - Executive Two-Tone Style */}
+  {todayLesson?.quote && (
+  <div className="relative bg-gradient-to-br from-slate-50 via-white to-signal-s-light/20 rounded-2xl p-10 lg:p-12 border border-border/50 card-executive overflow-hidden">
+  {/* Decorative background elements */}
+  <div className="absolute inset-0 opacity-[0.03]">
+    <div className="absolute top-0 right-0 w-64 h-64 bg-signal-s rounded-full blur-3xl" />
+    <div className="absolute bottom-0 left-0 w-48 h-48 bg-signal-n rounded-full blur-3xl" />
+  </div>
+  <div className="relative z-10 text-center">
+    <p className="text-sm font-semibold text-signal-s tracking-wide uppercase mb-4 flex items-center justify-center gap-2">
+      <Sparkles className="h-4 w-4" />
+      Today&apos;s Leadership Insight
+    </p>
+    <QuoteDisplay quote={todayLesson.quote} />
+    <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
+      <Calendar className="h-4 w-4" />
+      {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+    </div>
+  </div>
+  </div>
+  )}
 
           {/* Welcome Header */}
           <div className="flex items-center justify-between">
@@ -885,6 +934,46 @@ export function TodayDashboard({
               </div>
             </div>
           </div>
+
+          {/* Next Office Hours */}
+          {nextOfficeHours && (
+            <div className="control-panel rounded-2xl p-6 border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={cn("p-2.5 rounded-xl bg-signal-n-light")}>
+                  <Video className="h-5 w-5 text-signal-n" />
+                </div>
+                <h3 className="font-bold text-foreground tracking-tight">Next Office Hours</h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-semibold text-foreground">{nextOfficeHours.title}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {new Date(nextOfficeHours.scheduled_at).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit"
+                    })}
+                  </p>
+                </div>
+                {nextOfficeHours.description && (
+                  <p className="text-xs text-muted-foreground">{nextOfficeHours.description}</p>
+                )}
+                {nextOfficeHours.meeting_url && (
+                  <a
+                    href={nextOfficeHours.meeting_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full btn-executive text-white py-2.5 rounded-xl font-semibold text-sm mt-2"
+                  >
+                    Join Meeting
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Leadership Momentum */}
           <div className="btn-executive rounded-2xl p-6 text-white">

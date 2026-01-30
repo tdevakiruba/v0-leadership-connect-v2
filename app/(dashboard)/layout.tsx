@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -18,10 +18,11 @@ import {
   Settings,
   LogOut,
   Menu,
-  X,
-  Bell,
-  Search
+  X
 } from "lucide-react"
+import { HeaderSearch } from "@/components/dashboard/header-search"
+import { HeaderNotifications } from "@/components/dashboard/header-notifications"
+import { HeaderProfile } from "@/components/dashboard/header-profile"
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -38,9 +39,20 @@ export default function DashboardLayout({
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [userId, setUserId] = useState<string>("")
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+      }
+    }
+    getUser()
+  }, [supabase])
 
   const handleSignOut = async () => {
     try {
@@ -228,26 +240,12 @@ export default function DashboardLayout({
             </div>
 
             {/* Search bar */}
-            <div className="flex-1 max-w-md mx-4 hidden sm:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input 
-                  type="text"
-                  placeholder="Search here..."
-                  className="w-full h-10 pl-10 pr-4 bg-muted border-0 rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-            </div>
+            <HeaderSearch />
 
             {/* Right side actions */}
-            <div className="flex items-center gap-3">
-              <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-primary rounded-full" />
-              </button>
-              <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium text-sm">
-                U
-              </div>
+            <div className="flex items-center gap-2">
+              <HeaderNotifications userId={userId} />
+              <HeaderProfile userId={userId} />
             </div>
           </div>
         </header>
