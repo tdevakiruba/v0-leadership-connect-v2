@@ -18,10 +18,11 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     redirect("/auth/login?redirect=/pricing")
   }
 
-  const productId = params.product || "leadership-90"
+  const productId = params.product || "self-paced"
   const product = PRODUCTS.find(p => p.id === productId)
 
-  if (!product) {
+  // Only purchasable products can go through checkout
+  if (!product || product.ctaType !== 'purchase' || product.priceInCents === null) {
     redirect("/pricing")
   }
 
@@ -56,7 +57,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground">{product.durationDays} days access</p>
+                      <p className="text-sm text-muted-foreground">{product.duration} days access</p>
                     </div>
                   </div>
 

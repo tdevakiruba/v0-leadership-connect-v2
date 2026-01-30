@@ -3,7 +3,8 @@ import { redirect } from "next/navigation"
 import { getCheckoutSession } from "@/app/actions/stripe-actions"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, ArrowRight, Sparkles, Calendar } from "lucide-react"
+import { CheckCircle2, ArrowRight, Calendar } from "lucide-react"
+import Image from "next/image"
 
 interface SuccessPageProps {
   searchParams: Promise<{ session_id?: string }>
@@ -79,9 +80,13 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
         {/* Subscription Details */}
         <div className="bg-white rounded-2xl border p-6 mb-8 text-left">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-signal-s-light flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-signal-s" />
-            </div>
+            <Image 
+              src="/images/reboot-logo.png" 
+              alt="Leadership Reboot" 
+              width={40} 
+              height={40}
+              className="rounded-full"
+            />
             <div>
               <p className="font-semibold">Leadership Reboot SIGNAL™</p>
               <p className="text-sm text-muted-foreground">90-Day Program</p>

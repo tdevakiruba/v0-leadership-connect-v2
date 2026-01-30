@@ -23,6 +23,11 @@ export async function createCheckoutSession(productId: string) {
     return { error: "Product not found" }
   }
 
+  // Only purchasable products can go through checkout
+  if (product.priceInCents === null || product.ctaType !== 'purchase') {
+    return { error: "This product requires contacting sales" }
+  }
+
   // Check if Stripe is properly configured
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("[v0] STRIPE_SECRET_KEY is not set")
