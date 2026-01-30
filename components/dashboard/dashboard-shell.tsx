@@ -76,16 +76,15 @@ export function DashboardShell({
           <div className="flex items-center flex-shrink-0 px-6 mb-8">
             <Link href="/" className="flex items-center gap-3">
               <Image 
-                src="/reboot-logo.png" 
+                src="/images/reboot-logo.png" 
                 alt="Leadership Reboot" 
                 width={40} 
                 height={40}
                 className="rounded-xl"
               />
-              <div>
-                <span className="font-semibold text-foreground block leading-tight">Leadership</span>
-                <span className="text-xs text-muted-foreground">Reboot Program</span>
-              </div>
+              <span className="font-bold text-[#0f2a4a] text-lg leading-tight">
+                Leadership Reboot SIGNAL™
+              </span>
             </Link>
           </div>
 
