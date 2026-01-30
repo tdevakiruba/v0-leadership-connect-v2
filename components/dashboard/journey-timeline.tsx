@@ -1,22 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   CheckCircle2, 
-  Circle, 
   Lock,
-  ChevronRight,
   Calendar,
   Target,
   Trophy,
-  Flame,
   Star,
-  ArrowRight
+  ArrowRight,
+  Play,
+  TrendingUp
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -40,333 +36,238 @@ interface JourneyTimelineProps {
   progress: JourneyProgress[]
 }
 
-// SIGNAL™ phases with Monochromatic Blue-Teal Gradient Palette
+// SIGNAL phases with gradient colors
 const phases = [
-  { 
-    letter: "S", 
-    name: "Self-Awareness", 
-    description: "Discover your authentic leadership style and blind spots",
-    range: [1, 15],
-    color: "signal-s",
-    bgLight: "bg-signal-s-light",
-    bg: "bg-signal-s",
-    text: "text-signal-s"
-  },
-  { 
-    letter: "I", 
-    name: "Interpretation", 
-    description: "Reframe challenges as opportunities for growth",
-    range: [16, 30],
-    color: "signal-i",
-    bgLight: "bg-signal-i-light",
-    bg: "bg-signal-i",
-    text: "text-signal-i"
-  },
-  { 
-    letter: "G", 
-    name: "Goals & Strategy", 
-    description: "Align your vision with actionable strategies",
-    range: [31, 45],
-    color: "signal-g",
-    bgLight: "bg-signal-g-light",
-    bg: "bg-signal-g",
-    text: "text-signal-g"
-  },
-  { 
-    letter: "N", 
-    name: "Navigation", 
-    description: "Navigate complexity with clarity and purpose",
-    range: [46, 60],
-    color: "signal-n",
-    bgLight: "bg-signal-n-light",
-    bg: "bg-signal-n",
-    text: "text-signal-n"
-  },
-  { 
-    letter: "A", 
-    name: "Action & Execution", 
-    description: "Execute with precision and adaptability",
-    range: [61, 75],
-    color: "signal-a",
-    bgLight: "bg-signal-a-light",
-    bg: "bg-signal-a",
-    text: "text-signal-a"
-  },
-  { 
-    letter: "L", 
-    name: "Leadership Identity", 
-    description: "Embody your transformed leadership presence",
-    range: [76, 90],
-    color: "signal-l",
-    bgLight: "bg-signal-l-light",
-    bg: "bg-signal-l",
-    text: "text-signal-l"
-  },
+  { letter: "S", name: "Self-Awareness", range: [1, 15], color: "signal-s" },
+  { letter: "I", name: "Interpretation", range: [16, 30], color: "signal-i" },
+  { letter: "G", name: "Goals & Strategy", range: [31, 45], color: "signal-g" },
+  { letter: "N", name: "Navigation", range: [46, 60], color: "signal-n" },
+  { letter: "A", name: "Action & Execution", range: [61, 75], color: "signal-a" },
+  { letter: "L", name: "Leadership Identity", range: [76, 90], color: "signal-l" },
 ]
 
 export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
-  const [activePhase, setActivePhase] = useState(0)
+  const [expandedPhase, setExpandedPhase] = useState<number | null>(null)
 
   const completedDays = new Set(progress.filter(p => p.completed).map(p => p.day_number))
   const currentDay = completedDays.size > 0 
     ? Math.min(Math.max(...completedDays) + 1, 90)
     : 1
 
-  // Determine current phase
   const currentPhaseIndex = phases.findIndex(
     phase => currentDay >= phase.range[0] && currentDay <= phase.range[1]
   )
-
   const totalPoints = progress.reduce((sum, p) => sum + (p.points_awarded || 0), 0)
   const overallProgress = Math.round((completedDays.size / 90) * 100)
 
+  const getPhaseStats = (phaseIndex: number) => {
+    const phase = phases[phaseIndex]
+    const phaseDays = Array.from(
+      { length: phase.range[1] - phase.range[0] + 1 }, 
+      (_, i) => phase.range[0] + i
+    )
+    const completed = phaseDays.filter(day => completedDays.has(day)).length
+    return { completed, total: phaseDays.length, progress: Math.round((completed / phaseDays.length) * 100) }
+  }
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-6">
+      {/* Compact Header with Stats */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight section-title-executive">Your Leadership Pathway</h1>
-          <p className="text-muted-foreground mt-1">
-            Track your transformation through the SIGNAL&trade; leadership framework
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Leadership Pathway</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Day {currentDay} of 90</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Overall Progress</p>
-            <p className="text-2xl font-bold">{overallProgress}%</p>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 rounded-xl bg-signal-s-light flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-signal-s" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Index</p>
+              <p className="font-bold">{totalPoints}</p>
+            </div>
           </div>
-          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Trophy className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 rounded-xl bg-signal-g-light flex items-center justify-center">
+              <CheckCircle2 className="h-5 w-5 text-signal-g" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Applied</p>
+              <p className="font-bold">{completedDays.size}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Progress Overview */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Day {currentDay} of 90</span>
-              <span className="font-medium">{completedDays.size} days completed</span>
+      {/* Main Progress Visualization */}
+      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white">
+        <CardContent className="p-6 sm:p-8">
+          {/* Overall Progress Bar */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Overall Progress</span>
+              <span className="text-sm font-bold text-signal-s">{overallProgress}%</span>
             </div>
-            <Progress value={overallProgress} className="h-3" />
-            <div className="flex justify-between">
+            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-signal-s via-signal-g to-signal-l rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${overallProgress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Horizontal Timeline */}
+          <div className="relative">
+            {/* Connection Line */}
+            <div className="absolute top-6 left-6 right-6 h-0.5 bg-slate-200" />
+            <div 
+              className="absolute top-6 left-6 h-0.5 bg-gradient-to-r from-signal-s via-signal-g to-signal-n transition-all duration-700"
+              style={{ width: `${Math.min(overallProgress, 100) * 0.9}%` }}
+            />
+
+            {/* Phase Nodes */}
+            <div className="relative flex justify-between">
               {phases.map((phase, index) => {
-                const phaseStart = ((phase.range[0] - 1) / 90) * 100
+                const stats = getPhaseStats(index)
+                const isActive = currentPhaseIndex === index
+                const isComplete = stats.progress === 100
+                const isPast = currentPhaseIndex > index
+                const isFuture = currentPhaseIndex < index
+
                 return (
                   <div 
                     key={phase.letter}
                     className="flex flex-col items-center"
-                    style={{ position: 'relative', left: `${phaseStart - index * 16.67}%` }}
                   >
-                <div className={cn(
-                  "h-2 w-2 rounded-full",
-                  currentDay >= phase.range[0] ? phase.bg : "bg-muted"
-                )} />
-                    <span className="text-xs text-muted-foreground mt-1 hidden sm:block">
-                      {phase.letter}
-                    </span>
+                    {/* Phase Circle */}
+                    <button
+                      onClick={() => setExpandedPhase(expandedPhase === index ? null : index)}
+                      className={cn(
+                        "relative z-10 h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300",
+                        isComplete && `bg-${phase.color} text-white shadow-lg`,
+                        isActive && !isComplete && `bg-${phase.color} text-white ring-4 ring-${phase.color}/30 shadow-lg`,
+                        isPast && !isComplete && `bg-${phase.color}/80 text-white`,
+                        isFuture && "bg-slate-100 text-slate-400",
+                        "hover:scale-110"
+                      )}
+                    >
+                      {isComplete ? <CheckCircle2 className="h-6 w-6" /> : phase.letter}
+                    </button>
+
+                    {/* Phase Label */}
+                    <div className="mt-3 text-center">
+                      <p className={cn(
+                        "text-xs font-semibold",
+                        isActive ? `text-${phase.color}` : "text-muted-foreground"
+                      )}>
+                        {phase.letter}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground hidden sm:block">
+                        {stats.completed}/{stats.total}
+                      </p>
+                    </div>
+
+                    {/* Active Indicator */}
+                    {isActive && (
+                      <div className={`mt-1 h-1 w-6 rounded-full bg-${phase.color}`} />
+                    )}
                   </div>
                 )
               })}
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* SIGNAL™ Phases */}
-      <div className="grid gap-4 lg:grid-cols-6">
-        {phases.map((phase, index) => {
-          const phaseDays = Array.from(
-            { length: phase.range[1] - phase.range[0] + 1 }, 
-            (_, i) => phase.range[0] + i
-          )
-          const phaseCompleted = phaseDays.filter(day => completedDays.has(day)).length
-          const phaseTotal = phaseDays.length
-          const phaseProgress = Math.round((phaseCompleted / phaseTotal) * 100)
-          const isCurrentPhase = currentPhaseIndex === index
-          const isPastPhase = currentPhaseIndex > index
-          const isFuturePhase = currentPhaseIndex < index
-
-          return (
-            <Card 
-              key={phase.letter}
-              className={cn(
-                "cursor-pointer transition-all hover:shadow-md",
-                isCurrentPhase && "ring-2 ring-accent",
-                activePhase === index && "bg-muted/50"
-              )}
-              onClick={() => setActivePhase(index)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                <div className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-full font-bold text-lg",
-                  isPastPhase ? `${phase.bg} text-white` :
-                  isCurrentPhase ? `${phase.bg} text-white` :
-                  `${phase.bgLight} ${phase.text}`
-                )}>
-                  {isPastPhase ? <CheckCircle2 className="h-5 w-5" /> : phase.letter}
-                </div>
-                  {isCurrentPhase && (
-                    <Badge variant="secondary" className="text-xs">Active</Badge>
-                  )}
-                </div>
-                <h3 className="font-semibold text-sm">{phase.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Days {phase.range[0]}-{phase.range[1]}
-                </p>
-                <div className="mt-3">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-muted-foreground">{phaseCompleted}/{phaseTotal}</span>
-                    <span className="font-medium">{phaseProgress}%</span>
-                  </div>
-                <div className={cn("h-1.5 rounded-full overflow-hidden", phase.bgLight)}>
-                  <div 
-                    className={cn(
-                      "h-full transition-all duration-300",
-                      phase.bg
-                    )}
-                    style={{ width: `${phaseProgress}%` }}
-                  />
-                </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Phase Detail */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-2xl font-bold text-primary">
-                {phases[activePhase].letter}
-              </div>
-              <div>
-                <CardTitle>{phases[activePhase].name}</CardTitle>
-                <CardDescription className="mt-1">
-                  {phases[activePhase].description}
-                </CardDescription>
-              </div>
-            </div>
-            <Badge variant="outline" className="hidden sm:flex">
-              Days {phases[activePhase].range[0]}-{phases[activePhase].range[1]}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {/* Days Grid */}
-          <div className="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-15 gap-2">
-            {Array.from(
-              { length: phases[activePhase].range[1] - phases[activePhase].range[0] + 1 },
-              (_, i) => phases[activePhase].range[0] + i
-            ).map(day => {
-              const lesson = lessons.find(l => l.day_number === day)
-              const isCompleted = completedDays.has(day)
-              const isCurrent = day === currentDay
-              const isLocked = day > currentDay
-
-              return (
-                <Link
-                  key={day}
-                  href={isLocked ? "#" : `/dashboard/lessons/${day}`}
-                  className={cn(
-                    "aspect-square flex flex-col items-center justify-center rounded-lg text-sm font-medium transition-all",
-                    isCompleted && `${phases[activePhase].bg} text-white`,
-                    isCurrent && `${phases[activePhase].bg} text-white ring-2 ring-offset-2`,
-                    isCurrent && `ring-[color:var(--${phases[activePhase].color})]`,
-                    !isCompleted && !isCurrent && !isLocked && `${phases[activePhase].bgLight} hover:opacity-80`,
-                    isLocked && "bg-muted/50 text-muted-foreground cursor-not-allowed"
-                  )}
-                  onClick={(e) => isLocked && e.preventDefault()}
-                >
-                  <span>{day}</span>
-                  {isCompleted && <CheckCircle2 className="h-3 w-3 mt-0.5" />}
-                  {isLocked && <Lock className="h-3 w-3 mt-0.5" />}
-                </Link>
-              )
-            })}
-          </div>
-
-          {/* Current Day Quick Access */}
-          {currentDay >= phases[activePhase].range[0] && currentDay <= phases[activePhase].range[1] && (
-            <div className="mt-6 p-4 rounded-lg bg-accent/5 border border-accent/20">
-              <div className="flex items-center justify-between">
+          {/* Expanded Phase Detail */}
+          {expandedPhase !== null && (
+            <div className="mt-8 pt-6 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h4 className="font-semibold">Continue Your Journey</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Day {currentDay}: {lessons.find(l => l.day_number === currentDay)?.focus_reframe_technique || "Today's Focus"}
+                  <h3 className="font-bold text-lg">{phases[expandedPhase].name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Days {phases[expandedPhase].range[0]}-{phases[expandedPhase].range[1]}
                   </p>
                 </div>
-                <Link href={`/dashboard/lessons/${currentDay}`}>
-                  <Button>
-                    Start Day {currentDay}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
+                <div className={`px-3 py-1 rounded-full bg-${phases[expandedPhase].color}-light text-${phases[expandedPhase].color} text-sm font-semibold`}>
+                  {getPhaseStats(expandedPhase).progress}% Complete
+                </div>
+              </div>
+
+              {/* Compact Day Grid */}
+              <div className="flex flex-wrap gap-1.5">
+                {Array.from(
+                  { length: phases[expandedPhase].range[1] - phases[expandedPhase].range[0] + 1 },
+                  (_, i) => phases[expandedPhase].range[0] + i
+                ).map(day => {
+                  const isCompleted = completedDays.has(day)
+                  const isCurrent = day === currentDay
+                  const isLocked = day > currentDay
+
+                  return (
+                    <Link
+                      key={day}
+                      href={isLocked ? "#" : `/dashboard/lessons/${day}`}
+                      onClick={(e) => isLocked && e.preventDefault()}
+                      className={cn(
+                        "h-8 w-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all",
+                        isCompleted && `bg-${phases[expandedPhase].color} text-white`,
+                        isCurrent && `bg-${phases[expandedPhase].color} text-white ring-2 ring-offset-1 ring-${phases[expandedPhase].color}`,
+                        !isCompleted && !isCurrent && !isLocked && `bg-${phases[expandedPhase].color}-light text-${phases[expandedPhase].color} hover:opacity-80`,
+                        isLocked && "bg-slate-50 text-slate-300 cursor-not-allowed"
+                      )}
+                    >
+                      {day}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}
+
+          {/* Current Day CTA */}
+          <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-signal-s/10 via-signal-g/10 to-signal-n/10 border border-signal-s/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`h-12 w-12 rounded-xl bg-${phases[currentPhaseIndex]?.color || 'signal-s'} flex items-center justify-center`}>
+                  <Play className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Continue Your Journey</p>
+                  <h4 className="font-bold">
+                    Day {currentDay}: {lessons.find(l => l.day_number === currentDay)?.focus_reframe_technique || phases[currentPhaseIndex]?.name}
+                  </h4>
+                </div>
+              </div>
+              <Link href={`/dashboard/lessons/${currentDay}`}>
+                <Button className="btn-executive text-white rounded-xl px-6">
+                  Start Day {currentDay}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Leadership Metrics */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="card-executive">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-s-light">
-                <Star className="h-6 w-6 text-signal-s" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Leadership Index</p>
-                <p className="text-2xl font-bold">{totalPoints}</p>
-              </div>
+      {/* Compact Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { icon: Star, label: "Leadership Index", value: totalPoints, color: "signal-s" },
+          { icon: CheckCircle2, label: "Frameworks Applied", value: completedDays.size, color: "signal-i" },
+          { icon: Target, label: "Phases Mastered", value: currentPhaseIndex >= 0 ? currentPhaseIndex : 0, color: "signal-g" },
+          { icon: Calendar, label: "Days Remaining", value: 90 - completedDays.size, color: "signal-n" },
+        ].map((stat, i) => (
+          <div 
+            key={i}
+            className={`flex items-center gap-3 p-4 rounded-xl bg-${stat.color}-light/50 border border-${stat.color}/10`}
+          >
+            <stat.icon className={`h-5 w-5 text-${stat.color}`} />
+            <div>
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <p className="font-bold text-lg">{stat.value}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="card-executive">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-i-light">
-                <CheckCircle2 className="h-6 w-6 text-signal-i" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Frameworks Applied</p>
-                <p className="text-2xl font-bold">{completedDays.size}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-executive">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-g-light">
-                <Target className="h-6 w-6 text-signal-g" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Phases Mastered</p>
-                <p className="text-2xl font-bold">{currentPhaseIndex >= 0 ? currentPhaseIndex : 0}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="card-executive">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-n-light">
-                <Calendar className="h-6 w-6 text-signal-n" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Modules Remaining</p>
-                <p className="text-2xl font-bold">{90 - completedDays.size}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        ))}
       </div>
     </div>
   )
