@@ -23,7 +23,15 @@ export async function createCheckoutSession(productId: string) {
     return { error: "Product not found" }
   }
 
+  // Check if Stripe is properly configured
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("[v0] STRIPE_SECRET_KEY is not set")
+    return { error: "Payment system is not configured. Please contact support." }
+  }
+
   try {
+    console.log("[v0] Creating checkout session for product:", product.id, "user:", user.id)
+    
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
       payment_method_types: ["card"],
@@ -50,10 +58,12 @@ export async function createCheckoutSession(productId: string) {
       },
     })
 
+    console.log("[v0] Checkout session created successfully:", session.id)
     return { clientSecret: session.client_secret }
   } catch (error) {
-    console.error("Error creating checkout session:", error)
-    return { error: "Failed to create checkout session" }
+    console.error("[v0] Error creating checkout session:", error)
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return { error: `Failed to create checkout session: ${errorMessage}` }
   }
 }
 

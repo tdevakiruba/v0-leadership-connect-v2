@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { PRODUCTS } from "@/lib/products"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Sparkles, Shield, Clock, Users, Award, AlertCircle } from "lucide-react"
+import { Check, Sparkles, Shield, Clock, Users, Award } from "lucide-react"
 
 const features = [
   "90-Day Leadership Transformation Program",
@@ -52,7 +52,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
             <div className="h-8 w-8 rounded-lg bg-signal-s flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
-            <span className="font-bold text-xl">Leadership Connect</span>
+            <span className="font-bold text-xl">Leadership Reboot SIGNAL™</span>
           </Link>
           {user ? (
             <div className="flex items-center gap-4">
@@ -75,14 +75,16 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
       </header>
 
       <main className="container mx-auto px-4 py-16">
-        {/* Expired Subscription Alert */}
+        {/* Renew Subscription Notice */}
         {isExpired && (
-          <div className="max-w-2xl mx-auto mb-8 p-4 rounded-lg border border-amber-200 bg-amber-50 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="max-w-2xl mx-auto mb-8 p-4 rounded-xl border border-signal-s/20 bg-signal-s-light/30 flex items-start gap-3">
+            <div className="h-8 w-8 rounded-full bg-signal-s/10 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="h-4 w-4 text-signal-s" />
+            </div>
             <div>
-              <h3 className="font-semibold text-amber-800">Subscription Expired</h3>
-              <p className="text-sm text-amber-700 mt-1">
-                Your 90-day access has ended. Renew your subscription to continue your leadership transformation journey.
+              <h3 className="font-semibold text-foreground">Renew Subscription</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your 90-day access has ended. Renew below to continue your leadership transformation journey.
               </p>
             </div>
           </div>
