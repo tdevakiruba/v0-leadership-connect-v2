@@ -47,7 +47,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
               height={40}
               className="rounded-full"
             />
-            <span className="font-bold text-xl">Leadership Reboot SIGNAL™</span>
+            <span className="font-bold text-xl text-[#0f2a4a]">Leadership Reboot SIGNAL™</span>
           </Link>
           {user ? (
             <div className="flex items-center gap-4">

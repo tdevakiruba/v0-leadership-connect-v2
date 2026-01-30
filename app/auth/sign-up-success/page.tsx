@@ -11,13 +11,13 @@ export default function SignUpSuccessPage() {
         <div className="text-center mb-8">
           <Link href="/" className="flex items-center justify-center gap-3 mb-2">
             <Image 
-              src="/reboot-logo.png" 
+              src="/images/reboot-logo.png" 
               alt="Leadership Reboot" 
               width={40} 
               height={40}
-              className="rounded-lg"
+              className="rounded-full"
             />
-            <span className="text-2xl font-bold tracking-tight text-foreground">Leadership Reboot</span>
+            <span className="text-xl font-bold text-[#0f2a4a]">Leadership Reboot SIGNAL™</span>
           </Link>
         </div>
 
