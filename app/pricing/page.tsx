@@ -5,7 +5,6 @@ import { PRODUCTS } from "@/lib/products"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check, Sparkles, Shield, Clock, Users, Award, AlertCircle } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const features = [
   "90-Day Leadership Transformation Program",
@@ -78,13 +77,15 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
       <main className="container mx-auto px-4 py-16">
         {/* Expired Subscription Alert */}
         {isExpired && (
-          <Alert className="max-w-2xl mx-auto mb-8 border-amber-200 bg-amber-50">
-            <AlertCircle className="h-5 w-5 text-amber-600" />
-            <AlertTitle className="text-amber-800">Subscription Expired</AlertTitle>
-            <AlertDescription className="text-amber-700">
-              Your 90-day access has ended. Renew your subscription to continue your leadership transformation journey.
-            </AlertDescription>
-          </Alert>
+          <div className="max-w-2xl mx-auto mb-8 p-4 rounded-lg border border-amber-200 bg-amber-50 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-800">Subscription Expired</h3>
+              <p className="text-sm text-amber-700 mt-1">
+                Your 90-day access has ended. Renew your subscription to continue your leadership transformation journey.
+              </p>
+            </div>
+          </div>
         )}
 
         {/* Hero */}
