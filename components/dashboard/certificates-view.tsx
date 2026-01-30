@@ -212,7 +212,7 @@ export function CertificatesView({
             <div className="grid grid-cols-2 gap-4 lg:w-auto">
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold">{totalPoints}</p>
-                <p className="text-xs text-muted-foreground">Total Points</p>
+                <p className="text-xs text-muted-foreground">Leadership Index</p>
               </div>
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold">{earnedCertificates.length}</p>

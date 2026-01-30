@@ -103,7 +103,7 @@ export function LeadershipLab({
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Leadership Lab</h1>
+          <h1 className="text-2xl font-bold tracking-tight section-title-executive">Decision Lab</h1>
           <p className="text-muted-foreground mt-1">
             Connect with your leadership cohort and track team progress
           </p>
@@ -156,7 +156,7 @@ export function LeadershipLab({
                     <Trophy className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Your Points</p>
+                    <p className="text-sm text-muted-foreground">Leadership Index</p>
                     <p className="text-2xl font-bold">{totalPoints}</p>
                   </div>
                 </div>

@@ -20,9 +20,13 @@ import {
   Calendar,
   BookOpen,
   ArrowRight,
+  ArrowLeft,
   Loader2,
   Square,
-  CheckSquare
+  CheckSquare,
+  TrendingUp,
+  Quote,
+  ChevronRight
 } from "lucide-react"
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
@@ -135,6 +139,7 @@ interface TodayDashboardProps {
     leader_context: string | null
     thought_to_work_on: string | null
     action_for_today: string | null
+    quote: string | null
   } | null
   todayProgress: {
     id: string
@@ -355,7 +360,7 @@ export function TodayDashboard({
       }
 
       setIsCompleted(true)
-      toast.success("Day completed! +10 points")
+      toast.success("Framework applied! +10 Leadership Credits")
       router.refresh()
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -399,35 +404,54 @@ export function TodayDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Quote of the Day - Executive Style */}
+          {todayLesson?.quote && (
+            <div className="relative bg-gradient-to-br from-card via-card to-signal-s-light/30 rounded-2xl p-8 border border-border card-executive overflow-hidden">
+              <Quote className="absolute top-4 left-4 h-8 w-8 text-signal-s/20" />
+              <Quote className="absolute bottom-4 right-4 h-8 w-8 text-signal-s/20 rotate-180" />
+              <div className="relative z-10">
+                <p className="quote-executive text-center px-8">
+                  {todayLesson.quote}
+                </p>
+                <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Welcome Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                Welcome back, {firstName}!
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                Welcome back, {firstName}
               </h1>
               <p className="text-muted-foreground mt-1">
-                Continue your leadership journey. You&apos;re doing great!
+                Your leadership edge sharpens with every session.
               </p>
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-            </div>
+            {!todayLesson?.quote && (
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+              </div>
+            )}
           </div>
 
-          {/* Continue Learning Section */}
+          {/* Today's Leadership Focus */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-foreground">Continue Learning</h2>
-              <Link href="/dashboard/lessons" className={cn("text-sm hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
-                View all <ArrowRight className="h-3 w-3" />
+              <h2 className="text-lg font-bold tracking-tight text-foreground section-title-executive">Today&apos;s Leadership Focus</h2>
+              <Link href="/dashboard/lessons" className={cn("text-sm font-medium hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
+                All Frameworks <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
             
             {todayLesson && (
               <div className="grid sm:grid-cols-2 gap-4">
-                {/* Current Lesson Card */}
-                <div className={cn("bg-card rounded-2xl p-5 border hover:shadow-lg transition-all group", currentPhaseColors.borderActive)}>
+                {/* Current Framework Card */}
+                <div className={cn("bg-card rounded-2xl p-5 border card-executive hover:shadow-lg transition-all group", currentPhaseColors.borderActive)}>
                   <div className="flex items-start justify-between mb-4">
                     <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
                       <BookOpen className={cn("h-5 w-5", currentPhaseColors.textActive)} />
@@ -445,10 +469,10 @@ export function TodayDashboard({
                   {/* Progress bar */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span className="text-muted-foreground">{completedDays}/90 Lessons</span>
-                      <span className={cn("font-medium", currentPhaseColors.textActive)}>{progressPercentage}%</span>
+                      <span className="text-muted-foreground">{completedDays}/90 Frameworks</span>
+                      <span className={cn("font-semibold", currentPhaseColors.textActive)}>{progressPercentage}%</span>
                     </div>
-                    <div className={cn("h-2 rounded-full overflow-hidden", currentPhaseColors.bgActive)}>
+                    <div className={cn("h-2.5 rounded-full overflow-hidden progress-bar-executive", currentPhaseColors.bgActive)}>
                       <div 
                         className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressDone)}
                         style={{ width: `${progressPercentage}%` }}
@@ -463,61 +487,78 @@ export function TodayDashboard({
                   </Link>
                 </div>
 
-                {/* Next Lesson Preview */}
-                <div className="bg-card rounded-2xl p-5 border border-border hover:shadow-lg transition-all group">
+                {/* Navigation Links Card */}
+                <div className="bg-card rounded-2xl p-5 border border-border card-executive">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-2.5 bg-slate-100 rounded-xl">
-                      <Target className="h-5 w-5 text-slate-500" />
+                    <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
+                      <TrendingUp className={cn("h-5 w-5", currentPhaseColors.textActive)} />
                     </div>
-                    <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
-                      Day {Math.min(currentDay + 1, 90)}
+                    <span className={cn("px-2.5 py-1 text-xs font-semibold rounded-full", currentPhaseColors.bgActive, currentPhaseColors.textActive)}>
+                      Day {currentDay} of 90
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">
-                    {currentPhase?.name}
+                  <h3 className="font-bold text-foreground mb-2 tracking-tight">
+                    Framework Navigation
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4 uppercase tracking-wide">
-                    Next Session
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Access previous or upcoming modules
                   </p>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                    <Clock className="h-4 w-4" />
-                    <span>~10 min reading</span>
-                  </div>
-                  <button 
-                    disabled={!isCompleted}
-                    className={cn(
-                      "flex items-center gap-2 text-sm font-medium transition-all",
-                      isCompleted 
-                        ? cn(currentPhaseColors.textActive, "group-hover:gap-3")
-                        : "text-muted-foreground cursor-not-allowed"
+                  
+                  {/* Navigation Links */}
+                  <div className="space-y-2">
+                    {currentDay > 1 && (
+                      <Link 
+                        href={`/dashboard/lessons/${currentDay - 1}`}
+                        className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-all group"
+                      >
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <ArrowLeft className="h-4 w-4" />
+                          <span>Previous Framework</span>
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground">Day {currentDay - 1}</span>
+                      </Link>
                     )}
-                  >
-                    {isCompleted ? "Start Now" : "Complete current lesson first"}
-                    {isCompleted && <ArrowRight className="h-4 w-4" />}
-                  </button>
+                    {currentDay < 90 && (
+                      <Link 
+                        href={`/dashboard/lessons/${currentDay + 1}`}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-xl transition-all group",
+                          isCompleted 
+                            ? cn(currentPhaseColors.bgActive, "hover:opacity-80")
+                            : "bg-muted/30 opacity-60 pointer-events-none"
+                        )}
+                      >
+                        <div className={cn("flex items-center gap-2 text-sm", isCompleted ? currentPhaseColors.textActive : "text-muted-foreground")}>
+                          <span>Next Framework</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                        <span className={cn("text-xs font-medium", isCompleted ? currentPhaseColors.textActive : "text-muted-foreground")}>Day {currentDay + 1}</span>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Today's Actions Section */}
+          {/* Today's Strategic Actions */}
           {todayLesson && (
-            <div className="bg-card rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-2xl p-6 border border-border card-executive">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={cn("p-2 rounded-lg", currentPhaseColors.bgActive)}>
-                    <Target className={cn("h-4 w-4", currentPhaseColors.textActive)} />
+                  <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
+                    <Target className={cn("h-5 w-5", currentPhaseColors.textActive)} />
                   </div>
-                  <h3 className="font-semibold text-foreground">Today&apos;s Actions</h3>
+                  <h3 className="font-bold text-foreground tracking-tight section-title-executive">Strategic Actions</h3>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {actionsCompletedCount}/{totalActionsCount} completed
+                <span className={cn("text-sm font-semibold", currentPhaseColors.textActive)}>
+                  {actionsCompletedCount}/{totalActionsCount} applied
                 </span>
               </div>
 
               {/* Actions Progress */}
               <div className="mb-4">
-                <div className={cn("h-2 rounded-full overflow-hidden bg-slate-100")}>
+                <div className={cn("h-2.5 rounded-full overflow-hidden bg-slate-100 progress-bar-executive")}>
                   <div 
                     className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressActive)}
                     style={{ width: `${actionsProgress}%` }}
@@ -595,14 +636,14 @@ export function TodayDashboard({
             </div>
           )}
 
-          {/* Today's Reflection Section */}
+          {/* Strategic Reflection Section */}
           {todayLesson && (
-            <div className="bg-card rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-2xl p-6 border border-border card-executive">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-signal-s-light rounded-lg">
-                  <Zap className="h-4 w-4 text-signal-s" />
+                <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
+                  <Zap className={cn("h-5 w-5", currentPhaseColors.textActive)} />
                 </div>
-                <h3 className="font-semibold text-foreground">Today&apos;s Reflection</h3>
+                <h3 className="font-bold text-foreground tracking-tight section-title-executive">Strategic Reflection</h3>
               </div>
               
               {todayLesson.thought_to_work_on && (
@@ -633,32 +674,28 @@ export function TodayDashboard({
                   <Button 
                     onClick={handleComplete} 
                     disabled={isSubmitting || !reflection.trim()}
-                    className={cn(
-                      "text-white rounded-full px-6 py-2 h-auto font-medium shadow-lg transition-all",
-                      currentPhaseColors.bgDone,
-                      "hover:opacity-90"
-                    )}
+                    className="btn-executive text-white rounded-full px-8 py-2.5 h-auto font-semibold transition-all hover:opacity-90"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    {isSubmitting ? "Saving..." : "Complete Day"}
+                    {isSubmitting ? "Applying..." : "Apply Framework"}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 text-signal-g font-medium">
+                  <div className={cn("flex items-center gap-2 font-semibold", currentPhaseColors.textActive)}>
                     <CheckCircle2 className="h-5 w-5" />
-                    Day completed
+                    Framework Applied
                   </div>
                 )}
-                <span className="text-sm text-muted-foreground">+10 points on completion</span>
+                <span className="text-sm text-muted-foreground">+10 Leadership Credits</span>
               </div>
             </div>
           )}
 
-          {/* SIGNAL™ Journey Progress */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          {/* SIGNAL™ Leadership Pathway */}
+          <div className="bg-card rounded-2xl p-6 border border-border card-executive">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Your SIGNAL&trade; Journey</h3>
-              <Link href="/dashboard/journey" className={cn("text-sm hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
-                Details <ArrowRight className="h-3 w-3" />
+              <h3 className="font-bold text-foreground tracking-tight section-title-executive">Your SIGNAL&trade; Pathway</h3>
+              <Link href="/dashboard/journey" className={cn("text-sm font-medium hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
+                View Pathway <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -721,52 +758,76 @@ export function TodayDashboard({
           </div>
         </div>
 
-        {/* Right Column - Sidebar */}
+        {/* Right Column - Leadership Control Center */}
         <div className="space-y-6">
-          {/* User Profile Card */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          {/* Leadership Index Card */}
+          <div className="control-panel rounded-2xl p-6 border border-border">
             <div className="flex items-center gap-4 mb-6">
-              <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-semibold", currentPhaseColors.bgDone)}>
+              <div className={cn("h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-bold", currentPhaseColors.bgDone)}>
                 {firstName[0]?.toUpperCase()}
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">{profile?.full_name || firstName}</h3>
+                <h3 className="font-bold text-foreground tracking-tight">{profile?.full_name || firstName}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {profile?.title || "Leadership Learner"}
+                  {profile?.title || "Executive Leader"}
                 </p>
               </div>
             </div>
             
-            {/* Stats Grid */}
+            {/* Leadership Index */}
             <div className="grid grid-cols-3 gap-3">
               <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
                 <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
                   <Flame className="h-4 w-4" />
                   {streak}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
+                <p className="text-xs text-muted-foreground mt-1">Streak</p>
               </div>
               <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
                 <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
-                  <Sparkles className="h-4 w-4" />
+                  <TrendingUp className="h-4 w-4" />
                   {totalPoints}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Points</p>
+                <p className="text-xs text-muted-foreground mt-1">Leadership Index</p>
               </div>
               <div className={cn("text-center p-3 rounded-xl", currentPhaseColors.bgActive)}>
                 <div className={cn("flex items-center justify-center gap-1 font-bold text-lg", currentPhaseColors.textActive)}>
                   <Trophy className="h-4 w-4" />
                   {completedDays}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Completed</p>
+                <p className="text-xs text-muted-foreground mt-1">Applied</p>
               </div>
             </div>
           </div>
 
-          {/* Weekly Streak Calendar */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          {/* Next Milestone Card */}
+          <div className="control-panel rounded-2xl p-6 border border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
+                <Target className={cn("h-5 w-5", currentPhaseColors.textActive)} />
+              </div>
+              <h3 className="font-bold text-foreground tracking-tight">Next Milestone</h3>
+            </div>
+            <div className={cn("p-4 rounded-xl mb-4", currentPhaseColors.bgActive)}>
+              <p className={cn("text-sm font-semibold mb-1", currentPhaseColors.textActive)}>
+                {getNextMilestone(currentDay, currentPhaseColors.name)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {getMilestoneDaysRemaining(currentDay)} days remaining
+              </p>
+            </div>
+            <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-xl">
+              <Sparkles className="h-4 w-4 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground italic">
+                &ldquo;Consistency = Compound Clarity&rdquo;
+              </p>
+            </div>
+          </div>
+
+          {/* Weekly Performance */}
+          <div className="control-panel rounded-2xl p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Weekly Streak</h3>
+              <h3 className="font-bold text-foreground tracking-tight">Weekly Performance</h3>
               <span className="text-xs text-muted-foreground">
                 {today.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
               </span>
@@ -792,16 +853,16 @@ export function TodayDashboard({
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
-            <h3 className="font-semibold text-foreground mb-4">Progress Overview</h3>
+          {/* Trajectory Overview */}
+          <div className="control-panel rounded-2xl p-6 border border-border">
+            <h3 className="font-bold text-foreground mb-4 tracking-tight">Trajectory Overview</h3>
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Overall Progress</span>
-                  <span className="font-medium text-foreground">{progressPercentage}%</span>
+                  <span className="text-muted-foreground">Program Completion</span>
+                  <span className="font-semibold text-foreground">{progressPercentage}%</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden progress-bar-executive">
                   <div 
                     className={cn("h-full rounded-full transition-all", currentPhaseColors.progressDone)}
                     style={{ width: `${progressPercentage}%` }}
@@ -810,12 +871,12 @@ export function TodayDashboard({
               </div>
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Current Phase</span>
-                  <span className={cn("font-medium", currentPhaseColors.textActive)}>
+                  <span className="text-muted-foreground">Phase Progress</span>
+                  <span className={cn("font-semibold", currentPhaseColors.textActive)}>
                     {currentPhaseColors.name}
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden progress-bar-executive">
                   <div 
                     className={cn("h-full rounded-full transition-all", currentPhaseColors.progressActive)}
                     style={{ width: `${((currentDay - currentPhaseColors.dayStart) / 15) * 100}%` }}
@@ -825,25 +886,27 @@ export function TodayDashboard({
             </div>
           </div>
 
-          {/* Achievement Teaser */}
-          <div className={cn("rounded-2xl p-6 text-white", currentPhaseColors.bgDone)}>
+          {/* Leadership Momentum */}
+          <div className="btn-executive rounded-2xl p-6 text-white">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-white/20 rounded-lg">
+              <div className="p-2 bg-white/20 rounded-xl">
                 <Star className="h-5 w-5" />
               </div>
-              <h3 className="font-semibold">Keep Going!</h3>
+              <h3 className="font-bold tracking-tight">Momentum Building</h3>
             </div>
             <p className="text-sm opacity-90 mb-4">
-              Complete {7 - streak > 0 ? 7 - streak : 0} more days to unlock your weekly achievement badge.
+              {7 - streak > 0 
+                ? `${7 - streak} more days to unlock your weekly leadership badge.`
+                : "Weekly leadership badge unlocked! Keep the momentum."}
             </p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+              <div className="flex-1 h-2.5 bg-white/20 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-white rounded-full"
+                  className="h-full bg-white rounded-full transition-all"
                   style={{ width: `${Math.min((streak / 7) * 100, 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-medium">{Math.min(streak, 7)}/7</span>
+              <span className="text-sm font-semibold">{Math.min(streak, 7)}/7</span>
             </div>
           </div>
         </div>
@@ -862,4 +925,26 @@ function getSIGNALPhase(currentDay: number) {
     { name: "Leadership Identity", range: [76, 90] },
   ]
   return phases.find(p => currentDay >= p.range[0] && currentDay <= p.range[1]) || phases[0]
+}
+
+function getNextMilestone(currentDay: number, currentPhaseName: string) {
+  const phaseEndDays = [15, 30, 45, 60, 75, 90]
+  const phaseNames = ["Self-Awareness", "Interpretation", "Goals & Strategy", "Navigation", "Action & Execution", "Leadership Identity"]
+  
+  for (let i = 0; i < phaseEndDays.length; i++) {
+    if (currentDay <= phaseEndDays[i]) {
+      return `Unlock ${phaseNames[i]} Mastery`
+    }
+  }
+  return "Complete Leadership Transformation"
+}
+
+function getMilestoneDaysRemaining(currentDay: number) {
+  const phaseEndDays = [15, 30, 45, 60, 75, 90]
+  for (const endDay of phaseEndDays) {
+    if (currentDay <= endDay) {
+      return endDay - currentDay + 1
+    }
+  }
+  return 0
 }
