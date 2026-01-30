@@ -126,9 +126,9 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Daily Lessons</h1>
+        <h1 className="text-2xl font-bold tracking-tight section-title-executive">Leadership Frameworks</h1>
         <p className="text-muted-foreground mt-1">
-          Browse all 90 days of your leadership transformation curriculum
+          Browse all 90 modules of your leadership transformation program
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search lessons..."
+            placeholder="Search frameworks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -266,7 +266,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
         <Card>
           <CardContent className="py-12 text-center">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-lg font-medium">No lessons found</p>
+            <p className="text-lg font-medium">No frameworks found</p>
             <p className="text-sm text-muted-foreground mt-1">
               Try adjusting your search or filter criteria
             </p>

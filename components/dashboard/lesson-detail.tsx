@@ -271,7 +271,7 @@ export function LessonDetail({
       if (progressError) throw progressError
 
       setIsCompleted(true)
-      toast.success("Lesson completed! +10 points earned")
+      toast.success("Framework applied! +10 Leadership Credits")
       router.refresh()
     } catch (error: unknown) {
       console.error("[v0] Error completing lesson:", error)
@@ -511,15 +511,15 @@ export function LessonDetail({
             </CardContent>
           </Card>
 
-          {/* Reflection */}
-          <Card>
+          {/* Strategic Reflection */}
+          <Card className="card-executive">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-bold tracking-tight">
                 <Sparkles className="h-5 w-5 text-accent" />
-                Your Reflection
+                Strategic Reflection
               </CardTitle>
               <CardDescription>
-                Take a moment to reflect on today's lesson and how it applies to your leadership journey.
+                Capture your key insights and how this framework applies to your leadership context.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -535,15 +535,15 @@ export function LessonDetail({
                 <Button 
                   onClick={handleComplete} 
                   disabled={isSubmitting || !reflection.trim()}
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto btn-executive text-white"
                 >
-                  {isSubmitting ? "Saving..." : "Complete Lesson"} 
+                  {isSubmitting ? "Applying..." : "Apply Framework"} 
                   <CheckCircle2 className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
                 <div className="flex items-center gap-2 text-signal-g p-3 bg-signal-g-light rounded-lg">
                   <CheckCircle2 className="h-5 w-5" />
-                  <span className="font-medium">Lesson Completed on {new Date(progress?.completed_at || "").toLocaleDateString()}</span>
+                  <span className="font-medium">Framework Applied on {new Date(progress?.completed_at || "").toLocaleDateString()}</span>
                 </div>
               )}
             </CardContent>
@@ -600,9 +600,9 @@ export function LessonDetail({
           </Card>
 
           {/* Tips */}
-          <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
+          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 card-executive">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Reflection Tips</CardTitle>
+              <CardTitle className="text-base font-bold">Strategic Reflection Tips</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="text-sm text-muted-foreground space-y-2">

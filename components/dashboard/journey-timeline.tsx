@@ -125,7 +125,7 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your 90-Day Journey</h1>
+          <h1 className="text-2xl font-bold tracking-tight section-title-executive">Your Leadership Pathway</h1>
           <p className="text-muted-foreground mt-1">
             Track your transformation through the SIGNAL&trade; leadership framework
           </p>
@@ -313,55 +313,55 @@ export function JourneyTimeline({ lessons, progress }: JourneyTimelineProps) {
         </CardContent>
       </Card>
 
-      {/* Milestones */}
+      {/* Leadership Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="card-executive">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-s-light">
                 <Star className="h-6 w-6 text-signal-s" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Points</p>
+                <p className="text-sm text-muted-foreground">Leadership Index</p>
                 <p className="text-2xl font-bold">{totalPoints}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="card-executive">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-i-light">
                 <CheckCircle2 className="h-6 w-6 text-signal-i" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Days Completed</p>
+                <p className="text-sm text-muted-foreground">Frameworks Applied</p>
                 <p className="text-2xl font-bold">{completedDays.size}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="card-executive">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-g-light">
                 <Target className="h-6 w-6 text-signal-g" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Phases Completed</p>
+                <p className="text-sm text-muted-foreground">Phases Mastered</p>
                 <p className="text-2xl font-bold">{currentPhaseIndex >= 0 ? currentPhaseIndex : 0}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="card-executive">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-signal-n-light">
                 <Calendar className="h-6 w-6 text-signal-n" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Days Remaining</p>
+                <p className="text-sm text-muted-foreground">Modules Remaining</p>
                 <p className="text-2xl font-bold">{90 - completedDays.size}</p>
               </div>
             </div>

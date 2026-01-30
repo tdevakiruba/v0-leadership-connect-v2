@@ -25,9 +25,9 @@ import {
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Lessons", href: "/dashboard/lessons", icon: BookOpen },
-  { name: "Journey", href: "/dashboard/journey", icon: Route },
-  { name: "Lab", href: "/dashboard/lab", icon: FlaskConical },
+  { name: "Frameworks", href: "/dashboard/lessons", icon: BookOpen },
+  { name: "Leadership Pathway", href: "/dashboard/journey", icon: Route },
+  { name: "Decision Lab", href: "/dashboard/lab", icon: FlaskConical },
   { name: "Certificates", href: "/dashboard/certificates", icon: Award },
 ]
 
