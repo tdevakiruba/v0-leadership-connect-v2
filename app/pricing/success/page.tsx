@@ -83,7 +83,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               <Sparkles className="h-5 w-5 text-signal-s" />
             </div>
             <div>
-              <p className="font-semibold">Leadership Connect</p>
+              <p className="font-semibold">Leadership Reboot SIGNAL™</p>
               <p className="text-sm text-muted-foreground">90-Day Program</p>
             </div>
           </div>

@@ -321,7 +321,7 @@ export function LessonDetail({
         <Link href="/dashboard/lessons">
           <Button variant="outline" size="sm">
             <BookOpen className="mr-2 h-4 w-4" />
-            All Lessons
+            All Frameworks
           </Button>
         </Link>
         {nextLesson && lesson.day_number < currentDay ? (

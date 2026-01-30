@@ -30,8 +30,20 @@ export function Checkout({ productId }: CheckoutProps) {
 
   if (error) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-destructive">{error}</p>
+      <div className="p-8 text-center">
+        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 mb-4">
+          <svg className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+        <p className="text-destructive font-medium mb-2">Payment Setup Issue</p>
+        <p className="text-sm text-muted-foreground">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-4 text-sm text-signal-s hover:underline"
+        >
+          Try again
+        </button>
       </div>
     )
   }
