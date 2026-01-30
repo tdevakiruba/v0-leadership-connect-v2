@@ -600,14 +600,14 @@ export function LessonDetail({
           </Card>
 
           {/* Daily Quote */}
-          {lesson.thought_to_work_on && (
+          {lesson.quote && (
             <Card className={cn("border", phase.border)}>
               <CardContent className="pt-6">
                 <div className="flex gap-3">
                   <Quote className={cn("h-5 w-5 flex-shrink-0 mt-0.5", phase.textLight)} />
                   <div>
                     <p className="text-sm italic text-foreground leading-relaxed">
-                      &ldquo;{lesson.thought_to_work_on}&rdquo;
+                      &ldquo;{lesson.quote}&rdquo;
                     </p>
                     <p className={cn("text-xs mt-2 font-medium", phase.textLight)}>
                       Today&apos;s Reflection Focus
