@@ -1,13 +1,12 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { checkSubscription } from "@/lib/subscription"
-import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 
-export default async function DashboardLayout({
-  children,
-}: {
+interface SubscriptionGateProps {
   children: React.ReactNode
-}) {
+}
+
+export async function SubscriptionGate({ children }: SubscriptionGateProps) {
   const supabase = await createClient()
   
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -23,5 +22,5 @@ export default async function DashboardLayout({
     redirect("/pricing?expired=true")
   }
 
-  return <DashboardShell>{children}</DashboardShell>
+  return <>{children}</>
 }
