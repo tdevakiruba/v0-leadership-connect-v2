@@ -794,8 +794,8 @@ export function LessonDetail({
           </Card>
         </div>
 
-        {/* Sidebar Column - 4 cols */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Sidebar Column - 4 cols, sticky on desktop */}
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-20 lg:self-start">
           {/* Day Progress - Circular Ring */}
           <Card className={cn(
             "overflow-hidden border-0 shadow-md animate-slide-up"
