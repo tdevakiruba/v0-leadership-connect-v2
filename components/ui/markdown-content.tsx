@@ -6,9 +6,44 @@ import { cn } from "@/lib/utils"
 interface MarkdownContentProps {
   content: string
   className?: string
+  /** When true, renders inline-only (no wrapping <p> or block elements) */
+  inline?: boolean
 }
 
-export function MarkdownContent({ content, className }: MarkdownContentProps) {
+export function MarkdownContent({ content, className, inline = false }: MarkdownContentProps) {
+  if (inline) {
+    return (
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <>{children}</>,
+          strong: ({ children }) => (
+            <strong className="font-semibold">{children}</strong>
+          ),
+          em: ({ children }) => (
+            <em className="italic">{children}</em>
+          ),
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              {children}
+            </a>
+          ),
+          code: ({ children }) => (
+            <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+              {children}
+            </code>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    )
+  }
+
   return (
     <ReactMarkdown
       components={{
@@ -22,10 +57,10 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           <em className="italic">{children}</em>
         ),
         ul: ({ children }) => (
-          <ul className="list-disc pl-5 space-y-1 my-2">{children}</ul>
+          <ul className="list-disc pl-5 space-y-1.5 my-2">{children}</ul>
         ),
         ol: ({ children }) => (
-          <ol className="list-decimal pl-5 space-y-1 my-2">{children}</ol>
+          <ol className="list-decimal pl-5 space-y-1.5 my-2">{children}</ol>
         ),
         li: ({ children }) => (
           <li className="leading-relaxed">{children}</li>
@@ -58,6 +93,9 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           >
             {children}
           </a>
+        ),
+        hr: () => (
+          <hr className="my-4 border-border/50" />
         ),
       }}
     >
