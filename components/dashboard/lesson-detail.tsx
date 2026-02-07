@@ -34,6 +34,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { MarkdownContent } from "@/components/ui/markdown-content"
 
 interface Lesson {
   id: string
@@ -435,17 +436,17 @@ export function LessonDetail({
 
             {/* Main Title */}
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-balance leading-tight mb-4">
-              {lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`}
+              <MarkdownContent content={lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`} inline />
             </h1>
 
             {/* Emotional Context Line */}
-            <p className="text-muted-foreground leading-relaxed max-w-2xl">
+            <div className="text-muted-foreground leading-relaxed max-w-2xl">
               {lesson.focus_area ? (
-                <>Today we explore how leaders <span className={cn("font-medium", phase.textLight)}>{lesson.focus_area.toLowerCase()}</span>.</>
+                <p>Today we explore how leaders <span className={cn("font-medium", phase.textLight)}><MarkdownContent content={lesson.focus_area.toLowerCase()} inline /></span>.</p>
               ) : (
-                <>Building pattern recognition through focused leadership practice.</>
+                <p>Building pattern recognition through focused leadership practice.</p>
               )}
-            </p>
+            </div>
 
             {/* Streak indicator (mock for now) */}
             <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border/50">
@@ -485,13 +486,13 @@ export function LessonDetail({
               </CardHeader>
               <CardContent className="pt-0">
                 <div className={cn("rounded-xl p-5", phase.bgLight)}>
-                  <p className="text-lg font-medium text-foreground leading-relaxed">
-                    {lesson.leader_example}
-                  </p>
+                  <div className="text-lg font-medium text-foreground leading-relaxed">
+                    <MarkdownContent content={lesson.leader_example!} className="text-lg font-medium text-foreground" />
+                  </div>
                   {lesson.leader_context && (
-                    <p className="text-sm text-muted-foreground mt-4 pt-4 border-t border-border/30">
-                      {lesson.leader_context}
-                    </p>
+                    <div className="text-sm text-muted-foreground mt-4 pt-4 border-t border-border/30">
+                      <MarkdownContent content={lesson.leader_context} className="text-sm text-muted-foreground" />
+                    </div>
                   )}
                   {lesson.leader_story_id && (
                     <p className={cn("text-xs mt-3 uppercase tracking-wider font-semibold", phase.textLight)}>
@@ -527,9 +528,9 @@ export function LessonDetail({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-foreground leading-relaxed text-lg">
-                  {lesson.thought_to_work_on}
-                </p>
+                <div className="text-foreground leading-relaxed text-lg">
+                  <MarkdownContent content={lesson.thought_to_work_on!} className="text-foreground text-lg" />
+                </div>
                 
                 {/* Interactive Reflect Section */}
                 <div className={cn(
@@ -586,9 +587,9 @@ export function LessonDetail({
                 <div className="flex items-start gap-4">
                   <Quote className={cn("h-8 w-8 flex-shrink-0 mt-1", phase.textLight)} />
                   <div className="flex-1">
-                    <p className="text-lg italic text-foreground leading-relaxed">
-                      &ldquo;{lesson.quote}&rdquo;
-                    </p>
+                    <div className="text-lg italic text-foreground leading-relaxed">
+                      <MarkdownContent content={lesson.quote!} className="text-lg italic text-foreground" />
+                    </div>
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
                       <p className={cn("text-xs uppercase tracking-wider font-semibold", phase.textLight)}>
                         Reflection Anchor

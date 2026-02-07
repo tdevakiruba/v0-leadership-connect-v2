@@ -32,11 +32,13 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { MarkdownContent } from "@/components/ui/markdown-content"
 
-// Two-tone quote display component
+// Two-tone quote display component with markdown support
 function QuoteDisplay({ quote }: { quote: string }) {
-  // Split quote roughly in half for two-tone effect, prioritizing natural break points
-  const words = quote.split(" ")
+  // Strip markdown for the two-tone split logic but render with markdown
+  const plainText = quote.replace(/[*_~`#>\[\]()!]/g, "").replace(/\s+/g, " ").trim()
+  const words = plainText.split(" ")
   const midPoint = Math.ceil(words.length / 2)
   
   // Try to find a comma or natural break point near the middle
@@ -48,16 +50,19 @@ function QuoteDisplay({ quote }: { quote: string }) {
     }
   }
   
-  const firstPart = words.slice(0, breakIndex).join(" ")
-  const secondPart = words.slice(breakIndex).join(" ")
+  // Find the position of the break word in the original markdown string
+  const breakWord = words[breakIndex - 1]
+  const breakPos = quote.indexOf(breakWord) + breakWord.length
+  const firstPart = quote.slice(0, breakPos).trim()
+  const secondPart = quote.slice(breakPos).trim()
   
   return (
     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-balance">
-      <span className="text-foreground">{firstPart}</span>
+      <span className="text-foreground"><MarkdownContent content={firstPart} inline /></span>
       {secondPart && (
         <>
           {" "}
-          <span className="text-signal-s">{secondPart}</span>
+          <span className="text-signal-s"><MarkdownContent content={secondPart} inline /></span>
         </>
       )}
     </h2>
@@ -510,10 +515,10 @@ export function TodayDashboard({
                     </span>
                   </div>
                   <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
-                    {todayLesson.focus_reframe_technique || todayLesson.focus_area}
+                    <MarkdownContent content={todayLesson.focus_reframe_technique || todayLesson.focus_area} inline />
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4 uppercase tracking-wide">
-                    {todayLesson.focus_area}
+                    <MarkdownContent content={todayLesson.focus_area} inline />
                   </p>
                   {/* Progress bar */}
                   <div className="mb-4">
@@ -697,9 +702,10 @@ export function TodayDashboard({
               
               {todayLesson.thought_to_work_on && (
                 <div className={cn("rounded-xl p-4 mb-4 border", currentPhaseColors.bgActive, currentPhaseColors.borderActive)}>
-                  <p className={cn("text-sm leading-relaxed", currentPhaseColors.textActive)}>
-                    <span className="font-semibold">Mindset prompt:</span> {todayLesson.thought_to_work_on}
-                  </p>
+                  <div className={cn("text-sm leading-relaxed", currentPhaseColors.textActive)}>
+                    <span className="font-semibold">Mindset prompt:</span>{" "}
+                    <MarkdownContent content={todayLesson.thought_to_work_on} inline />
+                  </div>
                 </div>
               )}
               

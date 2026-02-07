@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { MarkdownContent } from "@/components/ui/markdown-content"
 
 interface Lesson {
   id: string
@@ -154,7 +155,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">Continue Day {currentDay}</p>
                       <h2 className="text-xl lg:text-2xl font-bold tracking-tight text-balance">
-                        {currentLesson.focus_reframe_technique || `Framework ${currentDay}`}
+                        <MarkdownContent content={currentLesson.focus_reframe_technique || `Framework ${currentDay}`} inline />
                       </h2>
                     </div>
 
@@ -166,7 +167,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                     {/* Leader */}
                     {currentLesson.leader_example && (
                       <p className="text-xs text-muted-foreground">
-                        Learn from: <span className="font-medium text-foreground">{currentLesson.leader_example}</span>
+                        Learn from: <span className="font-medium text-foreground"><MarkdownContent content={currentLesson.leader_example} inline /></span>
                       </p>
                     )}
                   </div>
@@ -321,7 +322,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium">Recommended Next</p>
             <p className="text-[11px] text-muted-foreground truncate">
-              Day {currentDay}: {currentLesson?.focus_reframe_technique || `Framework ${currentDay}`} — Build on your momentum
+              Day {currentDay}: <MarkdownContent content={currentLesson?.focus_reframe_technique || `Framework ${currentDay}`} inline /> — Build on your momentum
             </p>
           </div>
           <Link href={`/dashboard/lessons/${currentDay}`}>
@@ -425,7 +426,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                   isCompleted && !isCurrent && "text-foreground",
                   !isCompleted && !isCurrent && !isLocked && "text-foreground group-hover:text-signal-s transition-colors"
                 )}>
-                  {lesson.focus_reframe_technique || `Framework ${lesson.day_number}`}
+                  <MarkdownContent content={lesson.focus_reframe_technique || `Framework ${lesson.day_number}`} inline />
                 </h3>
 
                 {/* Leader name - only show for active/completed */}
@@ -434,7 +435,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                     "text-[10px] mb-1.5 truncate",
                     isCompleted || isCurrent ? "text-muted-foreground" : "text-muted-foreground/70"
                   )}>
-                    {lesson.leader_example}
+                    <MarkdownContent content={lesson.leader_example} inline />
                   </p>
                 )}
 
