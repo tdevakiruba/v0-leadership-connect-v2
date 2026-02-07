@@ -23,6 +23,7 @@ import {
 import { HeaderSearch } from "@/components/dashboard/header-search"
 import { HeaderNotifications } from "@/components/dashboard/header-notifications"
 import { HeaderProfile } from "@/components/dashboard/header-profile"
+import { InactivityGuard } from "@/components/dashboard/inactivity-guard"
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -56,8 +57,8 @@ export function DashboardShell({
 
   const handleSignOut = async () => {
     try {
-      // Clear client-side auth state first
-      await supabase.auth.signOut()
+      // Clear client-side auth state and terminate ALL sessions globally
+      await supabase.auth.signOut({ scope: 'global' })
       
       // Clear all cookies via server action and redirect
       await signOutAction()
@@ -69,6 +70,9 @@ export function DashboardShell({
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Inactivity auto-logout after 20 minutes */}
+      <InactivityGuard />
+
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-card border-r border-border pt-5 pb-4 overflow-y-auto">

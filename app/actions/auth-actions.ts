@@ -7,8 +7,8 @@ import { redirect } from 'next/navigation'
 export async function signOutAction() {
   const supabase = await createClient()
   
-  // Sign out from Supabase (this invalidates the session on the server)
-  await supabase.auth.signOut()
+  // Sign out from Supabase globally (terminates ALL sessions on ALL devices)
+  await supabase.auth.signOut({ scope: 'global' })
   
   // Get the cookie store and clear all Supabase-related cookies
   const cookieStore = await cookies()

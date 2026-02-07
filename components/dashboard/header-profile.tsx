@@ -65,7 +65,7 @@ export function HeaderProfile({ userId }: { userId: string }) {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut()
+      await supabase.auth.signOut({ scope: 'global' })
       await signOutAction()
     } catch {
       window.location.href = "/auth/login"
