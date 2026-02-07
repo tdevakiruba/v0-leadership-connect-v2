@@ -702,9 +702,8 @@ export function TodayDashboard({
               
               {todayLesson.thought_to_work_on && (
                 <div className={cn("rounded-xl p-4 mb-4 border", currentPhaseColors.bgActive, currentPhaseColors.borderActive)}>
-                  <div className={cn("text-sm leading-relaxed", currentPhaseColors.textActive)}>
-                    <span className="font-semibold">Mindset prompt:</span>{" "}
-                    <MarkdownContent content={todayLesson.thought_to_work_on} inline />
+                  <div className={cn("text-sm", currentPhaseColors.textActive)}>
+                    <MarkdownContent content={todayLesson.thought_to_work_on} className={cn("text-sm", currentPhaseColors.textActive)} />
                   </div>
                 </div>
               )}
