@@ -156,6 +156,77 @@
   }
 }
 
+/* Prose typography for ReactMarkdown content */
+.prose p {
+  margin-bottom: 1.2em;
+}
+.prose p:last-child {
+  margin-bottom: 0;
+}
+.prose h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+}
+.prose h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+}
+.prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+}
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1.2em;
+}
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-bottom: 1.2em;
+}
+.prose li {
+  margin-bottom: 0.4em;
+  line-height: 1.6;
+}
+.prose blockquote {
+  border-left: 2px solid var(--muted-foreground);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--muted-foreground);
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+.prose code {
+  background: var(--muted);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-family: var(--font-mono);
+}
+.prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose a:hover {
+  opacity: 0.8;
+}
+.prose hr {
+  border-color: var(--border);
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+.prose strong {
+  font-weight: 600;
+}
+
 /* Executive Visual Enhancements */
 @layer components {
   /* Thicker progress bars */
