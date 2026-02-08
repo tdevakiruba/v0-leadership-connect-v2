@@ -226,17 +226,6 @@ export function TodayDashboard({
   const progressPercentage = Math.round((completedDays / 90) * 100)
   const firstName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "Leader"
 
-  // Calculate day progress for the progress ring
-  const actionsCompletedCount = completedActions.length
-  const totalActionsCount = actions.length || 4
-  const dayProgressSteps = [
-    todayLesson?.leader_example ? 1 : 0,
-    todayLesson?.thought_to_work_on ? 1 : 0,
-    actionsCompletedCount > 0 ? 1 : 0,
-    isCompleted ? 1 : 0,
-  ]
-  const dayProgress = Math.round((dayProgressSteps.filter(Boolean).length / 4) * 100)
-
   // Get the current phase colors
   const currentPhaseColors = signalPhases.find(
     p => currentDay >= p.dayStart && currentDay <= p.dayEnd
@@ -449,6 +438,15 @@ export function TodayDashboard({
   const actionsCompletedCount = completedActions.length
   const totalActionsCount = actions.length
   const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
+
+  // Calculate day progress for the progress ring
+  const dayProgressSteps = [
+    todayLesson?.leader_example ? 1 : 0,
+    todayLesson?.thought_to_work_on ? 1 : 0,
+    actionsCompletedCount > 0 ? 1 : 0,
+    isCompleted ? 1 : 0,
+  ]
+  const dayProgress = Math.round((dayProgressSteps.filter(Boolean).length / 4) * 100)
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
