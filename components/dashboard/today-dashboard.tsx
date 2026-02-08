@@ -33,6 +33,7 @@ import {
 import Link from "next/link"
 import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
+import { ProgressRing } from "@/components/ui/progress-ring"
 
 // Two-tone quote display component with markdown support
 function QuoteDisplay({ quote }: { quote: string }) {
@@ -224,6 +225,17 @@ export function TodayDashboard({
 
   const progressPercentage = Math.round((completedDays / 90) * 100)
   const firstName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "Leader"
+
+  // Calculate day progress for the progress ring
+  const actionsCompletedCount = completedActions.length
+  const totalActionsCount = actions.length || 4
+  const dayProgressSteps = [
+    todayLesson?.leader_example ? 1 : 0,
+    todayLesson?.thought_to_work_on ? 1 : 0,
+    actionsCompletedCount > 0 ? 1 : 0,
+    isCompleted ? 1 : 0,
+  ]
+  const dayProgress = Math.round((dayProgressSteps.filter(Boolean).length / 4) * 100)
 
   // Get the current phase colors
   const currentPhaseColors = signalPhases.find(
@@ -504,8 +516,8 @@ export function TodayDashboard({
             
             {todayLesson && (
               <div className="grid sm:grid-cols-2 gap-4">
-                {/* Current Framework Card */}
-                <div className={cn("bg-card rounded-2xl p-5 border card-executive hover:shadow-lg transition-all group", currentPhaseColors.borderActive)}>
+                {/* Current Framework Card with Day Progress */}
+                <div className={cn("bg-card rounded-2xl p-5 border-2 card-executive hover:shadow-lg transition-all group", currentPhaseColors.borderActive)}>
                   <div className="flex items-start justify-between mb-4">
                     <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
                       <BookOpen className={cn("h-5 w-5", currentPhaseColors.textActive)} />
@@ -514,30 +526,64 @@ export function TodayDashboard({
                       Day {currentDay}
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                  <h3 className="font-semibold text-foreground mb-1 line-clamp-2">
                     <MarkdownContent content={todayLesson.focus_reframe_technique || todayLesson.focus_area} inline />
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4 uppercase tracking-wide">
+                  <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
                     <MarkdownContent content={todayLesson.focus_area} inline />
                   </p>
-                  {/* Progress bar */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span className="text-muted-foreground">{completedDays}/90 Frameworks</span>
-                      <span className={cn("font-semibold", currentPhaseColors.textActive)}>{progressPercentage}%</span>
-                    </div>
-                    <div className={cn("h-2.5 rounded-full overflow-hidden progress-bar-executive", currentPhaseColors.bgActive)}>
-                      <div 
-                        className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressDone)}
-                        style={{ width: `${progressPercentage}%` }}
-                      />
+
+                  {/* Day Progress Ring */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <ProgressRing 
+                      value={dayProgress} 
+                      size={72}
+                      strokeWidth={6}
+                      indicatorClassName={currentPhaseColors.textActive.replace('text-', 'stroke-')}
+                      trackClassName={currentPhaseColors.bgActive.replace('bg-', 'stroke-')}
+                      showValue={false}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-1.5 mb-0.5">
+                        <span className={cn("text-2xl font-bold", currentPhaseColors.textActive)}>{dayProgress}%</span>
+                        <span className="text-xs text-muted-foreground">today</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{completedDays}/90 Frameworks</span>
+                        <span className={cn("font-semibold", currentPhaseColors.textActive)}>{progressPercentage}%</span>
+                      </div>
+                      <div className={cn("h-1.5 rounded-full overflow-hidden mt-1", currentPhaseColors.bgActive)}>
+                        <div 
+                          className={cn("h-full rounded-full transition-all duration-500", currentPhaseColors.progressDone)}
+                          style={{ width: `${progressPercentage}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <Link 
-                    href={`/dashboard/lessons/${currentDay}`}
-                    className={cn("flex items-center gap-2 text-sm font-medium group-hover:gap-3 transition-all", currentPhaseColors.textActive)}
-                  >
-                    {isCompleted ? "Review Lesson" : "Resume Lesson"} <ArrowRight className="h-4 w-4" />
+
+                  {/* Prominent CTA Button */}
+                  <Link href={`/dashboard/lessons/${currentDay}`} className="block">
+                    <Button 
+                      className={cn(
+                        "w-full font-semibold text-sm h-11 gap-2 transition-all shadow-sm",
+                        isCompleted 
+                          ? "bg-muted text-foreground hover:bg-muted/80" 
+                          : cn(currentPhaseColors.progressDone, "text-white hover:opacity-90")
+                      )}
+                    >
+                      {isCompleted ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4" />
+                          Review Framework
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4" />
+                          Resume Framework
+                          <ArrowRight className="h-4 w-4 ml-auto" />
+                        </>
+                      )}
+                    </Button>
                   </Link>
                 </div>
 
