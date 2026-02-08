@@ -737,23 +737,18 @@ export function TodayDashboard({
           {/* Strategic Reflection Section */}
           {todayLesson && (
             <div className="bg-card rounded-2xl p-6 border border-border card-executive">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-1">
                 <div className={cn("p-2.5 rounded-xl", currentPhaseColors.bgActive)}>
                   <Zap className={cn("h-5 w-5", currentPhaseColors.textActive)} />
                 </div>
                 <h3 className="font-bold text-foreground tracking-tight section-title-executive">Strategic Reflection</h3>
               </div>
-              
-              {todayLesson.thought_to_work_on && (
-                <div className={cn("rounded-xl p-4 mb-4 border", currentPhaseColors.bgActive, currentPhaseColors.borderActive)}>
-                  <div className={cn("text-sm", currentPhaseColors.textActive)}>
-                    <MarkdownContent content={todayLesson.thought_to_work_on} className={cn("text-sm", currentPhaseColors.textActive)} />
-                  </div>
-                </div>
-              )}
+              <p className="text-sm text-muted-foreground mb-4 ml-12">
+                Capture your key insights and how this framework applies to your leadership context.
+              </p>
               
               <textarea
-                placeholder="What insight will you carry forward today?"
+                placeholder="What resonated with you today? How will you apply this insight? What challenges do you anticipate?"
                 value={reflection}
                 onChange={(e) => setReflection(e.target.value)}
                 disabled={isCompleted}
