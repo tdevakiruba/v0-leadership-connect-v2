@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { OAuthHandler } from "@/components/auth/oauth-handler"
-import { 
-  ArrowRight, 
-  CheckCircle2, 
-  Zap, 
-  Users, 
+import {
+  ArrowRight,
+  CheckCircle2,
+  Zap,
+  Users,
   Award,
   Calendar,
   Brain,
@@ -61,7 +61,7 @@ const phases = [
 ]
 
 const leaders = [
-  "Satya Nadella", "Jensen Huang", "Howard Schultz", "Tim Cook", "Reed Hastings", "Pat Gelsinger", "Ray Dalio", "Bob Iger", "Karen Lynch", 
+  "Satya Nadella", "Jensen Huang", "Howard Schultz", "Tim Cook", "Reed Hastings", "Pat Gelsinger", "Ray Dalio", "Bob Iger", "Karen Lynch",
   "Jamie Dimon", "Mary Barra", "Sundar Pichai", "Ginni Rometty", "Jeff Bezos"
 ]
 
@@ -72,15 +72,15 @@ export default function LandingPage() {
       <Suspense fallback={null}>
         <OAuthHandler />
       </Suspense>
-      
+
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Image 
-              src="/reboot-logo.png" 
-              alt="Leadership Reboot" 
-              width={36} 
+            <Image
+              src="/reboot-logo.png"
+              alt="Leadership Reboot"
+              width={36}
               height={36}
               className="rounded-lg"
             />
@@ -113,7 +113,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/images/hero-background.png')" }}
         />
@@ -124,19 +124,19 @@ export default function LandingPage() {
               <Zap className="mr-1 h-3 w-3" />
               90-Day Leadership Transformation
             </Badge>
-            <Link href="/" className="inline-flex items-center gap-2 justify-center mb-6">
-              <Image 
-                src="/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={56} 
+            <Link href="/" className="inline-flex items-center gap-2 justify-center mb-4">
+              <Image
+                src="/reboot-logo.png"
+                alt="Leadership Reboot"
+                width={56}
                 height={56}
                 className="rounded-lg"
               />
-              <span className="font-semibold">Leadership Reboot SIGNAL&#8482; Framework</span>
+              <span className="font-semibold text-lg">Leadership Reboot SIGNAL&#8482; Framework</span>
             </Link>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
-              Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework, 
-              micro-content, daily reflection, and performance-aligned action to elevate 
+              Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework,
+              micro-content, daily reflection, and performance-aligned action to elevate
               senior executives and top industry leaders. Designed to take the mindset shifts we discover in our workshops and turn them into permanent habits. Think of the workshop as the spark that lights the fire, and the Leadership Reboot SIGNAL™ as the fuel that keeps it burning for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -147,9 +147,9 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="#signal">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
-                Explore the SIGNAL&#8482; Model
-              </Button>
+                <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
+                  Explore the SIGNAL&#8482; Model
+                </Button>
               </Link>
             </div>
             <p className="text-sm text-muted-foreground mt-6">
@@ -185,7 +185,7 @@ export default function LandingPage() {
               <span className="text-primary"> Think, Behave, and Influence</span>
             </h1>
             <p className="text-muted-foreground">
-              A comprehensive platform designed for busy executives who want 
+              A comprehensive platform designed for busy executives who want
               meaningful transformation without endless workshops.
             </p>
           </div>
@@ -207,7 +207,7 @@ export default function LandingPage() {
 
       {/* SIGNAL Model Section */}
       <section id="signal" className="py-24 relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/images/signal-background.png')" }}
         />
@@ -219,15 +219,15 @@ export default function LandingPage() {
               A Proven Framework for Leadership Excellence
             </h2>
             <p className="text-muted-foreground">
-              Six phases, 90 days, one transformation. Each phase builds on the previous, 
+              Six phases, 90 days, one transformation. Each phase builds on the previous,
               creating lasting change in how you lead.
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
             <div className="grid gap-0 border rounded-xl overflow-hidden bg-card shadow-sm">
               {phases.map((phase, index) => (
-                <div 
-                  key={phase.letter} 
+                <div
+                  key={phase.letter}
                   className={`flex items-center gap-6 p-6 ${index !== phases.length - 1 ? 'border-b' : ''}`}
                 >
                   <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${phase.bg} text-white text-xl font-bold shrink-0`}>
@@ -288,7 +288,7 @@ export default function LandingPage() {
               Choose Your Leadership Journey
             </h2>
             <p className="text-muted-foreground">
-              Whether you are an individual leader or transforming an entire organization, 
+              Whether you are an individual leader or transforming an entire organization,
               we have a path for you.
             </p>
           </div>
@@ -419,7 +419,7 @@ export default function LandingPage() {
             Ready to Reboot Your Leadership?
           </h2>
           <p className="text-primary-foreground/80 max-w-xl mx-auto mb-8">
-            Join thousands of senior leaders who have transformed their leadership 
+            Join thousands of senior leaders who have transformed their leadership
             presence with the SIGNAL&#8482; framework.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -452,10 +452,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <Image 
-                src="/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={32} 
+              <Image
+                src="/reboot-logo.png"
+                alt="Leadership Reboot"
+                width={32}
                 height={32}
                 className="rounded-lg"
               />
