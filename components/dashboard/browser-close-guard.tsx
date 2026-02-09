@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
 
 /**
  * BrowserCloseGuard
