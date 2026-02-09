@@ -161,7 +161,16 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
               </CardContent>
               
               <CardFooter className="pt-6">
-                {product.ctaType === 'purchase' ? (
+                {product.ctaType === 'purchase' && product.paymentLink ? (
+                  <a href={product.paymentLink} target="_blank" rel="noopener noreferrer" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-12 text-base font-semibold"
+                    >
+                      Get Started
+                    </Button>
+                  </a>
+                ) : product.ctaType === 'purchase' ? (
                   user ? (
                     <Link href={`/pricing/checkout?product=${product.id}`} className="w-full">
                       <Button 
