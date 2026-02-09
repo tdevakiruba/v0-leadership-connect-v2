@@ -133,7 +133,7 @@ export default function LandingPage() {
                 className="rounded-lg"
               />
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
-              Leadershio Reboot
+              LeadershiP Reboot<br></br>
               <span className="text-primary">SIGNAL™ Framework</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
@@ -183,7 +183,7 @@ export default function LandingPage() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">Features</Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
-              Transform How You
+              Transform How You<br></br>
               <span className="text-primary"> Think, Behave, and Influence</span>
             </h1>
             <p className="text-muted-foreground">
