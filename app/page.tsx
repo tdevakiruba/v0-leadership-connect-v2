@@ -232,19 +232,19 @@ export default function LandingPage() {
               {phases.map((phase, index) => (
                 <div
                   key={phase.letter}
-                  className={`flex items-center gap-6 p-6 ${index !== phases.length - 1 ? 'border-b' : ''}`}
+                  className={`flex items-center gap-4 px-5 py-3 ${index !== phases.length - 1 ? 'border-b' : ''}`}
                 >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${phase.bg} text-white text-xl font-bold shrink-0`}>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${phase.bg} text-white text-lg font-bold shrink-0`}>
                     {phase.letter}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-foreground">{phase.name}</h3>
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-semibold text-foreground text-sm">{phase.name}</h3>
                       <span className={`text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded`}>
                         Days {phase.days}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">{phase.description}</p>
+                    <p className="text-xs text-muted-foreground">{phase.description}</p>
                   </div>
                 </div>
               ))}
