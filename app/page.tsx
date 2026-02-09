@@ -133,10 +133,6 @@ export default function LandingPage() {
               className="rounded-lg"
             />
             <span className="font-semibold">Leadership Reboot SIGNAL™ Framework</span>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
-              Transform How You
-              <span className="text-primary"> Think, Behave, and Influence</span>
-            </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
               Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework, 
               micro-content, daily reflection, and performance-aligned action to elevate 
@@ -183,9 +179,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">Features</Badge>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Everything You Need to Level Up Your Leadership
-            </h2>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+              Transform How You
+              <span className="text-primary"> Think, Behave, and Influence</span>
+            </h1>
             <p className="text-muted-foreground">
               A comprehensive platform designed for busy executives who want 
               meaningful transformation without endless workshops.
