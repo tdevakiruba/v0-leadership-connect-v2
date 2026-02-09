@@ -85,7 +85,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
                   <div className="pt-4 border-t flex justify-between font-bold">
                     <span>Total</span>
-                    <span className="text-signal-s">$1</span>
+                    <span className="text-signal-s">${(product.priceInCents / 100).toFixed(2)}</span>
                   </div>
 
                   <div className="mt-6 p-4 bg-slate-50 rounded-xl">
