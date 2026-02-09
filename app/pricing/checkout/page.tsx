@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { PRODUCTS } from "@/lib/products"
 import { Checkout } from "@/components/checkout"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Shield, Sparkles } from "lucide-react"
 
 interface CheckoutPageProps {
@@ -34,6 +35,16 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
           <Link href="/pricing" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span className="text-sm">Back to Pricing</span>
+          </Link>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/reboot-logo.png"
+              alt="Leadership Reboot"
+              width={32}
+              height={32}
+              className="rounded-md"
+            />
+            <span className="font-semibold text-foreground text-sm hidden sm:inline">Leadership Reboot</span>
           </Link>
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-signal-s" />
