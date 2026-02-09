@@ -18,7 +18,7 @@ export const PRODUCTS: Product[] = [
     name: 'Self-Paced',
     tier: 'Individual',
     description: 'Leadership Reboot SIGNAL™ - 90 Days',
-    priceInCents: 19900, // $199.00
+    priceInCents: 100, // $1.00 (test price - change to 19900 for production)
     originalPriceInCents: 29900, // $299.00
     duration: 90,
     features: [
@@ -68,6 +68,16 @@ export const PRODUCTS: Product[] = [
     ctaType: 'contact',
   },
 ]
+
+// Tax rate as a decimal (e.g., 0.08 = 8%). Set to 0 for no tax.
+export const TAX_RATE = 0
+
+export function calculateOrderTotal(priceInCents: number) {
+  const subtotal = priceInCents
+  const tax = Math.round(subtotal * TAX_RATE)
+  const total = subtotal + tax
+  return { subtotal, tax, total }
+}
 
 export function getProductById(id: string): Product | undefined {
   return PRODUCTS.find(p => p.id === id)

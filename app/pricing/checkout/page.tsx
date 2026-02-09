@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { PRODUCTS } from "@/lib/products"
+import { PRODUCTS, calculateOrderTotal } from "@/lib/products"
 import { Checkout } from "@/components/checkout"
 import Link from "next/link"
 import Image from "next/image"
@@ -26,6 +26,8 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
   if (!product || product.ctaType !== 'purchase' || product.priceInCents === null) {
     redirect("/pricing")
   }
+
+  const { subtotal, tax, total } = calculateOrderTotal(product.priceInCents)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-signal-s-light/20">
@@ -75,17 +77,17 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                   <div className="py-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${(product.priceInCents / 100).toFixed(2)}</span>
+                      <span>${(subtotal / 100).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Tax</span>
-                      <span>$0.00</span>
+                      <span>${(tax / 100).toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t flex justify-between font-bold">
                     <span>Total</span>
-                    <span className="text-signal-s">$1</span>
+                    <span className="text-signal-s">${(total / 100).toFixed(2)}</span>
                   </div>
 
                   <div className="mt-6 p-4 bg-slate-50 rounded-xl">
