@@ -120,8 +120,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
         <div className="container mx-auto px-4 py-24 lg:py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6">
-              <Zap className="mr-1 h-8 w-8" />
+            <Badge variant="secondary" className="mb-6 text-base px-5 py-2">
+              <Zap className="mr-2 h-5 w-5" />
               90-Day Leadership Transformation
             </Badge>
             <br></br>
@@ -183,7 +183,7 @@ export default function LandingPage() {
       <section id="features" className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-8">Features</Badge>
+            <Badge variant="outline" className="mb-8 text-base px-5 py-2">Features</Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Transform How You<br></br>
               <span className="text-primary"> Think, Behave, and Influence</span>
@@ -193,15 +193,15 @@ export default function LandingPage() {
               meaningful transformation without endless workshops.
             </p>  
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
             {features.map((feature, index) => (
-              <Card key={index} className="border-0 shadow-sm bg-card/50">
-                <CardContent className="pt-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
-                    <feature.icon className="h-6 w-6 text-primary" />
+              <Card key={index} className="border bg-card/50 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-0.5">
+                <CardContent className="pt-5 pb-4 px-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
+                    <feature.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="font-semibold mb-1 text-sm">{feature.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -218,7 +218,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-background/60" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-4">The SIGNAL&#8482; Model</Badge>
+            <Badge variant="outline" className="mb-4 text-base px-5 py-2">The SIGNAL&#8482; Model</Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               A Proven Framework<br></br>
               <span className="text-primary"> For Leadership Excellence</span>
@@ -263,7 +263,7 @@ export default function LandingPage() {
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-4">How It Works</Badge>
+            <Badge variant="outline" className="mb-4 text-base px-5 py-2">How It Works</Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Your Daily<br></br>
               <span className="text-primary">Leadership Practice</span>
@@ -294,7 +294,7 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="outline" className="mb-4">Pricing</Badge>
+            <Badge variant="outline" className="mb-4 text-base px-5 py-2">Pricing</Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Choose Your<br></br>
               <span className="text-primary">Leadership Journey</span>
