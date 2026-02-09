@@ -125,6 +125,10 @@ export default function LandingPage() {
               90-Day Leadership Transformation
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+              Leadership Reboot 
+              <span className="text-primary"> SIGNAL™ Framework</span>
+            </h1>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Transform How You
               <span className="text-primary"> Think, Behave, and Influence</span>
             </h1>
