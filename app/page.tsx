@@ -228,25 +228,30 @@ export default function LandingPage() {
               creating lasting change in how you lead.
             </p>
           </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="grid gap-0 border rounded-xl overflow-hidden bg-card shadow-sm">
+          {/* Horizontal Timeline */}
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-start justify-between relative px-4 md:px-8">
+              {/* Connecting line behind circles */}
+              <div className="absolute top-7 left-[calc(8.33%)] right-[calc(8.33%)] h-1 bg-muted rounded-full" aria-hidden="true" />
+
               {phases.map((phase, index) => (
-                <div
-                  key={phase.letter}
-                  className={`flex items-center gap-6 p-6 ${index !== phases.length - 1 ? 'border-b' : ''}`}
-                >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${phase.bg} text-white text-xl font-bold shrink-0`}>
+                <div key={phase.letter} className="flex flex-col items-center relative z-10 flex-1">
+                  {/* Circle */}
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-full ${phase.bg} text-white text-xl font-bold shadow-lg ring-4 ring-background`}>
                     {phase.letter}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-foreground">{phase.name}</h3>
-                      <span className={`text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded`}>
-                        Days {phase.days}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{phase.description}</p>
-                  </div>
+                  {/* Phase name */}
+                  <h3 className={`mt-4 font-semibold text-sm ${phase.text} text-center`}>
+                    {phase.name}
+                  </h3>
+                  {/* Days badge */}
+                  <span className={`mt-1 text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded-full`}>
+                    Days {phase.days}
+                  </span>
+                  {/* Description */}
+                  <p className="mt-2 text-xs text-muted-foreground text-center max-w-[120px] leading-relaxed hidden md:block">
+                    {phase.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -269,15 +274,15 @@ export default function LandingPage() {
           </div>
           <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
             {[
-              { step: "1", title: "Read", desc: "Start with a leadership insight from a world-class leader" },
-              { step: "2", title: "Reflect", desc: "Apply the thought exercise to your current challenges" },
-              { step: "3", title: "Act", desc: "Complete your daily action to change your mindset and track your progress" },
+              { step: "1", title: "Read", desc: "Start with a leadership insight from a world-class leader", bg: "bg-signal-s", text: "text-signal-s" },
+              { step: "2", title: "Reflect", desc: "Apply the thought exercise to your current challenges", bg: "bg-signal-g", text: "text-signal-g" },
+              { step: "3", title: "Act", desc: "Complete your daily action to change your mindset and track your progress", bg: "bg-signal-l", text: "text-signal-l" },
             ].map((item) => (
               <div key={item.step} className="text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg mx-auto mb-4">
+                <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${item.bg} text-white font-bold text-lg mx-auto mb-4 shadow-md`}>
                   {item.step}
                 </div>
-                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <h3 className={`font-semibold mb-2 ${item.text}`}>{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
             ))}
