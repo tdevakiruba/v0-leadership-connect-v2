@@ -61,8 +61,8 @@ const phases = [
 ]
 
 const leaders = [
-  "Satya Nadella", "Jensen Huang", "Karen Lynch", 
-  "Jamie Dimon", "Mary Barra", "Sundar Pichai"
+  "Satya Nadella", "Jensen Huang", "Howard Schultz", "Tim Cook", "Reed Hastings", "Pat Gelsinger", "Ray Dalio", "Bob Iger", "Karen Lynch", 
+  "Jamie Dimon", "Mary Barra", "Sundar Pichai", "Ginni Rometty", "Jeff Bezos"
 ]
 
 export default function LandingPage() {
