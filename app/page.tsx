@@ -121,7 +121,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-24 lg:py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Badge variant="secondary" className="mb-6">
-              <Zap className="mr-1 h-3 w-3" />
+              <Zap className="mr-1 h-8 w-8" />
               90-Day Leadership Transformation
             </Badge>
             <br></br>
