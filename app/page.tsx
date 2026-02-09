@@ -219,9 +219,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">The SIGNAL&#8482; Model</Badge>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              A Proven Framework for Leadership Excellence
-            </h2>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+              A Proven Framework<br></br>
+              <span className="text-primary"> For Leadership Excellence</span>
+            </h1>
             <p className="text-muted-foreground">
               Six phases, 90 days, one transformation. Each phase builds on the previous,
               creating lasting change in how you lead.
@@ -258,9 +259,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">How It Works</Badge>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Your Daily Leadership Practice
-            </h2>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+              Your Daily<br></br>
+              <span className="text-primary">Leadership Practice</span>
+            </h1>
             <p className="text-muted-foreground">
               Just 10-15 minutes per day to transform your leadership impact.
             </p>
@@ -288,9 +290,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">Pricing</Badge>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Choose Your Leadership Journey
-            </h2>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+              Choose Your<br></br>
+              <span className="text-primary">Leadership Journey</span>
+            </h1>
             <p className="text-muted-foreground">
               Whether you are an individual leader or transforming an entire organization,
               we have a path for you.
