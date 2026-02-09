@@ -84,7 +84,7 @@ export default function LandingPage() {
               height={36}
               className="rounded-lg"
             />
-            <span className="font-semibold">Leadership Reboot</span>
+            <span className="font-semibold">Leadership Reboot SIGNAL™ Framework</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -124,10 +124,19 @@ export default function LandingPage() {
               <Zap className="mr-1 h-3 w-3" />
               90-Day Leadership Transformation
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
+            /*<h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Leadership Reboot 
               <span className="text-primary"> SIGNAL™ Framework</span>
-            </h1>
+            </h1>*/
+            <Link href="/" className="flex items-center gap-2">
+            <Image 
+              src="/reboot-logo.png" 
+              alt="Leadership Reboot" 
+              width={56} 
+              height={56}
+              className="rounded-lg"
+            />
+            <span className="font-semibold">Leadership Reboot SIGNAL™ Framework</span>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Transform How You
               <span className="text-primary"> Think, Behave, and Influence</span>
