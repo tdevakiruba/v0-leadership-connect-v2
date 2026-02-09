@@ -272,15 +272,15 @@ export default function LandingPage() {
           </div>
           <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
             {[
-              { step: "1", title: "Read", desc: "Start with a leadership insight from a world-class leader" },
-              { step: "2", title: "Reflect", desc: "Apply the thought exercise to your current challenges" },
-              { step: "3", title: "Act", desc: "Complete your daily action to change your mindset and track your progress" },
+              { step: "1", title: "Read", desc: "Start with a leadership insight from a world-class leader", bg: "bg-signal-s", text: "text-signal-s" },
+              { step: "2", title: "Reflect", desc: "Apply the thought exercise to your current challenges", bg: "bg-signal-g", text: "text-signal-g" },
+              { step: "3", title: "Act", desc: "Complete your daily action to change your mindset and track your progress", bg: "bg-signal-l", text: "text-signal-l" },
             ].map((item) => (
               <div key={item.step} className="text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg mx-auto mb-4">
+                <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${item.bg} text-white font-bold text-lg mx-auto mb-4 shadow-md`}>
                   {item.step}
                 </div>
-                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <h3 className={`font-semibold mb-2 ${item.text}`}>{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
             ))}
