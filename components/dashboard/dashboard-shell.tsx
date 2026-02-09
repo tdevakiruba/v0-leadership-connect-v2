@@ -24,6 +24,7 @@ import { HeaderSearch } from "@/components/dashboard/header-search"
 import { HeaderNotifications } from "@/components/dashboard/header-notifications"
 import { HeaderProfile } from "@/components/dashboard/header-profile"
 import { InactivityGuard } from "@/components/dashboard/inactivity-guard"
+import { BrowserCloseGuard } from "@/components/dashboard/browser-close-guard"
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -72,6 +73,8 @@ export function DashboardShell({
     <div className="min-h-screen bg-background">
       {/* Inactivity auto-logout after 20 minutes */}
       <InactivityGuard />
+      {/* Terminate session when browser is closed */}
+      <BrowserCloseGuard />
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">

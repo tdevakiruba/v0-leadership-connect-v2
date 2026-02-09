@@ -4,5 +4,12 @@ export function createClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookieOptions: {
+        // Session-only cookies: no maxAge means the browser
+        // deletes them when all browser windows are closed
+        maxAge: undefined,
+      },
+    },
   )
 }
