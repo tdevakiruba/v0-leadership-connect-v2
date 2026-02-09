@@ -69,6 +69,16 @@ export const PRODUCTS: Product[] = [
   },
 ]
 
+// Tax rate as a decimal (e.g., 0.08 = 8%). Set to 0 for no tax.
+export const TAX_RATE = 0
+
+export function calculateOrderTotal(priceInCents: number) {
+  const subtotal = priceInCents
+  const tax = Math.round(subtotal * TAX_RATE)
+  const total = subtotal + tax
+  return { subtotal, tax, total }
+}
+
 export function getProductById(id: string): Product | undefined {
   return PRODUCTS.find(p => p.id === id)
 }

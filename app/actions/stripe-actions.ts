@@ -1,7 +1,7 @@
 "use server"
 
 import { stripe } from "@/lib/stripe"
-import { PRODUCTS } from "@/lib/products"
+import { PRODUCTS, calculateOrderTotal } from "@/lib/products"
 import { headers } from "next/headers"
 import { createClient } from "@/lib/supabase/server"
 
@@ -35,7 +35,8 @@ export async function createCheckoutSession(productId: string) {
   }
 
   try {
-    console.log("[v0] Creating checkout session for product:", product.id, "user:", user.id)
+    const { total } = calculateOrderTotal(product.priceInCents)
+    console.log("[v0] Creating checkout session for product:", product.id, "user:", user.id, "total:", total)
     
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
@@ -48,7 +49,7 @@ export async function createCheckoutSession(productId: string) {
               name: product.name,
               description: product.description,
             },
-            unit_amount: product.priceInCents,
+            unit_amount: total,
           },
           quantity: 1,
         },
