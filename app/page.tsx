@@ -125,7 +125,7 @@ export default function LandingPage() {
               90-Day Leadership Transformation
             </Badge>
             <br></br>
-            <div style={{justifyContent: "center"}}>
+            <div className="flex justify-center mb-6">
               <Image
                 src="/reboot-logo.png"
                 alt="Leadership Reboot"
@@ -133,12 +133,12 @@ export default function LandingPage() {
                 height={76}
                 className="rounded-lg"
               />
-              </div>
+            </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Leadership Reboot<br></br>
               <span className="text-primary">SIGNAL™ Framework</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-center">
               Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework,
               micro-content, daily reflection, and performance-aligned action to elevate
               senior executives and top industry leaders. Designed to take the mindset shifts we discover in our workshops and turn them into permanent habits. Think of the workshop as the spark that lights the fire, and the Leadership Reboot SIGNAL™ as the fuel that keeps it burning for the long haul.
