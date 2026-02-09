@@ -9,7 +9,6 @@ export interface Product {
   features: string[]
   isPopular?: boolean
   ctaType: 'purchase' | 'contact'
-  paymentLink?: string
 }
 
 // Leadership Reboot subscription products
