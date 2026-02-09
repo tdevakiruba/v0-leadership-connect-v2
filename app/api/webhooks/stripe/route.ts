@@ -71,9 +71,10 @@ export async function POST(request: Request) {
                 stripe_customer_id: session.customer as string,
                 status: "active",
                 plan_type: productId,
-                start_date: startDate.toISOString().split("T")[0],
-                end_date: endDate.toISOString().split("T")[0],
+                start_date: startDate.toISOString(),
+                end_date: endDate.toISOString(),
                 amount_paid: session.amount_total || 0,
+                currency: session.currency || "usd",
               })
 
             if (insertError) {
