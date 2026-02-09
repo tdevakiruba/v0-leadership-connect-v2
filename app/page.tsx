@@ -125,6 +125,7 @@ export default function LandingPage() {
               90-Day Leadership Transformation
             </Badge>
             <br></br>
+            <div style={{justifyContent: "center"}}>
               <Image
                 src="/reboot-logo.png"
                 alt="Leadership Reboot"
@@ -132,6 +133,7 @@ export default function LandingPage() {
                 height={76}
                 className="rounded-lg"
               />
+              </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Leadership Reboot<br></br>
               <span className="text-primary">SIGNAL™ Framework</span>
