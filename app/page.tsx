@@ -124,10 +124,6 @@ export default function LandingPage() {
               <Zap className="mr-1 h-3 w-3" />
               90-Day Leadership Transformation
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
-              Leadership Reboot 
-              <span className="text-primary"> SIGNAL™ Framework</span>
-            </h1>
             <Link href="/" className="flex items-center gap-2">
             <Image 
               src="/reboot-logo.png" 
