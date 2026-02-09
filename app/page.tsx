@@ -227,25 +227,30 @@ export default function LandingPage() {
               creating lasting change in how you lead.
             </p>
           </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="grid gap-0 border rounded-xl overflow-hidden bg-card shadow-sm">
+          {/* Horizontal Timeline */}
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-start justify-between relative px-4 md:px-8">
+              {/* Connecting line behind circles */}
+              <div className="absolute top-7 left-[calc(8.33%)] right-[calc(8.33%)] h-1 bg-muted rounded-full" aria-hidden="true" />
+
               {phases.map((phase, index) => (
-                <div
-                  key={phase.letter}
-                  className={`flex items-center gap-4 px-5 py-3 ${index !== phases.length - 1 ? 'border-b' : ''}`}
-                >
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${phase.bg} text-white text-lg font-bold shrink-0`}>
+                <div key={phase.letter} className="flex flex-col items-center relative z-10 flex-1">
+                  {/* Circle */}
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-full ${phase.bg} text-white text-xl font-bold shadow-lg ring-4 ring-background`}>
                     {phase.letter}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-foreground text-sm">{phase.name}</h3>
-                      <span className={`text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded`}>
-                        Days {phase.days}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{phase.description}</p>
-                  </div>
+                  {/* Phase name */}
+                  <h3 className={`mt-4 font-semibold text-sm ${phase.text} text-center`}>
+                    {phase.name}
+                  </h3>
+                  {/* Days badge */}
+                  <span className={`mt-1 text-xs font-medium ${phase.text} ${phase.bgLight} px-2 py-0.5 rounded-full`}>
+                    Days {phase.days}
+                  </span>
+                  {/* Description */}
+                  <p className="mt-2 text-xs text-muted-foreground text-center max-w-[120px] leading-relaxed hidden md:block">
+                    {phase.description}
+                  </p>
                 </div>
               ))}
             </div>
