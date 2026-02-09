@@ -32,7 +32,6 @@ export const PRODUCTS: Product[] = [
       'Completion Certificate + Digital Credential',
     ],
     ctaType: 'purchase',
-    paymentLink: 'https://buy.stripe.com/test_9B66oG62MgCI8Tw7576oo00',
   },
   {
     id: 'team-cohort',
