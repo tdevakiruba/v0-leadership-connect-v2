@@ -180,9 +180,8 @@ export default function LandingPage() {
       {/* Features Section */}
       <section id="features" className="py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-4xl mx-auto mb-16">
             <Badge variant="outline" className="mb-4">Features</Badge>
-            </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
               Transform How You<br></br>
               <span className="text-primary"> Think, Behave, and Influence</span>
@@ -190,7 +189,8 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               A comprehensive platform designed for busy executives who want
               meaningful transformation without endless workshops.
-            </p>          
+            </p>  
+          </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <Card key={index} className="border-0 shadow-sm bg-card/50">
