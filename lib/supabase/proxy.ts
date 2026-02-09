@@ -23,9 +23,14 @@ export async function updateSession(request: NextRequest) {
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Make all auth cookies session-only (no maxAge/expires)
+            // so they are cleared when the browser is closed
+            const sessionOptions = { ...options }
+            delete sessionOptions.maxAge
+            delete sessionOptions.expires
+            supabaseResponse.cookies.set(name, value, sessionOptions)
+          })
         },
       },
     },

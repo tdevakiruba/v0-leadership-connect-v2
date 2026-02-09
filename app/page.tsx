@@ -124,15 +124,16 @@ export default function LandingPage() {
               <Zap className="mr-1 h-3 w-3" />
               90-Day Leadership Transformation
             </Badge>
-            <Link href="/" className="flex items-center gap-2">
-            <Image 
-              src="/reboot-logo.png" 
-              alt="Leadership Reboot" 
-              width={56} 
-              height={56}
-              className="rounded-lg"
-            />
-            <span className="font-semibold">Leadership Reboot SIGNAL™ Framework</span>
+            <Link href="/" className="inline-flex items-center gap-2 justify-center mb-6">
+              <Image 
+                src="/reboot-logo.png" 
+                alt="Leadership Reboot" 
+                width={56} 
+                height={56}
+                className="rounded-lg"
+              />
+              <span className="font-semibold">Leadership Reboot SIGNAL&#8482; Framework</span>
+            </Link>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 text-pretty">
               Leadership Reboot SIGNAL™ is a 90-day guided system that uses the SIGNAL&#8482; framework, 
               micro-content, daily reflection, and performance-aligned action to elevate 

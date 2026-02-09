@@ -19,9 +19,14 @@ export async function createClient() {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            )
+            cookiesToSet.forEach(({ name, value, options }) => {
+              // Make all auth cookies session-only (no maxAge/expires)
+              // so they are cleared when the browser is closed
+              const sessionOptions = { ...options }
+              delete sessionOptions.maxAge
+              delete sessionOptions.expires
+              cookieStore.set(name, value, sessionOptions)
+            })
           } catch {
             // The "setAll" method was called from a Server Component.
             // This can be ignored if you have proxy refreshing
