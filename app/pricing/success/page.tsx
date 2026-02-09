@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { createClient as createAdminClient } from "@supabase/supabase-js"
 import { redirect } from "next/navigation"
 import { getCheckoutSession } from "@/app/actions/stripe-actions"
 import Link from "next/link"
@@ -32,7 +33,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   }
 
   // Check if subscription was created (by webhook)
-  const { data: subscription } = await supabase
+  const { data: existingSub } = await supabase
     .from("subscriptions")
     .select("*")
     .eq("user_id", user.id)
@@ -41,22 +42,48 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     .limit(1)
     .single()
 
-  // If webhook hasn't processed yet, create subscription manually
+  let subscription = existingSub
+
+  // If webhook hasn't processed yet, create subscription manually using admin client to bypass RLS
   if (!subscription) {
+    const supabaseAdmin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
     const startDate = new Date()
     const endDate = new Date()
     endDate.setDate(endDate.getDate() + 90)
 
-    await supabase.from("subscriptions").insert({
+    const { error: insertError } = await supabaseAdmin.from("subscriptions").insert({
       user_id: user.id,
       stripe_session_id: sessionId,
       stripe_payment_intent_id: session.payment_intent as string,
+      stripe_customer_id: session.customer as string,
       status: "active",
       plan_type: "leadership-90",
-      start_date: startDate.toISOString().split("T")[0],
-      end_date: endDate.toISOString().split("T")[0],
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
       amount_paid: session.amount_total || 0,
+      currency: session.currency || "usd",
     })
+
+    if (insertError) {
+      console.error("[v0] Failed to create subscription on success page:", insertError)
+    } else {
+      // Re-fetch the subscription after inserting
+      const { data: newSub } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single()
+      if (newSub) {
+        subscription = newSub
+      }
+    }
   }
 
   const endDate = subscription?.end_date 
