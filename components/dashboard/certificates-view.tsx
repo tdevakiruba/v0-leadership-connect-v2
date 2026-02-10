@@ -20,6 +20,7 @@ import {
   Activity
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 import type { User } from "@supabase/supabase-js"
 
 interface Profile {
@@ -599,10 +600,12 @@ export function CertificatesView({
                   }
                 </p>
               </div>
-              <Button className="gap-1.5 shrink-0">
-                Continue
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <Link href={`/dashboard/lessons/${(totalCompleted + 1)}`}>
+                <Button className="gap-1.5 shrink-0">
+                  Continue
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
