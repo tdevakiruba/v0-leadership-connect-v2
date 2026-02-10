@@ -55,6 +55,12 @@ export async function createCheckoutSession(productId: string) {
         },
       ],
       mode: "payment",
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          description: `${product.name} - ${product.duration} Days Access`,
+        },
+      },
       return_url: `${origin}/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         userId: user.id,

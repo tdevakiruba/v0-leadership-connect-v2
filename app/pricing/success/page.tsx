@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { createClient as createAdminClient } from "@supabase/supabase-js"
 import { redirect } from "next/navigation"
 import { getCheckoutSession } from "@/app/actions/stripe-actions"
+import { sendWelcomeEmail } from "@/lib/email"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, ArrowRight, Calendar } from "lucide-react"
@@ -70,6 +71,17 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     if (insertError) {
       console.error("[v0] Failed to create subscription on success page:", insertError)
     } else {
+      // Send welcome email since webhook didn't process this session
+      const userName = session.customer_details?.name || user.email?.split("@")[0] || "there"
+      if (user.email) {
+        await sendWelcomeEmail({
+          to: user.email,
+          name: userName,
+          endDate,
+          amountPaid: session.amount_total || 0,
+        })
+      }
+
       // Re-fetch the subscription after inserting
       const { data: newSub } = await supabase
         .from("subscriptions")
