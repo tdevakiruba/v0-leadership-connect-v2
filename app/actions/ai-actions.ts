@@ -1,8 +1,13 @@
 'use server'
 
 import { generateText, Output } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 const boldActionsSchema = z.object({
   actions: z.array(z.object({
@@ -21,7 +26,7 @@ export async function generateBoldActions(
 ): Promise<{ actions: Array<{ id: number; title: string; description: string; difficulty: 'easy' | 'medium' | 'bold' }> }> {
   try {
     const result = await generateText({
-      model: 'openai/gpt-4o-mini',
+      model: openai('gpt-4o-mini'),
       output: Output.object({ schema: boldActionsSchema }),
       prompt: `You are a leadership coach helping someone on Day ${dayNumber} of a 90-day Leadership Reboot program.
 
