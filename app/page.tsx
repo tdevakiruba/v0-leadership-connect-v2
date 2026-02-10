@@ -314,7 +314,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">$1</span>
+                    <span className="text-3xl font-bold">$99</span>
                     <span className="text-lg text-muted-foreground line-through">$299</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">one-time payment</p>
