@@ -40,6 +40,7 @@ export async function createCheckoutSession(productId: string) {
     
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
+      customer_email: user.email || undefined,
       payment_method_types: ["card"],
       line_items: [
         {
@@ -59,6 +60,12 @@ export async function createCheckoutSession(productId: string) {
         enabled: true,
         invoice_data: {
           description: `${product.name} - ${product.duration} Days Access`,
+          custom_fields: [
+            {
+              name: "Program",
+              value: "Leadership Reboot SIGNAL",
+            },
+          ],
         },
       },
       return_url: `${origin}/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
