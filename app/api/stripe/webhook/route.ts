@@ -2,6 +2,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { createClient } from "@supabase/supabase-js"
+import { sendWelcomeEmail } from "@/lib/email"
 import Stripe from "stripe"
 
 // Use service role for webhook to bypass RLS
@@ -95,6 +96,18 @@ export async function POST(request: Request) {
             }
 
             console.log(`[v0] Subscription created for user ${userId}, expires ${endDate.toISOString()}`)
+
+            // Send welcome email
+            const userEmail = session.metadata?.userEmail || session.customer_details?.email
+            if (userEmail) {
+              const userName = session.customer_details?.name || userEmail.split("@")[0]
+              await sendWelcomeEmail({
+                to: userEmail,
+                name: userName,
+                endDate,
+                amountPaid: session.amount_total || 0,
+              })
+            }
           } else {
             console.log("[v0] Subscription already exists for session:", session.id)
           }

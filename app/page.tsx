@@ -99,11 +99,8 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
-            </Link>
-            <Link href="/auth/sign-up">
               <Button size="sm">
-                Start Free Trial
+                Sign In
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
