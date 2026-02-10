@@ -573,7 +573,7 @@ export function TodayDashboard({
                         "w-full font-semibold text-sm h-11 gap-2 transition-all shadow-sm",
                         isCompleted 
                           ? "bg-muted text-foreground hover:bg-muted/80" 
-                          : cn(currentPhaseColors.progressDone, "text-white hover:opacity-90")
+                          : cn(currentPhaseColors.progressDone, "text-white hover:opacity-90 animate-pulse")
                       )}
                     >
                       {isCompleted ? (
@@ -590,6 +590,11 @@ export function TodayDashboard({
                       )}
                     </Button>
                   </Link>
+                  {!isCompleted && (
+                    <p className="text-xs text-center text-muted-foreground mt-2 animate-fade-in">
+                      Click above to continue today&apos;s framework
+                    </p>
+                  )}
                 </div>
 
                 {/* Navigation Links Card */}
