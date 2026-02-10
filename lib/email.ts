@@ -2,7 +2,7 @@ import { Resend } from "resend"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL = "Leadership Reboot SIGNAL <noreply@transformerhub.com>"
+const FROM_EMAIL = "Leadership Reboot SIGNAL <info@transformerhub.com>"
 const BASE_URL = "https://reboot.transformerhub.com"
 const LOGO_URL = `${BASE_URL}/images/signal-logo.png`
 const LOGO_NAME_URL = `${BASE_URL}/images/signal-logo-name.png`
