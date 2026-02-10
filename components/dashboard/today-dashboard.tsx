@@ -235,6 +235,7 @@ export function TodayDashboard({
   useEffect(() => {
     async function loadActions() {
       if (!todayLesson) return
+      console.log("[v0] loadActions: todayLesson found, cached ai_actions:", todayProgress?.ai_actions?.length ?? 0)
 
       // If we have cached AI actions, use them
       if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
