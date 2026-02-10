@@ -440,10 +440,16 @@ export function TodayDashboard({
   const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
 
   // Calculate day progress for the progress ring
+  // Progress is based on user actions only:
+  // 1. Viewed the lesson (todayProgress exists, meaning user visited the lesson page)
+  // 2. Completed at least one action
+  // 3. Wrote a reflection (reflection text exists)
+  // 4. Marked day as complete
+  const hasViewedLesson = !!todayProgress
   const dayProgressSteps = [
-    todayLesson?.leader_example ? 1 : 0,
-    todayLesson?.thought_to_work_on ? 1 : 0,
+    hasViewedLesson ? 1 : 0,
     actionsCompletedCount > 0 ? 1 : 0,
+    (todayProgress?.reflection_text && todayProgress.reflection_text.trim().length > 0) ? 1 : 0,
     isCompleted ? 1 : 0,
   ]
   const dayProgress = Math.round((dayProgressSteps.filter(Boolean).length / 4) * 100)
