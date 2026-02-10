@@ -251,11 +251,16 @@ export function LessonDetail({
   const totalActionsCount = actions.length
   const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
 
-  // Calculate overall day progress
+  // Calculate overall day progress based on user actions only:
+  // 1. Viewed the lesson (progress record exists)
+  // 2. Completed at least one action
+  // 3. Wrote a reflection
+  // 4. Marked day as complete
+  const hasViewedLesson = !!progress
   const progressSteps = [
-    lesson.leader_example ? 1 : 0,
-    lesson.thought_to_work_on ? 1 : 0,
+    hasViewedLesson ? 1 : 0,
     actionsCompletedCount > 0 ? 1 : 0,
+    (progress?.reflection_text && progress.reflection_text.trim().length > 0) ? 1 : 0,
     isCompleted ? 1 : 0,
   ]
   const completedSteps = progressSteps.filter(Boolean).length
