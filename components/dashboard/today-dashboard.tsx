@@ -666,6 +666,11 @@ export function TodayDashboard({
                 </span>
               </div>
 
+              {/* Guidance Note */}
+              <p className="text-xs text-muted-foreground mb-4 italic">
+                Please review the framework first, then complete actions and reflections.
+              </p>
+
               {/* Actions Progress */}
               <div className="mb-4">
                 <div className={cn("h-2.5 rounded-full overflow-hidden bg-slate-100 progress-bar-executive")}>
