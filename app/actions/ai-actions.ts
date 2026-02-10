@@ -1,16 +1,10 @@
 'use server'
 
-import { generateText, Output } from 'ai'
-import { z } from 'zod'
+import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase/server'
 
-const boldActionsSchema = z.object({
-  actions: z.array(z.object({
-    id: z.number(),
-    title: z.string(),
-    description: z.string(),
-    difficulty: z.enum(['easy', 'medium', 'bold'])
-  }))
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function generateBoldActions(
@@ -20,10 +14,17 @@ export async function generateBoldActions(
   actionForToday: string
 ): Promise<{ actions: Array<{ id: number; title: string; description: string; difficulty: 'easy' | 'medium' | 'bold' }> }> {
   try {
-    const result = await generateText({
-      model: 'openai/gpt-4o-mini',
-      output: Output.object({ schema: boldActionsSchema }),
-      prompt: `You are a leadership coach helping someone on Day ${dayNumber} of a 90-day Leadership Reboot program.
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: `You are a leadership coach. Always respond with valid JSON matching this schema: { "actions": [{ "id": number, "title": string, "description": string, "difficulty": "easy" | "medium" | "bold" }] }`
+        },
+        {
+          role: 'user',
+          content: `You are helping someone on Day ${dayNumber} of a 90-day Leadership Reboot program.
 
 Today's theme: "${theme}"
 Today's goal: "${goal}"
@@ -45,9 +46,12 @@ Return exactly 3 actions with varying difficulty levels:
 3. One "bold" action (challenging, transformative — e.g. facilitating a discussion, making a public commitment, or leading a change)
 
 Make them concrete and real-world applicable for a professional/leader context. Each must feel genuinely different in approach and scope.`
+        }
+      ]
     })
 
-    const generated = result.output ?? { actions: [] }
+    const content = response.choices[0]?.message?.content
+    const generated = content ? JSON.parse(content) as { actions: Array<{ id: number; title: string; description: string; difficulty: 'easy' | 'medium' | 'bold' }> } : { actions: [] }
 
     // Deduplicate: remove any AI action whose title or description is too similar to actionForToday
     const coreNormalized = actionForToday.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
