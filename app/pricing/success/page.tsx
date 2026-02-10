@@ -32,19 +32,18 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     redirect("/pricing")
   }
 
-  // Check if subscription was created (by webhook)
+  // Check if subscription was created for THIS session (by webhook)
   const { data: existingSub } = await supabase
     .from("subscriptions")
     .select("*")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(1)
+    .eq("stripe_session_id", sessionId)
     .single()
 
   let subscription = existingSub
 
-  // If webhook hasn't processed yet, create subscription manually using admin client to bypass RLS
+  console.log("[v0] Success page - sessionId:", sessionId, "existingSub:", existingSub ? `found (end_date: ${existingSub.end_date})` : "not found")
+
+  // If webhook hasn't processed yet for this session, create subscription manually using admin client to bypass RLS
   if (!subscription) {
     const supabaseAdmin = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -75,10 +74,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       const { data: newSub } = await supabase
         .from("subscriptions")
         .select("*")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(1)
+        .eq("stripe_session_id", sessionId)
         .single()
       if (newSub) {
         subscription = newSub
