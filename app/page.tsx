@@ -136,7 +136,7 @@ export default function LandingPage() {
               <span className="text-primary">SIGNAL™ Framework</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-center">
-              Leadership Reboot SIGNAL™ is a 90-day guided transformation system built for mid-career leaders, emerging executives, and high performers shifting from domain expertise into people, strategy, and solution leadership. Using the SIGNAL™ framework, micro-learning, daily reflection, and performance-aligned action, this experience rewires how leaders interpret pressure, navigate complexity, and make decisions that move teams forward. What begins in our workshops as awareness becomes permanent behavior here. Think of the workshop as the spark. Leadership Reboot SIGNAL™ is the fuel that keeps the fire burning — every day, for the long haul.
+              Leadership Reboot SIGNAL™ is a 90-day guided transformation system built for<I><b>mid-career leaders, emerging executives, and high performers shifting from domain expertise into people, strategy, and solution leadership</b></I>. Using the SIGNAL™ framework, micro-learning, daily reflection, and performance-aligned action, this experience rewires how leaders interpret pressure, navigate complexity, and make decisions that move teams forward. What begins in our workshops as awareness becomes permanent behavior here. Think of the workshop as the spark. Leadership Reboot SIGNAL™ is the fuel that keeps the fire burning — every day, for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/auth/sign-up">
