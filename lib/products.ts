@@ -18,7 +18,7 @@ export const PRODUCTS: Product[] = [
     name: 'Self-Paced',
     tier: 'Individual',
     description: 'Leadership Reboot SIGNAL™ - 90 Days',
-    priceInCents: 9900, // $99.00
+    priceInCents: 14900, // $149.00
     originalPriceInCents: 29900, // $299.00
     duration: 90,
     features: [
