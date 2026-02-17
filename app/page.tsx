@@ -31,7 +31,7 @@ const features = [
   {
     icon: Users,
     title: "Leadership Pods",
-    description: "Connect with other senior leaders, share insights, and track team progress together."
+    description: "Connect with other leaders, share insights, and track team progress together."
   },
   {
     icon: Award,
