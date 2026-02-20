@@ -29,12 +29,20 @@ const features = [
   {
     icon: Brain,
     title: "SIGNAL\u2122 Framework",
-    description: "Our proprietary methodology covering <span className=\"font-bold \">Self-awareness, Interpretation, Goals, Navigation, Action, and Leadership identity.</span>"
+    description: <>
+        Our proprietary methodology covering{" "}
+        <span className="font-bold">
+          Self-awareness, Interpretation, Goals, Navigation, Action, and Leadership Identity
+        </span>.
+      </>
   },
   {
     icon: Users,
     title: "Leadership Pods",
-    description: "<span className=\"font-bold \">Connect with other leaders,</span> share insights, and track team progress together."
+    description: <>
+      <span className="font-bold">Connect with other leaders,</span>{" "}
+      share insights, and track team progress together.
+    </>
   },
   {
     icon: Award,
@@ -44,7 +52,10 @@ const features = [
   {
     icon: TrendingUp,
     title: "Progress Tracking",
-    description: "<span className=\"font-bold \">Visual dashboards</span>, streak tracking, and gamification to keep you motivated."
+    description: <>
+      <span className="font-bold">Visual dashboards</span>, streak tracking,
+      and gamification to keep you motivated.
+    </>
   },
   {
     icon: Shield,
