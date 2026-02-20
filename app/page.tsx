@@ -21,7 +21,10 @@ const features = [
   {
     icon: Calendar,
     title: "90-Day Curriculum",
-    description: "A structured daily program with <span className=\"font-bold \">micro-content</span>, reflection prompts, and actionable leadership exercises."
+    description: <>
+        A structured daily program with{" "}
+        <span className="font-bold">micro-content</span>, reflection prompts, and actionable leadership exercises.
+      </>
   },
   {
     icon: Brain,
