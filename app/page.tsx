@@ -21,17 +21,17 @@ const features = [
   {
     icon: Calendar,
     title: "90-Day Curriculum",
-    description: "A structured daily program with micro-content, reflection prompts, and actionable leadership exercises."
+    description: 'A structured daily program with <span className="font-bold ">micro-content</span>, reflection prompts, and actionable leadership exercises.'
   },
   {
     icon: Brain,
     title: "SIGNAL\u2122 Framework",
-    description: "Our proprietary methodology covering Self-awareness, Interpretation, Goals, Navigation, Action, and Leadership identity."
+    description: 'Our proprietary methodology covering <span className="font-bold ">Self-awareness, Interpretation, Goals, Navigation, Action, and Leadership identity.</span>'
   },
   {
     icon: Users,
     title: "Leadership Pods",
-    description: "Connect with other leaders, share insights, and track team progress together."
+    description: '<span className="font-bold ">Connect with other leaders,</span> share insights, and track team progress together.'
   },
   {
     icon: Award,
@@ -41,7 +41,7 @@ const features = [
   {
     icon: TrendingUp,
     title: "Progress Tracking",
-    description: "Visual dashboards, streak tracking, and gamification to keep you motivated."
+    description: '<span className="font-bold ">Visual dashboards</span>, streak tracking, and gamification to keep you motivated.'
   },
   {
     icon: Shield,
