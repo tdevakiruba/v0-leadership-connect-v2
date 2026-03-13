@@ -35,7 +35,7 @@ export default async function LessonPage({
 
   // Get the lesson
   const { data: lesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_Daily_lessons")
     .select("*")
     .eq("day_number", dayNumber)
     .single()
@@ -49,13 +49,13 @@ export default async function LessonPage({
 
   // Get adjacent lessons for navigation
   const { data: prevLesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_Daily_lessons")
     .select("day_number, focus_reframe_technique")
     .eq("day_number", dayNumber - 1)
     .single()
 
   const { data: nextLesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_Daily_lessons")
     .select("day_number, focus_reframe_technique")
     .eq("day_number", dayNumber + 1)
     .single()

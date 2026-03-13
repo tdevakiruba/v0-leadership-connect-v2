@@ -33,7 +33,7 @@ export default async function DashboardPage() {
 
   // Get today's lesson with quote
   const { data: todayLesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_Daily_lessons")
     .select("*, quote")
     .eq("day_number", currentDay)
     .single()

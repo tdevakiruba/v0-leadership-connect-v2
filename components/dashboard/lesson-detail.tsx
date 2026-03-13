@@ -18,7 +18,7 @@ import {
   BookOpen,
   Square,
   CheckSquare,
-  Loader2,
+
   Brain,
   Compass,
   Zap,
@@ -26,26 +26,51 @@ import {
   Bookmark,
   ChevronDown,
   ChevronUp,
-  Flame
+  Flame,
+
+  Cpu,
+  Users,
+  HelpCircle,
+  FileText
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
-import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 
 interface Lesson {
   id: string
   day_number: number
-  focus_area: string
+  // Phase information
+  phase: string
+  phase_name: string
+  phase_subtitle: string | null
+  phase_goal: string | null
+  phase_key_question: string | null
+  // Focus area
+  focus_area: string | null
   focus_reframe_technique: string | null
+  // Leader insights
   leader_example: string | null
   leader_context: string | null
-  leader_story_id: string | null
+  leader_story: string | null
+  // Thinking frameworks
+  mental_model: string | null
+  ai_leadership_lens: string | null
+  // Learning elements
+  micro_case: string | null
+  reflection_question: string | null
   thought_to_work_on: string | null
+  // Actions (now 3)
   action_for_today: string | null
+  action_for_today1: string | null
+  action_for_today2: string | null
+  // Pod discussion
+  pod_discussion_prompt: string | null
+  // Legacy
   quote?: string | null
 }
 
@@ -141,7 +166,7 @@ export function LessonDetail({
   const [isCompleted, setIsCompleted] = useState(progress?.completed || false)
   const [actions, setActions] = useState<ActionItem[]>([])
   const [completedActions, setCompletedActions] = useState<number[]>(progress?.actions_completed || [])
-  const [isLoadingActions, setIsLoadingActions] = useState(false)
+
   const [showJournal, setShowJournal] = useState(false)
   const [journalNote, setJournalNote] = useState("")
   const [expandedTip, setExpandedTip] = useState<number | null>(null)
@@ -152,78 +177,47 @@ export function LessonDetail({
   const isLocked = lesson.day_number > currentDay
   const phase = getPhaseForDay(lesson.day_number)
 
-  // Load or generate actions on mount
+  // Load actions from database - now using all 3 action fields
   useEffect(() => {
     async function loadActions() {
       if (!lesson) return
 
-      // If we have cached AI actions, use them
-      if (progress?.ai_actions && progress.ai_actions.length > 0) {
-        const allActions: ActionItem[] = []
-        if (lesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-        allActions.push(...progress.ai_actions)
-        setActions(allActions)
-        return
+      const allActions: ActionItem[] = []
+      
+      // Add all three database actions if they exist
+      if (lesson.action_for_today) {
+        allActions.push({
+          id: 0,
+          title: "Action 1",
+          description: lesson.action_for_today,
+          difficulty: 'easy',
+          isFromDB: true
+        })
       }
-
-      // Generate new actions
-      setIsLoadingActions(true)
-      try {
-        const result = await generateBoldActions(
-          lesson.day_number,
-          lesson.focus_area,
-          lesson.focus_reframe_technique || lesson.focus_area,
-          lesson.action_for_today || ""
-        )
-
-        const allActions: ActionItem[] = []
-        
-        if (lesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-
-        const aiActions = result.actions.map((action, index) => ({
-          ...action,
-          id: index + 1
-        }))
-        allActions.push(...aiActions)
-        
-        setActions(allActions)
-
-        // Save AI actions to database for caching
-        await saveActionsToProgress(lesson.day_number, aiActions)
-      } catch (error) {
-        console.error('[v0] Error loading actions:', error)
-        if (lesson.action_for_today) {
-          setActions([{
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          }])
-        }
-      } finally {
-        setIsLoadingActions(false)
+      if (lesson.action_for_today1) {
+        allActions.push({
+          id: 1,
+          title: "Action 2",
+          description: lesson.action_for_today1,
+          difficulty: 'medium',
+          isFromDB: true
+        })
       }
+      if (lesson.action_for_today2) {
+        allActions.push({
+          id: 2,
+          title: "Action 3",
+          description: lesson.action_for_today2,
+          difficulty: 'bold',
+          isFromDB: true
+        })
+      }
+      
+      setActions(allActions)
     }
 
     loadActions()
-  }, [lesson, progress?.ai_actions])
+  }, [lesson])
 
   const handleToggleAction = async (actionId: number) => {
     const isCurrentlyCompleted = completedActions.includes(actionId)
@@ -415,10 +409,10 @@ export function LessonDetail({
                   "px-3 py-1.5 text-xs font-semibold tracking-wide border-0",
                   phase.bg, phase.text
                 )}>
-                  {phase.name}
+                  {lesson.phase_name || phase.name}
                 </Badge>
                 <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                  SIGNAL Phase {phase.letter}
+                  SIGNAL Phase {lesson.phase || phase.letter}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -444,12 +438,18 @@ export function LessonDetail({
               <MarkdownContent content={lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`} inline />
             </h1>
 
-            {/* Emotional Context Line */}
-            <div className="text-muted-foreground leading-relaxed max-w-2xl">
+            {/* Phase Goal & Context */}
+            <div className="text-muted-foreground leading-relaxed max-w-2xl space-y-2">
+              {lesson.phase_goal && (
+                <p className="text-sm"><span className="font-medium text-foreground">Phase Goal:</span> {lesson.phase_goal}</p>
+              )}
               {lesson.focus_area ? (
                 <p>Today we explore how leaders <span className={cn("font-medium", phase.textLight)}><MarkdownContent content={lesson.focus_area.toLowerCase()} inline /></span>.</p>
               ) : (
                 <p>Building pattern recognition through focused leadership practice.</p>
+              )}
+              {lesson.phase_key_question && (
+                <p className="text-sm italic border-l-2 border-muted pl-3 mt-3">{lesson.phase_key_question}</p>
               )}
             </div>
 
@@ -499,10 +499,11 @@ export function LessonDetail({
                       <MarkdownContent content={lesson.leader_context} className="text-sm text-muted-foreground" />
                     </div>
                   )}
-                  {lesson.leader_story_id && (
-                    <p className={cn("text-xs mt-3 uppercase tracking-wider font-semibold", phase.textLight)}>
-                      {lesson.leader_story_id}
-                    </p>
+                  {lesson.leader_story && (
+                    <div className="text-sm text-muted-foreground mt-4 pt-4 border-t border-border/30">
+                      <p className={cn("text-xs uppercase tracking-wider font-semibold mb-2", phase.textLight)}>Leadership Story</p>
+                      <MarkdownContent content={lesson.leader_story} className="text-sm text-muted-foreground" />
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -582,7 +583,122 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* 3. Reflection Quote - Emotional Layer (moved here per UX spec) */}
+          {/* 3. Mental Model - Thinking Framework */}
+          {lesson.mental_model && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '200ms' }}>
+              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                      <Brain className={cn("h-5 w-5", phase.textLight)} />
+                    </div>
+                    Mental Model
+                  </CardTitle>
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
+                    Thinking Framework
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="text-foreground leading-relaxed">
+                  <MarkdownContent content={lesson.mental_model} className="text-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 4. AI Leadership Lens - Modern Perspective */}
+          {lesson.ai_leadership_lens && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0",
+              "bg-gradient-to-br from-card via-card to-blue-500/5"
+            )} style={{ animationDelay: '220ms' }}>
+              <div className={cn("absolute top-0 left-0 w-1 h-full bg-blue-500")} />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className="p-2 rounded-xl bg-blue-500/10">
+                      <Cpu className="h-5 w-5 text-blue-600" />
+                    </div>
+                    AI Leadership Lens
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider font-medium text-blue-600 border-blue-500/30">
+                    Modern Perspective
+                  </Badge>
+                </div>
+                <CardDescription>
+                  How AI-era leaders apply this framework
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="text-foreground leading-relaxed">
+                  <MarkdownContent content={lesson.ai_leadership_lens} className="text-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 5. Micro Case - Practical Scenario */}
+          {lesson.micro_case && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '240ms' }}>
+              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                      <FileText className={cn("h-5 w-5", phase.textLight)} />
+                    </div>
+                    Micro Case
+                  </CardTitle>
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
+                    Practical Scenario
+                  </Badge>
+                </div>
+                <CardDescription>
+                  A real-world scenario to apply today&apos;s framework
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className={cn("rounded-xl p-5 bg-muted/50 border border-border/50")}>
+                  <MarkdownContent content={lesson.micro_case} className="text-foreground leading-relaxed" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 6. Reflection Question */}
+          {lesson.reflection_question && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '260ms' }}>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                  <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                    <HelpCircle className={cn("h-5 w-5", phase.textLight)} />
+                  </div>
+                  Reflection Question
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className={cn("rounded-xl p-5", phase.bgLight)}>
+                  <p className={cn("text-lg font-medium", phase.textLight)}>
+                    <MarkdownContent content={lesson.reflection_question} inline />
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 7. Reflection Quote - Emotional Layer */}
           {lesson.quote && (
             <Card className={cn(
               "overflow-hidden border-0 shadow-md animate-slide-up",
@@ -648,13 +764,7 @@ export function LessonDetail({
               </div>
 
               {/* Actions List */}
-              {isLoadingActions ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className={cn("h-6 w-6 animate-spin", phase.textLight)} />
-                  <span className="ml-3 text-muted-foreground">Generating personalized actions...</span>
-                </div>
-              ) : (
-                <div className="space-y-3">
+              <div className="space-y-3">
                   {actions.map((action, index) => {
                     const isActionCompleted = completedActions.includes(action.id)
                     const wasJustCompleted = justCompleted === action.id
@@ -728,11 +838,10 @@ export function LessonDetail({
                       </div>
                     )
                   })}
-                </div>
-              )}
+              </div>
 
               {/* Motivation Message */}
-              {actionsCompletedCount > 0 && actionsCompletedCount === totalActionsCount && !isLoadingActions && (
+              {actionsCompletedCount > 0 && actionsCompletedCount === totalActionsCount && (
                 <div className={cn(
                   "mt-6 p-4 rounded-xl text-center animate-fade-in",
                   phase.bgLight
@@ -743,7 +852,7 @@ export function LessonDetail({
                 </div>
               )}
 
-              {actions.length > 0 && !isLoadingActions && actionsCompletedCount < totalActionsCount && (
+              {actions.length > 0 && actionsCompletedCount < totalActionsCount && (
                 <p className="text-xs text-muted-foreground mt-6 text-center">
                   <Sparkles className="h-3 w-3 inline mr-1" />
                   Actions personalized for today&apos;s leadership theme
@@ -752,11 +861,43 @@ export function LessonDetail({
             </CardContent>
           </Card>
 
-          {/* 5. Strategic Reflection - Now with Journal */}
+          {/* Pod Discussion Prompt */}
+          {lesson.pod_discussion_prompt && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0",
+              "bg-gradient-to-br from-card via-card to-purple-500/5"
+            )} style={{ animationDelay: '380ms' }}>
+              <div className="absolute top-0 left-0 w-1 h-full bg-purple-500" />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className="p-2 rounded-xl bg-purple-500/10">
+                      <Users className="h-5 w-5 text-purple-600" />
+                    </div>
+                    Pod Discussion
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider font-medium text-purple-600 border-purple-500/30">
+                    Team Exercise
+                  </Badge>
+                </div>
+                <CardDescription>
+                  Share and discuss with your leadership pod
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="rounded-xl p-5 bg-purple-500/5 border border-purple-500/20">
+                  <MarkdownContent content={lesson.pod_discussion_prompt} className="text-foreground leading-relaxed" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Strategic Reflection - Now with Journal */}
           <Card className={cn(
             "overflow-hidden shadow-lg animate-slide-up",
             "bg-gradient-to-br from-card via-card to-primary/5 border-0"
-          )} style={{ animationDelay: '360ms' }}>
+          )} style={{ animationDelay: '400ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-xl font-bold tracking-tight">
                 <Sparkles className="h-6 w-6 text-accent" />
