@@ -6,11 +6,7 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-    console.error('[v0] Missing Supabase environment variables in middleware:', {
-      hasUrl: !!url,
-      hasKey: !!key,
-    })
-    // Redirect to error page
+    // Redirect to error page if Supabase credentials are missing
     const url_obj = request.nextUrl.clone()
     url_obj.pathname = '/auth/error'
     url_obj.searchParams.set('message', 'Configuration error: Supabase credentials are missing')
@@ -57,20 +53,15 @@ export async function updateSession(request: NextRequest) {
   try {
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError) {
-      console.error('[v0] Supabase auth error:', authError.message)
-      // Continue anyway - the auth error might be due to missing session
-    }
-
-    const user_final = !authError ? user : null
+    // Note: "Auth session missing!" is expected when user is not logged in
+    // This is normal behavior, not an error
 
     if (
       // if the user is not logged in and the dashboard is accessed, redirect to the login page
       request.nextUrl.pathname.startsWith('/dashboard') &&
-      !user_final
+      !user
     ) {
       // no user, redirect to the login page
       const url_redirect = request.nextUrl.clone()
@@ -82,7 +73,7 @@ export async function updateSession(request: NextRequest) {
     if (
       (request.nextUrl.pathname.startsWith('/auth/login') ||
        request.nextUrl.pathname.startsWith('/auth/sign-up')) &&
-      user_final
+      user
     ) {
       const url_redirect = request.nextUrl.clone()
       url_redirect.pathname = '/dashboard'
@@ -103,9 +94,8 @@ export async function updateSession(request: NextRequest) {
     // of sync and terminate the user's session prematurely!
 
     return supabaseResponse
-  } catch (error) {
-    console.error('[v0] Supabase proxy error:', error instanceof Error ? error.message : error)
-    // On error, redirect to login if accessing dashboard
+  } catch {
+    // On unexpected error, redirect to login if accessing dashboard
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
       const url_redirect = request.nextUrl.clone()
       url_redirect.pathname = '/auth/login'
