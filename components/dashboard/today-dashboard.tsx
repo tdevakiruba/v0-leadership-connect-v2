@@ -21,7 +21,7 @@ import {
   BookOpen,
   ArrowRight,
   ArrowLeft,
-  Loader2,
+
   Square,
   CheckSquare,
   TrendingUp,
@@ -31,7 +31,7 @@ import {
   Video
 } from "lucide-react"
 import Link from "next/link"
-import { generateBoldActions, toggleActionCompleted, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 import { ProgressRing } from "@/components/ui/progress-ring"
 
@@ -181,12 +181,31 @@ interface TodayDashboardProps {
   todayLesson: {
     id: string
     day_number: number
-    focus_area: string
+    // Phase info
+    phase: string
+    phase_name: string
+    phase_subtitle: string | null
+    phase_goal: string | null
+    phase_key_question: string | null
+    // Focus
+    focus_area: string | null
     focus_reframe_technique: string | null
+    // Content
     leader_example: string | null
     leader_context: string | null
+    leader_story: string | null
+    mental_model: string | null
+    ai_leadership_lens: string | null
+    micro_case: string | null
+    reflection_question: string | null
     thought_to_work_on: string | null
+    // Actions
     action_for_today: string | null
+    action_for_today1: string | null
+    action_for_today2: string | null
+    // Pod
+    pod_discussion_prompt: string | null
+    // Quote
     quote: string | null
   } | null
   todayProgress: {
@@ -219,7 +238,6 @@ export function TodayDashboard({
   const [isCompleted, setIsCompleted] = useState(todayProgress?.completed || false)
   const [actions, setActions] = useState<ActionItem[]>([])
   const [completedActions, setCompletedActions] = useState<number[]>(todayProgress?.actions_completed || [])
-  const [isLoadingActions, setIsLoadingActions] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -231,83 +249,47 @@ export function TodayDashboard({
     p => currentDay >= p.dayStart && currentDay <= p.dayEnd
   ) || signalPhases[0]
 
-  // Load or generate actions on mount
+  // Load actions from database - now using all 3 action fields
   useEffect(() => {
     async function loadActions() {
       if (!todayLesson) return
-      console.log("[v0] loadActions: todayLesson found, cached ai_actions:", todayProgress?.ai_actions?.length ?? 0)
 
-      // If we have cached AI actions, use them
-      if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
-        // Add the DB action as the first item
-        const allActions: ActionItem[] = []
-        if (todayLesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-        allActions.push(...todayProgress.ai_actions)
-        setActions(allActions)
-        return
+      const allActions: ActionItem[] = []
+      
+      // Add all three database actions if they exist
+      if (todayLesson.action_for_today) {
+        allActions.push({
+          id: 0,
+          title: "Action 1",
+          description: todayLesson.action_for_today,
+          difficulty: 'easy',
+          isFromDB: true
+        })
       }
-
-      // Generate new actions
-      setIsLoadingActions(true)
-      try {
-        const result = await generateBoldActions(
-          currentDay,
-          todayLesson.focus_area,
-          todayLesson.focus_reframe_technique || todayLesson.focus_area,
-          todayLesson.action_for_today || ""
-        )
-
-        const allActions: ActionItem[] = []
-        
-        // Add the DB action as the first item
-        if (todayLesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-
-        // Add AI-generated actions with offset IDs
-        const aiActions = result.actions.map((action, index) => ({
-          ...action,
-          id: index + 1
-        }))
-        allActions.push(...aiActions)
-        
-        setActions(allActions)
-
-        // Save AI actions to database for caching
-        await saveActionsToProgress(currentDay, aiActions)
-      } catch (error) {
-        console.error('[v0] Error loading actions:', error)
-        // Fallback: just show the DB action
-        if (todayLesson.action_for_today) {
-          setActions([{
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          }])
-        }
-      } finally {
-        setIsLoadingActions(false)
+      if (todayLesson.action_for_today1) {
+        allActions.push({
+          id: 1,
+          title: "Action 2",
+          description: todayLesson.action_for_today1,
+          difficulty: 'medium',
+          isFromDB: true
+        })
       }
+      if (todayLesson.action_for_today2) {
+        allActions.push({
+          id: 2,
+          title: "Action 3",
+          description: todayLesson.action_for_today2,
+          difficulty: 'bold',
+          isFromDB: true
+        })
+      }
+      
+      setActions(allActions)
     }
 
     loadActions()
-  }, [todayLesson, todayProgress?.ai_actions, currentDay])
+  }, [todayLesson])
 
   const handleToggleAction = async (actionId: number) => {
     if (!todayLesson) return
@@ -532,11 +514,16 @@ export function TodayDashboard({
                     </span>
                   </div>
                   <h3 className="font-semibold text-foreground mb-1 line-clamp-2">
-                    <MarkdownContent content={todayLesson.focus_reframe_technique || todayLesson.focus_area} inline />
+                    <MarkdownContent content={todayLesson.focus_reframe_technique || todayLesson.focus_area || `Day ${currentDay} Focus`} inline />
                   </h3>
-                  <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wide">
-                    <MarkdownContent content={todayLesson.focus_area} inline />
+                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">
+                    {todayLesson.phase_name || currentPhaseColors.name} · Phase {todayLesson.phase || currentPhase?.letter}
                   </p>
+                  {todayLesson.phase_goal && (
+                    <p className="text-xs text-muted-foreground mb-4 line-clamp-2">
+                      {todayLesson.phase_goal}
+                    </p>
+                  )}
 
                   {/* Day Progress Ring */}
                   <div className="flex items-center gap-4 mb-4">
@@ -682,13 +669,7 @@ export function TodayDashboard({
               </div>
 
               {/* Actions List */}
-              {isLoadingActions ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className={cn("h-6 w-6 animate-spin", currentPhaseColors.textActive)} />
-                  <span className="ml-2 text-muted-foreground">Generating personalized actions...</span>
-                </div>
-              ) : (
-                <div className="space-y-3">
+              <div className="space-y-3">
                   {actions.map((action) => {
                     const isActionCompleted = completedActions.includes(action.id)
                     return (
@@ -739,10 +720,9 @@ export function TodayDashboard({
                       </div>
                     )
                   })}
-                </div>
-              )}
+              </div>
 
-              {actions.length > 0 && !isLoadingActions && (
+              {actions.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-4 text-center">
                   <Sparkles className="h-3 w-3 inline mr-1" />
                   Actions are personalized based on today&apos;s lesson theme

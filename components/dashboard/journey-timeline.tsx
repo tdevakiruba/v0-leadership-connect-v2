@@ -20,8 +20,12 @@ import Link from "next/link"
 interface Lesson {
   id: string
   day_number: number
-  focus_area: string
+  phase: string
+  phase_name: string
+  phase_goal: string | null
+  focus_area: string | null
   focus_reframe_technique: string | null
+  mental_model: string | null
 }
 
 interface JourneyProgress {

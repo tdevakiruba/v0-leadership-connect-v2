@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Sparkles,
   Flame,
-  TrendingUp
+  TrendingUp,
+  Target
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -22,9 +23,23 @@ import { MarkdownContent } from "@/components/ui/markdown-content"
 interface Lesson {
   id: string
   day_number: number
-  focus_area: string
+  // Phase info
+  phase: string
+  phase_name: string
+  phase_subtitle: string | null
+  phase_goal: string | null
+  // Focus
+  focus_area: string | null
   focus_reframe_technique: string | null
+  // Content
   leader_example: string | null
+  mental_model: string | null
+  ai_leadership_lens: string | null
+  // Actions
+  action_for_today: string | null
+  action_for_today1: string | null
+  action_for_today2: string | null
+  // Legacy
   insight_quote?: string | null
 }
 
@@ -137,10 +152,10 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                       </div>
                       <div>
                         <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">
-                          Phase {phases.indexOf(currentPhase!) + 1} of 6
+                          Phase {currentLesson.phase || phases.indexOf(currentPhase!) + 1} of 6
                         </p>
                         <p className={cn("text-xs font-semibold", currentPhase?.text)}>
-                          {currentPhase?.name}
+                          {currentLesson.phase_name || currentPhase?.name}
                         </p>
                       </div>
                       {streak > 0 && (
@@ -159,17 +174,23 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                       </h2>
                     </div>
 
-                    {/* Quote preview */}
-                    <p className="text-sm text-muted-foreground italic max-w-md">
-                      "{getInsightQuote(currentDay)}"
-                    </p>
-
-                    {/* Leader */}
-                    {currentLesson.leader_example && (
-                      <p className="text-xs text-muted-foreground">
-                        Learn from: <span className="font-medium text-foreground"><MarkdownContent content={currentLesson.leader_example} inline /></span>
+                    {/* Mental model preview */}
+                    {currentLesson.mental_model && (
+                      <p className="text-sm text-muted-foreground max-w-md line-clamp-2">
+                        <MarkdownContent content={currentLesson.mental_model} inline />
                       </p>
                     )}
+
+                    {/* Phase goal and action count */}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {currentLesson.phase_goal && (
+                        <span className="line-clamp-1 flex-1">{currentLesson.phase_goal}</span>
+                      )}
+                      <span className="flex items-center gap-1 flex-shrink-0">
+                        <Target className="h-3 w-3" />
+                        {[currentLesson.action_for_today, currentLesson.action_for_today1, currentLesson.action_for_today2].filter(Boolean).length} actions
+                      </span>
+                    </div>
                   </div>
 
                   {/* CTA */}
@@ -429,21 +450,30 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                   <MarkdownContent content={lesson.focus_reframe_technique || `Framework ${lesson.day_number}`} inline />
                 </h3>
 
-                {/* Leader name - only show for active/completed */}
-                {!isLocked && lesson.leader_example && (
+                {/* Mental model preview - only show for active/unlocked */}
+                {!isLocked && lesson.mental_model && (
                   <p className={cn(
-                    "text-[10px] mb-1.5 truncate",
+                    "text-[10px] mb-1.5 line-clamp-1",
                     isCompleted || isCurrent ? "text-muted-foreground" : "text-muted-foreground/70"
                   )}>
-                    <MarkdownContent content={lesson.leader_example} inline />
+                    <MarkdownContent content={lesson.mental_model} inline />
                   </p>
                 )}
 
-                {/* Insight quote preview - only for completed and current */}
-                {(isCompleted || isCurrent) && !isLocked && (
-                  <p className="text-[10px] text-muted-foreground italic line-clamp-1">
-                    "{getInsightQuote(lesson.day_number)}"
-                  </p>
+                {/* Action count indicator */}
+                {!isLocked && (
+                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                    <Target className="h-3 w-3" />
+                    <span>
+                      {[lesson.action_for_today, lesson.action_for_today1, lesson.action_for_today2].filter(Boolean).length} actions
+                    </span>
+                    {lesson.ai_leadership_lens && (
+                      <>
+                        <span className="text-muted-foreground/50">·</span>
+                        <span className="text-blue-500">AI Lens</span>
+                      </>
+                    )}
+                  </div>
                 )}
 
                 {/* Progress micro-bar for current */}
