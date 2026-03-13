@@ -2,16 +2,24 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!url || !key) {
+    // Redirect to error page if Supabase credentials are missing
+    const url_obj = request.nextUrl.clone()
+    url_obj.pathname = '/auth/error'
+    url_obj.searchParams.set('message', 'Configuration error: Supabase credentials are missing')
+    return NextResponse.redirect(url_obj)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabase = createServerClient(url, key, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
@@ -42,44 +50,58 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  if (
-    // if the user is not logged in and the dashboard is accessed, redirect to the login page
-    request.nextUrl.pathname.startsWith('/dashboard') &&
-    !user
-  ) {
-    // no user, redirect to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+    // Note: "Auth session missing!" is expected when user is not logged in
+    // This is normal behavior, not an error
+
+    if (
+      // if the user is not logged in and the dashboard is accessed, redirect to the login page
+      request.nextUrl.pathname.startsWith('/dashboard') &&
+      !user
+    ) {
+      // no user, redirect to the login page
+      const url_redirect = request.nextUrl.clone()
+      url_redirect.pathname = '/auth/login'
+      return NextResponse.redirect(url_redirect)
+    }
+
+    // If user is logged in and tries to access auth pages, redirect to dashboard
+    if (
+      (request.nextUrl.pathname.startsWith('/auth/login') ||
+       request.nextUrl.pathname.startsWith('/auth/sign-up')) &&
+      user
+    ) {
+      const url_redirect = request.nextUrl.clone()
+      url_redirect.pathname = '/dashboard'
+      return NextResponse.redirect(url_redirect)
+    }
+
+    // IMPORTANT: You *must* return the supabaseResponse object as it is.
+    // If you're creating a new response object with NextResponse.next() make sure to:
+    // 1. Pass the request in it, like so:
+    //    const myNewResponse = NextResponse.next({ request })
+    // 2. Copy over the cookies, like so:
+    //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
+    // 3. Change the myNewResponse object to fit your needs, but avoid changing
+    //    the cookies!
+    // 4. Finally:
+    //    return myNewResponse
+    // If this is not done, you may be causing the browser and server to go out
+    // of sync and terminate the user's session prematurely!
+
+    return supabaseResponse
+  } catch {
+    // On unexpected error, redirect to login if accessing dashboard
+    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+      const url_redirect = request.nextUrl.clone()
+      url_redirect.pathname = '/auth/login'
+      return NextResponse.redirect(url_redirect)
+    }
+    // For auth pages, continue normally
+    return supabaseResponse
   }
-
-  // If user is logged in and tries to access auth pages, redirect to dashboard
-  if (
-    (request.nextUrl.pathname.startsWith('/auth/login') ||
-     request.nextUrl.pathname.startsWith('/auth/sign-up')) &&
-    user
-  ) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
-  }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse
 }
