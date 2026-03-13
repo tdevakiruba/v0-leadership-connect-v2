@@ -80,7 +80,7 @@ export function HeaderSearch() {
 
       // Search lessons from Supabase
       const { data: lessons } = await supabase
-        .from("daily_lessons")
+        .from("V2_Daily_lessons")
         .select("id, day_number, focus_area, focus_reframe_technique")
         .or(`focus_area.ilike.%${query}%,focus_reframe_technique.ilike.%${query}%`)
         .limit(5)
