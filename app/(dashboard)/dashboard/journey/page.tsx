@@ -13,7 +13,7 @@ export default async function JourneyPage() {
 
   // Get all lessons
   const { data: lessons } = await supabase
-    .from("V2_Daily_lessons")
+    .from("daily_lessons")
     .select("*")
     .order("day_number", { ascending: true })
 
