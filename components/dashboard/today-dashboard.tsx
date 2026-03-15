@@ -31,7 +31,7 @@ import {
   Video
 } from "lucide-react"
 import Link from "next/link"
-import { toggleActionCompleted } from "@/app/actions/ai-actions"
+import { toggleActionCompleted, generateBoldActions, saveActionsToProgress } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 import { ProgressRing } from "@/components/ui/progress-ring"
 
@@ -249,47 +249,102 @@ export function TodayDashboard({
     p => currentDay >= p.dayStart && currentDay <= p.dayEnd
   ) || signalPhases[0]
 
-  // Load actions from database - now using all 3 action fields
+  const [isGeneratingActions, setIsGeneratingActions] = useState(false)
+
+  // Load actions - 1st from database, other 3 from AI
   useEffect(() => {
     async function loadActions() {
       if (!todayLesson) return
 
-      const allActions: ActionItem[] = []
-      
-      // Add all three database actions if they exist
-      if (todayLesson.action_for_today) {
-        allActions.push({
-          id: 0,
-          title: "Action 1",
-          description: todayLesson.action_for_today,
-          difficulty: 'easy',
-          isFromDB: true
+      // Check if we already have saved AI actions
+      if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
+        // Combine DB action with saved AI actions
+        const allActions: ActionItem[] = []
+        
+        // First action from database
+        if (todayLesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+        
+        // Add saved AI actions
+        todayProgress.ai_actions.forEach((action, index) => {
+          allActions.push({
+            ...action,
+            id: index + 1
+          })
         })
+        
+        setActions(allActions)
+        return
       }
-      if (todayLesson.action_for_today1) {
-        allActions.push({
-          id: 1,
-          title: "Action 2",
-          description: todayLesson.action_for_today1,
-          difficulty: 'medium',
-          isFromDB: true
+
+      // Generate new AI actions
+      setIsGeneratingActions(true)
+      try {
+        const theme = todayLesson.focus_area || todayLesson.phase_name || 'Leadership'
+        const goal = todayLesson.phase_goal || 'Develop your leadership skills'
+        const coreAction = todayLesson.action_for_today || ''
+
+        const { actions: aiActions } = await generateBoldActions(
+          currentDay,
+          theme,
+          goal,
+          coreAction
+        )
+
+        // Build combined actions list
+        const allActions: ActionItem[] = []
+        
+        // First action from database
+        if (todayLesson.action_for_today) {
+          allActions.push({
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          })
+        }
+
+        // Add AI-generated actions
+        aiActions.forEach((action, index) => {
+          allActions.push({
+            ...action,
+            id: index + 1
+          })
         })
+
+        setActions(allActions)
+
+        // Save AI actions to progress for future loads
+        if (aiActions.length > 0) {
+          await saveActionsToProgress(currentDay, aiActions)
+        }
+      } catch (error) {
+        console.error('[v0] Error loading actions:', error)
+        // Fallback to just the DB action
+        if (todayLesson.action_for_today) {
+          setActions([{
+            id: 0,
+            title: "Today's Core Action",
+            description: todayLesson.action_for_today,
+            difficulty: 'medium',
+            isFromDB: true
+          }])
+        }
+      } finally {
+        setIsGeneratingActions(false)
       }
-      if (todayLesson.action_for_today2) {
-        allActions.push({
-          id: 2,
-          title: "Action 3",
-          description: todayLesson.action_for_today2,
-          difficulty: 'bold',
-          isFromDB: true
-        })
-      }
-      
-      setActions(allActions)
     }
 
     loadActions()
-  }, [todayLesson])
+  }, [todayLesson, currentDay, todayProgress?.ai_actions])
 
   const handleToggleAction = async (actionId: number) => {
     if (!todayLesson) return
@@ -670,7 +725,14 @@ export function TodayDashboard({
 
               {/* Actions List */}
               <div className="space-y-3">
-                  {actions.map((action) => {
+                  {isGeneratingActions ? (
+                    <div className="flex items-center justify-center py-8 text-muted-foreground">
+                      <div className="flex items-center gap-3">
+                        <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        <span className="text-sm">Generating personalized actions...</span>
+                      </div>
+                    </div>
+                  ) : actions.map((action) => {
                     const isActionCompleted = completedActions.includes(action.id)
                     return (
                       <div 
