@@ -19,9 +19,7 @@ export async function generateBoldActions(
   actionForToday: string
 ): Promise<{ actions: Array<{ id: number; title: string; description: string; difficulty: 'easy' | 'medium' | 'bold' }> }> {
   try {
-    console.log("[v0] generateBoldActions called for day", dayNumber, "theme:", theme)
     const openai = getOpenAIClient()
-    console.log("[v0] OpenAI client created, making API call...")
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       response_format: { type: 'json_object' },
