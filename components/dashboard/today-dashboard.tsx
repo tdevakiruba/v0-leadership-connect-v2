@@ -254,10 +254,16 @@ export function TodayDashboard({
   // Load actions - 1st from database, other 3 from AI
   useEffect(() => {
     async function loadActions() {
-      if (!todayLesson) return
+      if (!todayLesson) {
+        console.log("[v0] No todayLesson, skipping loadActions")
+        return
+      }
+
+      console.log("[v0] loadActions: checking for saved AI actions", todayProgress?.ai_actions?.length)
 
       // Check if we already have saved AI actions
       if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
+        console.log("[v0] Using saved AI actions:", todayProgress.ai_actions.length)
         // Combine DB action with saved AI actions
         const allActions: ActionItem[] = []
         
@@ -280,23 +286,28 @@ export function TodayDashboard({
           })
         })
         
+        console.log("[v0] Total actions loaded:", allActions.length)
         setActions(allActions)
         return
       }
 
       // Generate new AI actions
+      console.log("[v0] Generating new AI actions")
       setIsGeneratingActions(true)
       try {
         const theme = todayLesson.focus_area || todayLesson.phase_name || 'Leadership'
         const goal = todayLesson.phase_goal || 'Develop your leadership skills'
         const coreAction = todayLesson.action_for_today || ''
 
+        console.log("[v0] Calling generateBoldActions with theme:", theme, "goal:", goal)
         const { actions: aiActions } = await generateBoldActions(
           currentDay,
           theme,
           goal,
           coreAction
         )
+
+        console.log("[v0] generateBoldActions returned:", aiActions.length, "actions")
 
         // Build combined actions list
         const allActions: ActionItem[] = []
@@ -320,16 +331,19 @@ export function TodayDashboard({
           })
         })
 
+        console.log("[v0] Total actions set:", allActions.length)
         setActions(allActions)
 
         // Save AI actions to progress for future loads
         if (aiActions.length > 0) {
+          console.log("[v0] Saving AI actions to progress")
           await saveActionsToProgress(currentDay, aiActions)
         }
       } catch (error) {
         console.error('[v0] Error loading actions:', error)
         // Fallback to just the DB action
         if (todayLesson.action_for_today) {
+          console.log("[v0] Using fallback: just DB action")
           setActions([{
             id: 0,
             title: "Today's Core Action",
