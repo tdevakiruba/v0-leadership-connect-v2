@@ -33,9 +33,9 @@ export default async function LessonPage({
     ? Math.min(Math.max(...completedDays) + 1, 90)
     : 1
 
-  // Get the lesson
+  // Get the lesson from V2_daily_lessons
   const { data: lesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_daily_lessons")
     .select("*")
     .eq("day_number", dayNumber)
     .single()
@@ -47,15 +47,15 @@ export default async function LessonPage({
   // Get this day's progress if exists
   const dayProgress = progress?.find(p => p.day_number === dayNumber)
 
-  // Get adjacent lessons for navigation
+  // Get adjacent lessons for navigation from V2_daily_lessons
   const { data: prevLesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_daily_lessons")
     .select("day_number, focus_reframe_technique")
     .eq("day_number", dayNumber - 1)
     .single()
 
   const { data: nextLesson } = await supabase
-    .from("daily_lessons")
+    .from("V2_daily_lessons")
     .select("day_number, focus_reframe_technique")
     .eq("day_number", dayNumber + 1)
     .single()

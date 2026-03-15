@@ -14,7 +14,12 @@ import {
   Sparkles,
   Flame,
   TrendingUp,
-  Target
+  Target,
+  Quote,
+  BookOpen,
+  Brain,
+  Lightbulb,
+  Users
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -28,19 +33,30 @@ interface Lesson {
   phase_name: string
   phase_subtitle: string | null
   phase_goal: string | null
+  phase_key_question: string | null
   // Focus
   focus_area: string | null
   focus_reframe_technique: string | null
-  // Content
+  // Leader content
   leader_example: string | null
+  leader_context: string | null
+  leader_story: string | null
+  // Thinking frameworks
   mental_model: string | null
   ai_leadership_lens: string | null
-  // Actions
+  // Learning elements
+  micro_case: string | null
+  reflection_question: string | null
+  thought_to_work_on: string | null
+  // Actions (from table)
   action_for_today: string | null
   action_for_today1: string | null
   action_for_today2: string | null
-  // Legacy
-  insight_quote?: string | null
+  // Pod & extras
+  pod_discussion_prompt: string | null
+  executive_challenge: string | null
+  score_metric: string | null
+  quote: string | null
 }
 
 interface LessonProgress {
@@ -61,23 +77,6 @@ const phases = [
   { letter: "A", name: "Action & Execution", range: [61, 75], color: "bg-signal-a", light: "bg-signal-a-light", text: "text-signal-a", border: "border-signal-a" },
   { letter: "L", name: "Leadership Identity", range: [76, 90], color: "bg-signal-l", light: "bg-signal-l-light", text: "text-signal-l", border: "border-signal-l" },
 ]
-
-// Sample quotes for demonstration - in production, these would come from the lesson data
-const getInsightQuote = (day: number): string => {
-  const quotes: Record<number, string> = {
-    1: "The first step to leading others is understanding yourself.",
-    2: "Resistance protects something important.",
-    3: "Your triggers reveal your values.",
-    4: "Clarity precedes mastery.",
-    5: "Growth happens at the edge of comfort.",
-    6: "Leadership is a practice, not a position.",
-    7: "Your patterns are your teachers.",
-    8: "The obstacle is the way forward.",
-    9: "Influence begins with inquiry.",
-    10: "What you focus on expands.",
-  }
-  return quotes[day] || "Leadership insight awaits."
-}
 
 export function LessonsList({ lessons, progress }: LessonsListProps) {
   const [search, setSearch] = useState("")
@@ -101,7 +100,9 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
     return lessons.filter(lesson => {
       const matchesSearch = !search || 
         lesson.focus_reframe_technique?.toLowerCase().includes(search.toLowerCase()) ||
+        lesson.focus_area?.toLowerCase().includes(search.toLowerCase()) ||
         lesson.leader_example?.toLowerCase().includes(search.toLowerCase()) ||
+        lesson.phase_name?.toLowerCase().includes(search.toLowerCase()) ||
         lesson.day_number.toString().includes(search)
       
       const matchesPhase = !activePhase || 
@@ -127,6 +128,17 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
     const nextPhase = phases.find(p => currentDay < p.range[0])
     return nextPhase ? { phase: nextPhase, daysAway: nextPhase.range[0] - currentDay } : null
   }, [currentDay])
+
+  // Count content richness indicators
+  const getContentIndicators = (lesson: Lesson) => {
+    const actions = [lesson.action_for_today, lesson.action_for_today1, lesson.action_for_today2].filter(Boolean).length
+    const hasLeaderExample = !!lesson.leader_example
+    const hasAILens = !!lesson.ai_leadership_lens
+    const hasMicroCase = !!lesson.micro_case
+    const hasPodPrompt = !!lesson.pod_discussion_prompt
+    const hasChallenge = !!lesson.executive_challenge
+    return { actions, hasLeaderExample, hasAILens, hasMicroCase, hasPodPrompt, hasChallenge }
+  }
 
   return (
     <div className="space-y-4">
@@ -174,22 +186,47 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                       </h2>
                     </div>
 
-                    {/* Mental model preview */}
-                    {currentLesson.mental_model && (
+                    {/* Focus area preview */}
+                    {currentLesson.focus_area && (
                       <p className="text-sm text-muted-foreground max-w-md line-clamp-2">
-                        <MarkdownContent content={currentLesson.mental_model} inline />
+                        <MarkdownContent content={currentLesson.focus_area} inline />
                       </p>
                     )}
 
-                    {/* Phase goal and action count */}
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      {currentLesson.phase_goal && (
-                        <span className="line-clamp-1 flex-1">{currentLesson.phase_goal}</span>
-                      )}
+                    {/* Quote preview if available */}
+                    {currentLesson.quote && (
+                      <div className="flex items-start gap-2 mt-2 p-3 rounded-lg bg-muted/50 border border-border/50 max-w-md">
+                        <Quote className={cn("h-4 w-4 mt-0.5 flex-shrink-0", currentPhase?.text)} />
+                        <p className="text-xs italic text-muted-foreground line-clamp-2">
+                          <MarkdownContent content={currentLesson.quote} inline />
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Content indicators */}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span className="flex items-center gap-1 flex-shrink-0">
                         <Target className="h-3 w-3" />
                         {[currentLesson.action_for_today, currentLesson.action_for_today1, currentLesson.action_for_today2].filter(Boolean).length} actions
                       </span>
+                      {currentLesson.leader_example && (
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="h-3 w-3" />
+                          Leader example
+                        </span>
+                      )}
+                      {currentLesson.micro_case && (
+                        <span className="flex items-center gap-1">
+                          <Lightbulb className="h-3 w-3" />
+                          Micro case
+                        </span>
+                      )}
+                      {currentLesson.pod_discussion_prompt && (
+                        <span className="flex items-center gap-1 text-purple-600">
+                          <Users className="h-3 w-3" />
+                          Pod prompt
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -235,6 +272,16 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                           style={{ width: `${((phaseProgress.find(p => p.letter === currentPhase.letter)?.completed || 0) / 15) * 100}%` }}
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Phase key question */}
+                  {currentLesson.phase_key_question && (
+                    <div className="pt-2 border-t border-border/50">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Key Question</p>
+                      <p className={cn("text-xs font-medium italic", currentPhase?.text)}>
+                        {currentLesson.phase_key_question}
+                      </p>
                     </div>
                   )}
 
@@ -334,7 +381,7 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
         })}
       </div>
 
-      {/* AI Recommendation Banner */}
+      {/* Recommended Next Banner */}
       {!search && !activePhase && currentDay <= 90 && (
         <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-signal-s/5 to-signal-i/5 border border-signal-s/10">
           <div className="h-8 w-8 rounded-lg bg-signal-s/10 flex items-center justify-center flex-shrink-0">
@@ -354,13 +401,14 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
         </div>
       )}
 
-      {/* Grid of Framework Tiles - Tighter spacing, increased density */}
+      {/* Grid of Framework Tiles - Enhanced with V2 content indicators */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 stagger-children">
         {filteredLessons.map(lesson => {
           const phase = getPhaseForDay(lesson.day_number)
           const isCompleted = completedDays.has(lesson.day_number)
           const isCurrent = lesson.day_number === currentDay
           const isLocked = lesson.day_number > currentDay
+          const indicators = getContentIndicators(lesson)
 
           return (
             <Link
@@ -450,28 +498,42 @@ export function LessonsList({ lessons, progress }: LessonsListProps) {
                   <MarkdownContent content={lesson.focus_reframe_technique || `Framework ${lesson.day_number}`} inline />
                 </h3>
 
-                {/* Mental model preview - only show for active/unlocked */}
-                {!isLocked && lesson.mental_model && (
+                {/* Focus area preview - only show for active/unlocked */}
+                {!isLocked && lesson.focus_area && (
                   <p className={cn(
                     "text-[10px] mb-1.5 line-clamp-1",
                     isCompleted || isCurrent ? "text-muted-foreground" : "text-muted-foreground/70"
                   )}>
-                    <MarkdownContent content={lesson.mental_model} inline />
+                    <MarkdownContent content={lesson.focus_area} inline />
                   </p>
                 )}
 
-                {/* Action count indicator */}
+                {/* Content indicators - show what's included */}
                 {!isLocked && (
-                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                    <Target className="h-3 w-3" />
-                    <span>
-                      {[lesson.action_for_today, lesson.action_for_today1, lesson.action_for_today2].filter(Boolean).length} actions
+                  <div className="flex items-center gap-1 text-[9px] text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-0.5">
+                      <Target className="h-2.5 w-2.5" />
+                      {indicators.actions}
                     </span>
-                    {lesson.ai_leadership_lens && (
-                      <>
-                        <span className="text-muted-foreground/50">·</span>
-                        <span className="text-blue-500">AI Lens</span>
-                      </>
+                    {indicators.hasLeaderExample && (
+                      <span className="flex items-center gap-0.5" title="Leader example">
+                        <BookOpen className="h-2.5 w-2.5" />
+                      </span>
+                    )}
+                    {indicators.hasAILens && (
+                      <span className="flex items-center gap-0.5 text-blue-500" title="AI Leadership Lens">
+                        <Brain className="h-2.5 w-2.5" />
+                      </span>
+                    )}
+                    {indicators.hasMicroCase && (
+                      <span className="flex items-center gap-0.5" title="Micro case">
+                        <Lightbulb className="h-2.5 w-2.5" />
+                      </span>
+                    )}
+                    {indicators.hasPodPrompt && (
+                      <span className="flex items-center gap-0.5 text-purple-500" title="Pod discussion">
+                        <Users className="h-2.5 w-2.5" />
+                      </span>
                     )}
                   </div>
                 )}

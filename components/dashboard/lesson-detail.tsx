@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,7 +18,6 @@ import {
   BookOpen,
   Square,
   CheckSquare,
-
   Brain,
   Compass,
   Zap,
@@ -27,18 +26,19 @@ import {
   ChevronDown,
   ChevronUp,
   Flame,
-
   Cpu,
   Users,
   HelpCircle,
-  FileText
+  FileText,
+  Trophy,
+  BarChart3
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
-import { toggleActionCompleted, generateBoldActions, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 
 interface Lesson {
@@ -64,32 +64,31 @@ interface Lesson {
   micro_case: string | null
   reflection_question: string | null
   thought_to_work_on: string | null
-  // Actions (now 3)
+  // Actions from table (3 actions)
   action_for_today: string | null
   action_for_today1: string | null
   action_for_today2: string | null
   // Pod discussion
   pod_discussion_prompt: string | null
-  // Legacy
-  quote?: string | null
+  // Additional V2 fields
+  executive_challenge: string | null
+  score_metric: string | null
+  quote: string | null
 }
 
 interface Progress {
   id: string
   completed: boolean
   reflection_text: string | null
-  ai_action: string | null
   completed_at: string | null
   actions_completed?: number[]
-  ai_actions?: ActionItem[]
 }
 
 interface ActionItem {
   id: number
   title: string
   description: string
-  difficulty: 'easy' | 'medium' | 'bold'
-  isFromDB?: boolean
+  priority: 'primary' | 'secondary' | 'stretch'
 }
 
 interface AdjacentLesson {
@@ -106,7 +105,7 @@ interface LessonDetailProps {
   nextLesson: AdjacentLesson | null
 }
 
-// SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
+// SIGNAL phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhaseColors = [
   { letter: "S", name: "Self-Awareness", dayStart: 1, dayEnd: 15, bg: "bg-signal-s", text: "text-white", bgLight: "bg-signal-s-light", textLight: "text-signal-s", border: "border-signal-s/30", stroke: "stroke-signal-s" },
   { letter: "I", name: "Interpretation", dayStart: 16, dayEnd: 30, bg: "bg-signal-i", text: "text-white", bgLight: "bg-signal-i-light", textLight: "text-signal-i", border: "border-signal-i/30", stroke: "stroke-signal-i" },
@@ -118,15 +117,6 @@ const signalPhaseColors = [
 
 const getPhaseForDay = (day: number) => {
   return signalPhaseColors.find(p => day >= p.dayStart && day <= p.dayEnd) || signalPhaseColors[0]
-}
-
-const getDifficultyColor = (difficulty: string) => {
-  switch (difficulty) {
-    case 'easy': return 'bg-signal-s-light text-signal-s'
-    case 'medium': return 'bg-signal-g-light text-signal-g'
-    case 'bold': return 'bg-signal-l-light text-signal-l'
-    default: return 'bg-slate-100 text-slate-700'
-  }
 }
 
 // Strategic tips data
@@ -154,7 +144,6 @@ const strategicTips = [
 ]
 
 export function LessonDetail({
-  userId,
   lesson,
   progress,
   currentDay,
@@ -164,10 +153,7 @@ export function LessonDetail({
   const [reflection, setReflection] = useState(progress?.reflection_text || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCompleted, setIsCompleted] = useState(progress?.completed || false)
-  const [actions, setActions] = useState<ActionItem[]>([])
   const [completedActions, setCompletedActions] = useState<number[]>(progress?.actions_completed || [])
-  const [isGeneratingActions, setIsGeneratingActions] = useState(false)
-
   const [showJournal, setShowJournal] = useState(false)
   const [journalNote, setJournalNote] = useState("")
   const [expandedTip, setExpandedTip] = useState<number | null>(null)
@@ -178,100 +164,27 @@ export function LessonDetail({
   const isLocked = lesson.day_number > currentDay
   const phase = getPhaseForDay(lesson.day_number)
 
-  // Load actions - 1st from database, other 3 from AI
-  useEffect(() => {
-    async function loadActions() {
-      if (!lesson) return
-
-      // Check if we already have saved AI actions in progress
-      if (progress?.ai_actions && progress.ai_actions.length > 0) {
-        // Combine DB action with saved AI actions
-        const allActions: ActionItem[] = []
-        
-        // First action from database
-        if (lesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-        
-        // Add saved AI actions
-        progress.ai_actions.forEach((action, index) => {
-          allActions.push({
-            ...action,
-            id: index + 1
-          })
-        })
-        
-        setActions(allActions)
-        return
-      }
-
-      // Generate new AI actions
-      setIsGeneratingActions(true)
-      try {
-        const theme = lesson.focus_area || lesson.phase_name || 'Leadership'
-        const goal = lesson.phase_goal || 'Develop your leadership skills'
-        const coreAction = lesson.action_for_today || ''
-
-        const { actions: aiActions } = await generateBoldActions(
-          lesson.day_number,
-          theme,
-          goal,
-          coreAction
-        )
-
-        // Build combined actions list
-        const allActions: ActionItem[] = []
-        
-        // First action from database
-        if (lesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-
-        // Add AI-generated actions
-        aiActions.forEach((action, index) => {
-          allActions.push({
-            ...action,
-            id: index + 1
-          })
-        })
-
-        setActions(allActions)
-
-        // Save AI actions to progress for future loads
-        if (aiActions.length > 0) {
-          await saveActionsToProgress(lesson.day_number, aiActions)
-        }
-      } catch (error) {
-        console.error('[v0] Error loading actions:', error)
-        // Fallback to just the DB action
-        if (lesson.action_for_today) {
-          setActions([{
-            id: 0,
-            title: "Today's Core Action",
-            description: lesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          }])
-        }
-      } finally {
-        setIsGeneratingActions(false)
-      }
-    }
-
-    loadActions()
-  }, [lesson, progress?.ai_actions])
+  // Build actions from table data only (no AI generation)
+  const actions: ActionItem[] = [
+    lesson.action_for_today && {
+      id: 0,
+      title: "Primary Action",
+      description: lesson.action_for_today,
+      priority: 'primary' as const
+    },
+    lesson.action_for_today1 && {
+      id: 1,
+      title: "Secondary Action",
+      description: lesson.action_for_today1,
+      priority: 'secondary' as const
+    },
+    lesson.action_for_today2 && {
+      id: 2,
+      title: "Stretch Action",
+      description: lesson.action_for_today2,
+      priority: 'stretch' as const
+    },
+  ].filter((action): action is ActionItem => Boolean(action))
 
   const handleToggleAction = async (actionId: number) => {
     const isCurrentlyCompleted = completedActions.includes(actionId)
@@ -289,7 +202,7 @@ export function LessonDetail({
 
     try {
       await toggleActionCompleted(lesson.day_number, actionId, !isCurrentlyCompleted)
-    } catch (error) {
+    } catch {
       setCompletedActions(completedActions)
       toast.error("Failed to update action")
     }
@@ -299,11 +212,7 @@ export function LessonDetail({
   const totalActionsCount = actions.length
   const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
 
-  // Calculate overall day progress based on user actions only:
-  // 1. Viewed the lesson (progress record exists)
-  // 2. Completed at least one action
-  // 3. Wrote a reflection
-  // 4. Marked day as complete
+  // Calculate overall day progress based on user actions only
   const hasViewedLesson = !!progress
   const progressSteps = [
     hasViewedLesson ? 1 : 0,
@@ -393,6 +302,15 @@ export function LessonDetail({
     toast.success("Quote saved to your collection")
   }
 
+  const getPriorityStyles = (priority: string) => {
+    switch (priority) {
+      case 'primary': return { bg: phase.bgLight, text: phase.textLight, label: 'Core' }
+      case 'secondary': return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Growth' }
+      case 'stretch': return { bg: 'bg-purple-50', text: 'text-purple-700', label: 'Stretch' }
+      default: return { bg: 'bg-slate-100', text: 'text-slate-700', label: 'Action' }
+    }
+  }
+
   if (isLocked) {
     return (
       <div className="max-w-3xl mx-auto animate-fade-in">
@@ -449,7 +367,6 @@ export function LessonDetail({
 
       {/* Session Header - Emotional Entry Point */}
       <div className="relative animate-slide-up" style={{ animationDelay: '60ms' }}>
-        {/* Premium Header Card */}
         <Card className={cn(
           "overflow-hidden border-0 shadow-lg",
           "bg-gradient-to-br from-card via-card to-muted/30"
@@ -507,7 +424,7 @@ export function LessonDetail({
               )}
             </div>
 
-            {/* Streak indicator (mock for now) */}
+            {/* Streak indicator */}
             <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border/50">
               <Flame className={cn("h-4 w-4", phase.textLight)} />
               <span className="text-sm text-muted-foreground">
@@ -571,7 +488,6 @@ export function LessonDetail({
               "shadow-md hover:shadow-lg border-0",
               "relative"
             )} style={{ animationDelay: '180ms' }}>
-              {/* Glow Effect on Hover */}
               <div className={cn(
                 "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none",
                 "bg-gradient-to-r from-transparent via-accent/5 to-transparent"
@@ -752,12 +668,71 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* 7. Reflection Quote - Emotional Layer */}
+          {/* 7. Executive Challenge - NEW V2 Section */}
+          {lesson.executive_challenge && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0",
+              "bg-gradient-to-br from-card via-card to-amber-500/5"
+            )} style={{ animationDelay: '280ms' }}>
+              <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className="p-2 rounded-xl bg-amber-500/10">
+                      <Trophy className="h-5 w-5 text-amber-600" />
+                    </div>
+                    Executive Challenge
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider font-medium text-amber-600 border-amber-500/30">
+                    Level Up
+                  </Badge>
+                </div>
+                <CardDescription>
+                  Push beyond your comfort zone with this high-impact challenge
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="rounded-xl p-5 bg-amber-50/50 border border-amber-200/50">
+                  <MarkdownContent content={lesson.executive_challenge} className="text-foreground leading-relaxed" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 8. Score Metric - NEW V2 Section */}
+          {lesson.score_metric && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '290ms' }}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                      <BarChart3 className={cn("h-5 w-5", phase.textLight)} />
+                    </div>
+                    Success Metric
+                  </CardTitle>
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
+                    Measure Progress
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className={cn("rounded-xl p-5 border-2 border-dashed", phase.border)}>
+                  <MarkdownContent content={lesson.score_metric} className="text-foreground leading-relaxed" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 9. Reflection Quote - Emotional Layer */}
           {lesson.quote && (
             <Card className={cn(
               "overflow-hidden border-0 shadow-md animate-slide-up",
               "bg-gradient-to-br from-muted/30 via-card to-card"
-            )} style={{ animationDelay: '240ms' }}>
+            )} style={{ animationDelay: '300ms' }}>
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <Quote className={cn("h-8 w-8 flex-shrink-0 mt-1", phase.textLight)} />
@@ -784,51 +759,46 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* 4. Today's Actions - Behavioral Energy */}
-          <Card className={cn(
-            "overflow-hidden transition-all duration-300 animate-slide-up",
-            "shadow-md border-0"
-          )} style={{ animationDelay: '300ms' }}>
-            <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-3 text-lg font-bold">
-                  <div className={cn("p-2 rounded-xl", phase.bgLight)}>
-                    <Target className={cn("h-5 w-5", phase.textLight)} />
-                  </div>
-                  Today&apos;s Actions
-                </CardTitle>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-foreground">
-                    {actionsCompletedCount}/{totalActionsCount}
-                  </span>
-                  <span className="text-sm text-muted-foreground">completed</span>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className={cn("h-2 rounded-full overflow-hidden", phase.bgLight)}>
-                  <div 
-                    className={cn("h-full rounded-full transition-all duration-700 ease-out", phase.bg)}
-                    style={{ width: `${actionsProgress}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Actions List */}
-              <div className="space-y-3">
-                  {isGeneratingActions ? (
-                    <div className="flex items-center justify-center py-8 text-muted-foreground">
-                      <div className="flex items-center gap-3">
-                        <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        <span className="text-sm">Generating personalized actions...</span>
-                      </div>
+          {/* 10. Today's Actions - From Table Data Only */}
+          {actions.length > 0 && (
+            <Card className={cn(
+              "overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md border-0"
+            )} style={{ animationDelay: '320ms' }}>
+              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                      <Target className={cn("h-5 w-5", phase.textLight)} />
                     </div>
-                  ) : actions.map((action, index) => {
+                    Today&apos;s Actions
+                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-foreground">
+                      {actionsCompletedCount}/{totalActionsCount}
+                    </span>
+                    <span className="text-sm text-muted-foreground">completed</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {/* Progress Bar */}
+                <div className="mb-6">
+                  <div className={cn("h-2 rounded-full overflow-hidden", phase.bgLight)}>
+                    <div 
+                      className={cn("h-full rounded-full transition-all duration-700 ease-out", phase.bg)}
+                      style={{ width: `${actionsProgress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Actions List */}
+                <div className="space-y-3">
+                  {actions.map((action, index) => {
                     const isActionCompleted = completedActions.includes(action.id)
                     const wasJustCompleted = justCompleted === action.id
+                    const priorityStyles = getPriorityStyles(action.priority)
                     return (
                       <div 
                         key={action.id}
@@ -866,18 +836,10 @@ export function LessonDetail({
                             </h4>
                             <span className={cn(
                               "px-2.5 py-1 text-[10px] font-semibold rounded-full uppercase tracking-wide",
-                              getDifficultyColor(action.difficulty)
+                              priorityStyles.bg, priorityStyles.text
                             )}>
-                              {action.difficulty}
+                              {priorityStyles.label}
                             </span>
-                            {action.isFromDB && (
-                              <span className={cn(
-                                "px-2.5 py-1 text-[10px] font-semibold rounded-full uppercase tracking-wide",
-                                phase.bgLight, phase.textLight
-                              )}>
-                                Core
-                              </span>
-                            )}
                           </div>
                           <p className={cn(
                             "text-sm leading-relaxed transition-all duration-300",
@@ -899,28 +861,22 @@ export function LessonDetail({
                       </div>
                     )
                   })}
-              </div>
-
-              {/* Motivation Message */}
-              {actionsCompletedCount > 0 && actionsCompletedCount === totalActionsCount && (
-                <div className={cn(
-                  "mt-6 p-4 rounded-xl text-center animate-fade-in",
-                  phase.bgLight
-                )}>
-                  <p className={cn("font-medium", phase.textLight)}>
-                    You are building pattern recognition.
-                  </p>
                 </div>
-              )}
 
-              {actions.length > 0 && actionsCompletedCount < totalActionsCount && (
-                <p className="text-xs text-muted-foreground mt-6 text-center">
-                  <Sparkles className="h-3 w-3 inline mr-1" />
-                  Actions personalized for today&apos;s leadership theme
-                </p>
-              )}
-            </CardContent>
-          </Card>
+                {/* Motivation Message */}
+                {actionsCompletedCount > 0 && actionsCompletedCount === totalActionsCount && (
+                  <div className={cn(
+                    "mt-6 p-4 rounded-xl text-center animate-fade-in",
+                    phase.bgLight
+                  )}>
+                    <p className={cn("font-medium", phase.textLight)}>
+                      All actions completed! You are building pattern recognition.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Pod Discussion Prompt */}
           {lesson.pod_discussion_prompt && (
@@ -954,11 +910,11 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* Strategic Reflection - Now with Journal */}
+          {/* Strategic Reflection - Final Section */}
           <Card className={cn(
             "overflow-hidden shadow-lg animate-slide-up",
             "bg-gradient-to-br from-card via-card to-primary/5 border-0"
-          )} style={{ animationDelay: '400ms' }}>
+          )} style={{ animationDelay: '400ms' }} data-reflection>
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-xl font-bold tracking-tight">
                 <Sparkles className="h-6 w-6 text-accent" />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -14,14 +14,12 @@ import {
   CheckCircle2, 
   Sparkles, 
   Play, 
-  Clock, 
   Trophy,
   Star,
   Calendar,
   BookOpen,
   ArrowRight,
   ArrowLeft,
-
   Square,
   CheckSquare,
   TrendingUp,
@@ -31,7 +29,7 @@ import {
   Video
 } from "lucide-react"
 import Link from "next/link"
-import { toggleActionCompleted, generateBoldActions, saveActionsToProgress } from "@/app/actions/ai-actions"
+import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 import { ProgressRing } from "@/components/ui/progress-ring"
 
@@ -70,7 +68,7 @@ function QuoteDisplay({ quote }: { quote: string }) {
   )
 }
 
-// SIGNAL™ phase color configurations - Monochromatic Blue-Teal Gradient Palette
+// SIGNAL phase color configurations - Monochromatic Blue-Teal Gradient Palette
 const signalPhases = [
   {
     letter: "S",
@@ -156,8 +154,7 @@ interface ActionItem {
   id: number
   title: string
   description: string
-  difficulty: 'easy' | 'medium' | 'bold'
-  isFromDB?: boolean
+  priority: 'primary' | 'secondary' | 'stretch'
 }
 
 interface OfficeHours {
@@ -199,22 +196,22 @@ interface TodayDashboardProps {
     micro_case: string | null
     reflection_question: string | null
     thought_to_work_on: string | null
-    // Actions
+    // Actions from table (3 actions)
     action_for_today: string | null
     action_for_today1: string | null
     action_for_today2: string | null
     // Pod
     pod_discussion_prompt: string | null
-    // Quote
+    // Additional V2 fields
+    executive_challenge: string | null
+    score_metric: string | null
     quote: string | null
   } | null
   todayProgress: {
     id: string
     completed: boolean
     reflection_text: string | null
-    ai_action: string | null
     actions_completed?: number[]
-    ai_actions?: ActionItem[]
   } | null
   completedDays: number
   streak: number
@@ -236,7 +233,6 @@ export function TodayDashboard({
   const [reflection, setReflection] = useState(todayProgress?.reflection_text || "")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCompleted, setIsCompleted] = useState(todayProgress?.completed || false)
-  const [actions, setActions] = useState<ActionItem[]>([])
   const [completedActions, setCompletedActions] = useState<number[]>(todayProgress?.actions_completed || [])
   const router = useRouter()
   const supabase = createClient()
@@ -246,104 +242,30 @@ export function TodayDashboard({
 
   // Get the current phase colors
   const currentPhaseColors = signalPhases.find(
-    p => currentDay >= p.dayStart && currentDay <= p.dayEnd
+    p => currentDay >= p.dayStart && p <= p.dayEnd
   ) || signalPhases[0]
 
-  const [isGeneratingActions, setIsGeneratingActions] = useState(false)
-
-  // Load actions - 1st from database, other 3 from AI
-  useEffect(() => {
-    async function loadActions() {
-      if (!todayLesson) return
-
-      // Check if we already have saved AI actions
-      if (todayProgress?.ai_actions && todayProgress.ai_actions.length > 0) {
-        // Combine DB action with saved AI actions
-        const allActions: ActionItem[] = []
-        
-        // First action from database
-        if (todayLesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-        
-        // Add saved AI actions
-        todayProgress.ai_actions.forEach((action, index) => {
-          allActions.push({
-            ...action,
-            id: index + 1
-          })
-        })
-        
-        setActions(allActions)
-        return
-      }
-
-      // Generate new AI actions
-      setIsGeneratingActions(true)
-      try {
-        const theme = todayLesson.focus_area || todayLesson.phase_name || 'Leadership'
-        const goal = todayLesson.phase_goal || 'Develop your leadership skills'
-        const coreAction = todayLesson.action_for_today || ''
-
-        const { actions: aiActions } = await generateBoldActions(
-          currentDay,
-          theme,
-          goal,
-          coreAction
-        )
-
-        // Build combined actions list
-        const allActions: ActionItem[] = []
-        
-        // First action from database
-        if (todayLesson.action_for_today) {
-          allActions.push({
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          })
-        }
-
-        // Add AI-generated actions
-        aiActions.forEach((action, index) => {
-          allActions.push({
-            ...action,
-            id: index + 1
-          })
-        })
-
-        setActions(allActions)
-
-        // Save AI actions to progress for future loads
-        if (aiActions.length > 0) {
-          await saveActionsToProgress(currentDay, aiActions)
-        }
-      } catch (error) {
-        // Fallback to just the DB action
-        if (todayLesson.action_for_today) {
-          setActions([{
-            id: 0,
-            title: "Today's Core Action",
-            description: todayLesson.action_for_today,
-            difficulty: 'medium',
-            isFromDB: true
-          }])
-        }
-      } finally {
-        setIsGeneratingActions(false)
-      }
-    }
-
-    loadActions()
-  }, [todayLesson, currentDay, todayProgress?.ai_actions])
+  // Build actions from table data only (no AI generation)
+  const actions: ActionItem[] = todayLesson ? [
+    todayLesson.action_for_today && {
+      id: 0,
+      title: "Primary Action",
+      description: todayLesson.action_for_today,
+      priority: 'primary' as const
+    },
+    todayLesson.action_for_today1 && {
+      id: 1,
+      title: "Secondary Action",
+      description: todayLesson.action_for_today1,
+      priority: 'secondary' as const
+    },
+    todayLesson.action_for_today2 && {
+      id: 2,
+      title: "Stretch Action",
+      description: todayLesson.action_for_today2,
+      priority: 'stretch' as const
+    },
+  ].filter((action): action is ActionItem => Boolean(action)) : []
 
   const handleToggleAction = async (actionId: number) => {
     if (!todayLesson) return
@@ -357,7 +279,7 @@ export function TodayDashboard({
 
     try {
       await toggleActionCompleted(currentDay, actionId, !isCurrentlyCompleted)
-    } catch (error) {
+    } catch {
       // Revert on error
       setCompletedActions(completedActions)
       toast.error("Failed to update action")
@@ -477,11 +399,6 @@ export function TodayDashboard({
   const actionsProgress = totalActionsCount > 0 ? Math.round((actionsCompletedCount / totalActionsCount) * 100) : 0
 
   // Calculate day progress for the progress ring
-  // Progress is based on user actions only:
-  // 1. Viewed the lesson (todayProgress exists, meaning user visited the lesson page)
-  // 2. Completed at least one action
-  // 3. Wrote a reflection (reflection text exists)
-  // 4. Marked day as complete
   const hasViewedLesson = !!todayProgress
   const dayProgressSteps = [
     hasViewedLesson ? 1 : 0,
@@ -491,12 +408,12 @@ export function TodayDashboard({
   ]
   const dayProgress = Math.round((dayProgressSteps.filter(Boolean).length / 4) * 100)
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'bg-signal-s-light text-signal-s'
-      case 'medium': return 'bg-signal-g-light text-signal-g'
-      case 'bold': return 'bg-signal-l-light text-signal-l'
-      default: return 'bg-slate-100 text-slate-700'
+  const getPriorityStyles = (priority: string) => {
+    switch (priority) {
+      case 'primary': return { bg: currentPhaseColors.bgActive, text: currentPhaseColors.textActive, label: 'Core' }
+      case 'secondary': return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Growth' }
+      case 'stretch': return { bg: 'bg-purple-50', text: 'text-purple-700', label: 'Stretch' }
+      default: return { bg: 'bg-slate-100', text: 'text-slate-700', label: 'Action' }
     }
   }
 
@@ -506,27 +423,27 @@ export function TodayDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
- {/* Quote of the Day - Executive Two-Tone Style */}
-  {todayLesson?.quote && (
-  <div className="relative bg-gradient-to-br from-slate-50 via-white to-signal-s-light/20 rounded-2xl p-10 lg:p-12 border border-border/50 card-executive overflow-hidden">
-  {/* Decorative background elements */}
-  <div className="absolute inset-0 opacity-[0.03]">
-    <div className="absolute top-0 right-0 w-64 h-64 bg-signal-s rounded-full blur-3xl" />
-    <div className="absolute bottom-0 left-0 w-48 h-48 bg-signal-n rounded-full blur-3xl" />
-  </div>
-  <div className="relative z-10 text-center">
-    <p className="text-sm font-semibold text-signal-s tracking-wide uppercase mb-4 flex items-center justify-center gap-2">
-      <Sparkles className="h-4 w-4" />
-      Today&apos;s Leadership Insight
-    </p>
-    <QuoteDisplay quote={todayLesson.quote} />
-    <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
-      <Calendar className="h-4 w-4" />
-      {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-    </div>
-  </div>
-  </div>
-  )}
+          {/* Quote of the Day - Executive Two-Tone Style */}
+          {todayLesson?.quote && (
+            <div className="relative bg-gradient-to-br from-slate-50 via-white to-signal-s-light/20 rounded-2xl p-10 lg:p-12 border border-border/50 card-executive overflow-hidden">
+              {/* Decorative background elements */}
+              <div className="absolute inset-0 opacity-[0.03]">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-signal-s rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-signal-n rounded-full blur-3xl" />
+              </div>
+              <div className="relative z-10 text-center">
+                <p className="text-sm font-semibold text-signal-s tracking-wide uppercase mb-4 flex items-center justify-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Today&apos;s Leadership Insight
+                </p>
+                <QuoteDisplay quote={todayLesson.quote} />
+                <div className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  {today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Welcome Header */}
           <div className="flex items-center justify-between">
@@ -692,8 +609,8 @@ export function TodayDashboard({
             )}
           </div>
 
-          {/* Today's Strategic Actions */}
-          {todayLesson && (
+          {/* Today's Strategic Actions - Table Based Only */}
+          {todayLesson && actions.length > 0 && (
             <div className="bg-card rounded-2xl p-6 border border-border card-executive">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -724,70 +641,60 @@ export function TodayDashboard({
 
               {/* Actions List */}
               <div className="space-y-3">
-                  {isGeneratingActions ? (
-                    <div className="flex items-center justify-center py-8 text-muted-foreground">
-                      <div className="flex items-center gap-3">
-                        <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        <span className="text-sm">Generating personalized actions...</span>
+                {actions.map((action) => {
+                  const isActionCompleted = completedActions.includes(action.id)
+                  const priorityStyles = getPriorityStyles(action.priority)
+                  return (
+                    <div 
+                      key={action.id}
+                      onClick={() => handleToggleAction(action.id)}
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all",
+                        isActionCompleted 
+                          ? "bg-slate-50 border-slate-200" 
+                          : "bg-card border-border hover:border-slate-300 hover:shadow-sm"
+                      )}
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {isActionCompleted ? (
+                          <CheckSquare className={cn("h-5 w-5", currentPhaseColors.textActive)} />
+                        ) : (
+                          <Square className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className={cn(
+                            "font-medium text-sm",
+                            isActionCompleted ? "line-through text-muted-foreground" : "text-foreground"
+                          )}>
+                            {action.title}
+                          </h4>
+                          <span className={cn(
+                            "px-2 py-0.5 text-[10px] font-medium rounded-full uppercase",
+                            priorityStyles.bg, priorityStyles.text
+                          )}>
+                            {priorityStyles.label}
+                          </span>
+                        </div>
+                        <p className={cn(
+                          "text-sm",
+                          isActionCompleted ? "text-muted-foreground/70" : "text-muted-foreground"
+                        )}>
+                          {action.description}
+                        </p>
                       </div>
                     </div>
-                  ) : actions.map((action) => {
-                    const isActionCompleted = completedActions.includes(action.id)
-                    return (
-                      <div 
-                        key={action.id}
-                        onClick={() => handleToggleAction(action.id)}
-                        className={cn(
-                          "flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all",
-                          isActionCompleted 
-                            ? "bg-slate-50 border-slate-200" 
-                            : "bg-card border-border hover:border-slate-300 hover:shadow-sm"
-                        )}
-                      >
-                        <div className="flex-shrink-0 mt-0.5">
-                          {isActionCompleted ? (
-                            <CheckSquare className={cn("h-5 w-5", currentPhaseColors.textActive)} />
-                          ) : (
-                            <Square className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className={cn(
-                              "font-medium text-sm",
-                              isActionCompleted ? "line-through text-muted-foreground" : "text-foreground"
-                            )}>
-                              {action.title}
-                            </h4>
-                            <span className={cn(
-                              "px-2 py-0.5 text-[10px] font-medium rounded-full uppercase",
-                              getDifficultyColor(action.difficulty)
-                            )}>
-                              {action.difficulty}
-                            </span>
-                            {action.isFromDB && (
-                              <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary/10 text-primary uppercase">
-                                Core
-                              </span>
-                            )}
-                          </div>
-                          <p className={cn(
-                            "text-sm",
-                            isActionCompleted ? "text-muted-foreground/70" : "text-muted-foreground"
-                          )}>
-                            {action.description}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
+                  )
+                })}
               </div>
 
-              {actions.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-4 text-center">
-                  <Sparkles className="h-3 w-3 inline mr-1" />
-                  Actions are personalized based on today&apos;s lesson theme
-                </p>
+              {actionsCompletedCount === totalActionsCount && totalActionsCount > 0 && (
+                <div className={cn("mt-4 p-3 rounded-xl text-center", currentPhaseColors.bgActive)}>
+                  <p className={cn("text-sm font-medium", currentPhaseColors.textActive)}>
+                    All actions completed! Great progress today.
+                  </p>
+                </div>
               )}
             </div>
           )}
@@ -841,7 +748,7 @@ export function TodayDashboard({
             </div>
           )}
 
-          {/* SIGNAL™ Leadership Pathway */}
+          {/* SIGNAL Leadership Pathway */}
           <div className="bg-card rounded-2xl p-6 border border-border card-executive">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-foreground tracking-tight section-title-executive">Your SIGNAL&trade; Pathway</h3>
@@ -1108,12 +1015,12 @@ export function TodayDashboard({
 
 function getSIGNALPhase(currentDay: number) {
   const phases = [
-    { name: "Self-Awareness", range: [1, 15] },
-    { name: "Interpretation", range: [16, 30] },
-    { name: "Goals & Strategy", range: [31, 45] },
-    { name: "Navigation", range: [46, 60] },
-    { name: "Action & Execution", range: [61, 75] },
-    { name: "Leadership Identity", range: [76, 90] },
+    { name: "Self-Awareness", range: [1, 15], letter: "S" },
+    { name: "Interpretation", range: [16, 30], letter: "I" },
+    { name: "Goals & Strategy", range: [31, 45], letter: "G" },
+    { name: "Navigation", range: [46, 60], letter: "N" },
+    { name: "Action & Execution", range: [61, 75], letter: "A" },
+    { name: "Leadership Identity", range: [76, 90], letter: "L" },
   ]
   return phases.find(p => currentDay >= p.range[0] && currentDay <= p.range[1]) || phases[0]
 }
