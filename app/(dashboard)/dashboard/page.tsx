@@ -31,10 +31,10 @@ export default async function DashboardPage() {
     ? Math.min(Math.max(...completedDays) + 1, 90)
     : 1
 
-  // Get today's lesson with quote
+  // Get today's lesson from V2_daily_lessons
   const { data: todayLesson } = await supabase
-    .from("daily_lessons")
-    .select("*, quote")
+    .from("V2_daily_lessons")
+    .select("*")
     .eq("day_number", currentDay)
     .single()
 

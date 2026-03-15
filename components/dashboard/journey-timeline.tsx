@@ -22,10 +22,24 @@ interface Lesson {
   day_number: number
   phase: string
   phase_name: string
+  phase_subtitle: string | null
   phase_goal: string | null
+  phase_key_question: string | null
   focus_area: string | null
   focus_reframe_technique: string | null
+  leader_example: string | null
   mental_model: string | null
+  ai_leadership_lens: string | null
+  micro_case: string | null
+  reflection_question: string | null
+  thought_to_work_on: string | null
+  action_for_today: string | null
+  action_for_today1: string | null
+  action_for_today2: string | null
+  pod_discussion_prompt: string | null
+  executive_challenge: string | null
+  score_metric: string | null
+  quote: string | null
 }
 
 interface JourneyProgress {

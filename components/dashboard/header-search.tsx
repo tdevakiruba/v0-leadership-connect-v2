@@ -78,11 +78,11 @@ export function HeaderSearch() {
              p.description?.toLowerCase().includes(lowerQuery)
       )
 
-      // Search lessons from Supabase
+      // Search lessons from V2_daily_lessons
       const { data: lessons } = await supabase
-        .from("daily_lessons")
-        .select("id, day_number, focus_area, focus_reframe_technique")
-        .or(`focus_area.ilike.%${query}%,focus_reframe_technique.ilike.%${query}%`)
+        .from("V2_daily_lessons")
+        .select("id, day_number, focus_area, focus_reframe_technique, phase_name")
+        .or(`focus_area.ilike.%${query}%,focus_reframe_technique.ilike.%${query}%,phase_name.ilike.%${query}%`)
         .limit(5)
 
       const lessonResults: SearchResult[] = (lessons || []).map(lesson => ({
