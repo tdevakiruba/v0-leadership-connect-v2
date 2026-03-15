@@ -59,7 +59,9 @@ Make them concrete and real-world applicable for a professional/leader context. 
     })
 
     const content = response.choices[0]?.message?.content
+    console.log("[v0] Raw API response content:", content)
     const generated = content ? JSON.parse(content) as { actions: Array<{ id: number; title: string; description: string; difficulty: 'easy' | 'medium' | 'bold' }> } : { actions: [] }
+    console.log("[v0] Parsed generated actions:", generated.actions.length)
 
     // Deduplicate: remove any AI action whose title or description is too similar to actionForToday
     const coreNormalized = actionForToday.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
@@ -75,20 +77,27 @@ Make them concrete and real-world applicable for a professional/leader context. 
         titleNorm === coreNormalized ||
         descNorm === coreNormalized
       )) {
+        console.log("[v0] Filtered out duplicate action:", action.title)
         return false
       }
       return true
     })
+    console.log("[v0] After dedup with core action:", deduped.length)
 
     // Also deduplicate among the AI actions themselves
     const seen = new Set<string>()
     const uniqueActions = deduped.filter(action => {
       const key = action.title.toLowerCase().trim()
-      if (seen.has(key)) return false
+      if (seen.has(key)) {
+        console.log("[v0] Filtered out duplicate among AI actions:", action.title)
+        return false
+      }
       seen.add(key)
       return true
     })
+    console.log("[v0] Final unique actions count:", uniqueActions.length)
 
+    console.log("[v0] Returning actions:", JSON.stringify(uniqueActions, null, 2))
     return { actions: uniqueActions }
   } catch (error) {
     console.error('[v0] Error generating bold actions:', error)
@@ -122,10 +131,14 @@ export async function saveActionsToProgress(
   dayNumber: number,
   aiActions: Array<{ id: number; title: string; description: string; difficulty: string }>
 ) {
+  console.log("[v0] saveActionsToProgress called with", aiActions.length, "actions for day", dayNumber)
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
+  if (!user) {
+    console.error("[v0] No user authenticated")
+    throw new Error('Not authenticated')
+  }
 
   // First check if progress exists
   const { data: existing } = await supabase
@@ -135,15 +148,23 @@ export async function saveActionsToProgress(
     .eq('day_number', dayNumber)
     .single()
 
+  console.log("[v0] Existing progress found:", !!existing)
+
   if (existing) {
+    console.log("[v0] Updating existing progress")
     const { error } = await supabase
       .from('user_progress')
       .update({ ai_actions: aiActions })
       .eq('user_id', user.id)
       .eq('day_number', dayNumber)
 
-    if (error) throw error
+    if (error) {
+      console.error("[v0] Error updating progress:", error)
+      throw error
+    }
+    console.log("[v0] Successfully updated progress")
   } else {
+    console.log("[v0] Creating new progress record")
     const { error } = await supabase
       .from('user_progress')
       .insert({ 
@@ -152,7 +173,11 @@ export async function saveActionsToProgress(
         ai_actions: aiActions 
       })
 
-    if (error) throw error
+    if (error) {
+      console.error("[v0] Error creating progress:", error)
+      throw error
+    }
+    console.log("[v0] Successfully created progress record")
   }
   
   return { success: true }
