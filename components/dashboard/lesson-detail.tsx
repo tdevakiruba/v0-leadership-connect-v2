@@ -440,38 +440,16 @@ export function LessonDetail({
 
               {/* Right Column: Day Badge */}
               <div className="hidden lg:flex items-center justify-end">
-                <div className="relative">
-                  {/* Subtle background circle */}
-                  <div className={cn(
-                    "absolute inset-0 rounded-full blur-2xl opacity-20",
-                    phase.bg
-                  )} style={{
-                    width: '300px',
-                    height: '300px',
-                    transform: 'translate(-50%, -50%)',
-                    right: '-50px',
-                    top: '50%'
-                  }} />
-                  
-                  {/* Day badge image */}
-                  <div className={cn(
-                    "relative w-48 h-48 rounded-3xl shadow-lg overflow-hidden",
-                    phase.bgLight
-                  )}>
-                    <Image
-                      src="/images/day-badge-template.jpg"
-                      alt={`Day ${lesson.day_number}`}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                    
-                    {/* Day number overlay text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-transparent to-black/10">
-                      <span className={cn("text-sm font-bold uppercase tracking-widest", phase.textLight)}>Day</span>
-                      <span className={cn("text-6xl font-bold", phase.text)}>{lesson.day_number}</span>
-                    </div>
-                  </div>
+                <div className={cn(
+                  "flex flex-col items-center justify-center w-44 h-44 rounded-3xl shadow-md",
+                  phase.bg
+                )}>
+                  <span className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
+                    DAY
+                  </span>
+                  <span className="text-8xl font-bold leading-none text-white tabular-nums">
+                    {lesson.day_number}
+                  </span>
                 </div>
               </div>
             </div>
