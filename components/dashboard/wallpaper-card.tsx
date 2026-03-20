@@ -505,7 +505,7 @@ function WallpaperExport({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <RebootLogoSVG size={48} />
+          <RebootLogoImage size={48} />
           <div style={{ fontSize: "28px", color: colors.accent, fontWeight: 600, letterSpacing: "0.08em" }}>
             Reboot.TransformerHub.com
           </div>
