@@ -472,11 +472,11 @@ export function TodayDashboard({
                 {todayLesson && (
                   <WallpaperDownloadButton
                     dayNumber={currentDay}
-                    phaseName={todayLesson.phase_name}
-                    phaseLabel={`SIGNAL Phase ${todayLesson.phase}`}
-                    quote={todayLesson.quote}
-                    mentalModel={todayLesson.mental_model}
-                    scoreMetric={todayLesson.score_metric}
+                    phaseName={todayLesson.phase_name || "Self Awareness"}
+                    phaseLabel={`SIGNAL Phase ${todayLesson.phase || "S"}`}
+                    quote={todayLesson.quote || ""}
+                    mentalModel={todayLesson.mental_model || ""}
+                    scoreMetric={todayLesson.score_metric || ""}
                     phaseColor=""
                     variant="outline"
                   />
