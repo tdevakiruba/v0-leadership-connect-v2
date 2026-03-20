@@ -20,6 +20,7 @@ interface WallpaperCardProps {
   quote: string | null
   mentalModel: string | null
   leaderExample?: string | null
+  reflectionQuestion?: string | null
   phaseColor: string
 }
 
@@ -128,6 +129,7 @@ export function WallpaperPreview({
   quote,
   mentalModel,
   leaderExample,
+  reflectionQuestion,
 }: WallpaperCardProps) {
   const colors = getPhaseColors(phaseName)
 
@@ -307,6 +309,7 @@ function WallpaperExport({
   quote,
   mentalModel,
   leaderExample,
+  reflectionQuestion,
 }: WallpaperCardProps) {
   const colors = getPhaseColors(phaseName)
 
@@ -455,6 +458,34 @@ function WallpaperExport({
           </div>
         )}
 
+        {/* Reflection Question section */}
+        {reflectionQuestion && (
+          <div
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              borderRadius: "24px",
+              padding: "40px",
+              border: "2px solid rgba(255,255,255,0.04)",
+              marginTop: "auto",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+              <div style={{ background: `${colors.bg}20`, borderRadius: "12px", padding: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={colors.bg} strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+              </div>
+              <span style={{ fontSize: "18px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.accent }}>
+                Reflect
+              </span>
+            </div>
+            <div style={{ fontSize: "28px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.6, fontStyle: "italic" }}>
+              {stripMarkdown(reflectionQuestion).substring(0, 140)}
+            </div>
+          </div>
+        )}
+
         {/* Call-to-action with leader example */}
         {leaderExample && (
           <div style={{ marginTop: "auto", paddingTop: "30px" }}>
@@ -500,6 +531,7 @@ export function WallpaperDownloadButton({
   quote,
   mentalModel,
   leaderExample,
+  reflectionQuestion,
   variant = "outline",
 }: WallpaperCardProps & { variant?: "outline" | "ghost" | "default" }) {
   const [open, setOpen] = useState(false)
@@ -563,6 +595,7 @@ export function WallpaperDownloadButton({
               quote={quote}
               mentalModel={mentalModel}
               leaderExample={leaderExample}
+              reflectionQuestion={reflectionQuestion}
               phaseColor=""
             />
           </div>
@@ -608,6 +641,7 @@ export function WallpaperDownloadButton({
             quote={quote}
             mentalModel={mentalModel}
             leaderExample={leaderExample}
+            reflectionQuestion={reflectionQuestion}
             phaseColor=""
           />
         </div>
