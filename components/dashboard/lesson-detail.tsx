@@ -507,10 +507,34 @@ export function LessonDetail({
                 <div className="text-foreground leading-relaxed text-lg">
                   <MarkdownContent content={lesson.thought_to_work_on!} className="text-foreground text-lg" />
                 </div>
-                
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 3. Reflection Question */}
+          {lesson.reflection_question && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '200ms' }}>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                  <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                    <HelpCircle className={cn("h-5 w-5", phase.textLight)} />
+                  </div>
+                  Reflection Question
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className={cn("rounded-xl p-5", phase.bgLight)}>
+                  <p className={cn("text-lg font-medium", phase.textLight)}>
+                    <MarkdownContent content={lesson.reflection_question} inline />
+                  </p>
+                </div>
+
                 {/* Interactive Reflect Section */}
                 <div className={cn(
-                  "rounded-xl border-2 border-dashed transition-all duration-300",
+                  "mt-4 rounded-xl border-2 border-dashed transition-all duration-300",
                   showJournal ? cn("border-solid", phase.border, phase.bgLight) : "border-muted-foreground/20 hover:border-muted-foreground/40"
                 )}>
                   {!showJournal ? (
@@ -548,30 +572,6 @@ export function LessonDetail({
                       </div>
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* 3. Reflection Question */}
-          {lesson.reflection_question && (
-            <Card className={cn(
-              "group overflow-hidden transition-all duration-300 animate-slide-up",
-              "shadow-md hover:shadow-lg border-0"
-            )} style={{ animationDelay: '200ms' }}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-3 text-lg font-bold">
-                  <div className={cn("p-2 rounded-xl", phase.bgLight)}>
-                    <HelpCircle className={cn("h-5 w-5", phase.textLight)} />
-                  </div>
-                  Reflection Question
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className={cn("rounded-xl p-5", phase.bgLight)}>
-                  <p className={cn("text-lg font-medium", phase.textLight)}>
-                    <MarkdownContent content={lesson.reflection_question} inline />
-                  </p>
                 </div>
               </CardContent>
             </Card>
