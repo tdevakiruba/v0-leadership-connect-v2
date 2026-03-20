@@ -214,8 +214,8 @@ export function WallpaperPreview({
                 Quote
               </span>
             </div>
-            <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5, fontStyle: "italic", paddingLeft: "7px", borderLeft: `2px solid ${colors.bg}` }}>
-              &ldquo;{stripMarkdown(quote).substring(0, 110)}&rdquo;
+            <div style={{ fontSize: "7px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.4, fontStyle: "italic", paddingLeft: "7px", borderLeft: `2px solid ${colors.bg}` }}>
+              &ldquo;{stripMarkdown(quote).substring(0, 85)}&rdquo;
             </div>
           </div>
         )}
@@ -229,8 +229,8 @@ export function WallpaperPreview({
                 Mental Model
               </span>
             </div>
-            <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
-              {stripMarkdown(mentalModel).substring(0, 90)}
+            <div style={{ fontSize: "7px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.4 }}>
+              {stripMarkdown(mentalModel).substring(0, 75)}
             </div>
           </div>
         )}
@@ -244,8 +244,8 @@ export function WallpaperPreview({
                 Reflect
               </span>
             </div>
-            <div style={{ fontSize: "9px", fontWeight: 600, color: "#f1f5f9", lineHeight: 1.5, fontStyle: "italic" }}>
-              {stripMarkdown(reflectionQuestion).substring(0, 90)}
+            <div style={{ fontSize: "7px", fontWeight: 600, color: "#f1f5f9", lineHeight: 1.4, fontStyle: "italic" }}>
+              {stripMarkdown(reflectionQuestion).substring(0, 75)}
             </div>
           </div>
         )}
@@ -365,8 +365,8 @@ function WallpaperExport({
                 Quote
               </span>
             </div>
-            <div style={{ fontSize: "40px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5, fontStyle: "italic", paddingLeft: "32px", borderLeft: `6px solid ${colors.bg}` }}>
-              &ldquo;{stripMarkdown(quote).substring(0, 200)}&rdquo;
+            <div style={{ fontSize: "32px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.4, fontStyle: "italic", paddingLeft: "32px", borderLeft: `6px solid ${colors.bg}` }}>
+              &ldquo;{stripMarkdown(quote).substring(0, 160)}&rdquo;
             </div>
           </div>
         )}
@@ -382,8 +382,8 @@ function WallpaperExport({
                 Mental Model
               </span>
             </div>
-            <div style={{ fontSize: "36px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
-              {stripMarkdown(mentalModel).substring(0, 180)}
+            <div style={{ fontSize: "28px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.4 }}>
+              {stripMarkdown(mentalModel).substring(0, 140)}
             </div>
           </div>
         )}
@@ -399,8 +399,8 @@ function WallpaperExport({
                 Reflect
               </span>
             </div>
-            <div style={{ fontSize: "44px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.35, fontStyle: "italic" }}>
-              {stripMarkdown(reflectionQuestion).substring(0, 180)}
+            <div style={{ fontSize: "32px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.3, fontStyle: "italic" }}>
+              {stripMarkdown(reflectionQuestion).substring(0, 140)}
             </div>
           </div>
         )}
