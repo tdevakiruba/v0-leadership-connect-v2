@@ -100,11 +100,16 @@ const TargetIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
 // Reboot Logo SVG (simplified version)
 const RebootLogoSVG = ({ size = 40 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-    <rect width="40" height="40" rx="8" fill="#0d9488" />
-    <path d="M12 14h6v6h-6z" fill="#ffffff" opacity="0.9" />
-    <path d="M20 14h8v3h-8z" fill="#ffffff" opacity="0.7" />
-    <path d="M20 19h8v3h-8z" fill="#ffffff" opacity="0.5" />
-    <path d="M12 22h16v4h-16z" fill="#ffffff" opacity="0.9" />
+    <circle cx="20" cy="20" r="20" fill="#000000" />
+    <path
+      d="M20 8C13.4 8 8 13.4 8 20c0 6.6 5.4 12 12 12s12-5.4 12-12c0-2.4-0.7-4.6-1.9-6.5"
+      fill="none"
+      stroke="#ffffff"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <polygon points="24,12 24,6 28,9" fill="#ffffff" />
   </svg>
 )
 
