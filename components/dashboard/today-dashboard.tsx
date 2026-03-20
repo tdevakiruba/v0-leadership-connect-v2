@@ -32,6 +32,7 @@ import Link from "next/link"
 import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 import { ProgressRing } from "@/components/ui/progress-ring"
+import { WallpaperDownloadButton } from "@/components/dashboard/wallpaper-card"
 
 // Two-tone quote display component with markdown support
 function QuoteDisplay({ quote }: { quote: string }) {
@@ -467,9 +468,23 @@ export function TodayDashboard({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold tracking-tight text-foreground section-title-executive">Today&apos;s Leadership Focus</h2>
-              <Link href="/dashboard/lessons" className={cn("text-sm font-medium hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
-                All Frameworks <ArrowRight className="h-3 w-3" />
-              </Link>
+              <div className="flex items-center gap-3">
+                {todayLesson && (
+                  <WallpaperDownloadButton
+                    dayNumber={currentDay}
+                    phaseName={todayLesson.phase_name}
+                    phaseLabel={`SIGNAL Phase ${todayLesson.phase}`}
+                    quote={todayLesson.quote}
+                    mentalModel={todayLesson.mental_model}
+                    scoreMetric={todayLesson.score_metric}
+                    phaseColor=""
+                    variant="outline"
+                  />
+                )}
+                <Link href="/dashboard/lessons" className={cn("text-sm font-medium hover:opacity-80 flex items-center gap-1", currentPhaseColors.textActive)}>
+                  All Frameworks <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </div>
             
             {todayLesson && (
