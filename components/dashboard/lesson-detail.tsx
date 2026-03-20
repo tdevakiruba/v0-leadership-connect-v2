@@ -553,41 +553,13 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* 3. Mental Model - Thinking Framework */}
-          {lesson.mental_model && (
-            <Card className={cn(
-              "group overflow-hidden transition-all duration-300 animate-slide-up",
-              "shadow-md hover:shadow-lg border-0"
-            )} style={{ animationDelay: '200ms' }}>
-              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
-                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
-                      <Brain className={cn("h-5 w-5", phase.textLight)} />
-                    </div>
-                    Mental Model
-                  </CardTitle>
-                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
-                    Thinking Framework
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-foreground leading-relaxed">
-                  <MarkdownContent content={lesson.mental_model} className="text-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* 4. AI Leadership Lens - Modern Perspective */}
+          {/* 3. AI Leadership Lens - Modern Perspective */}
           {lesson.ai_leadership_lens && (
             <Card className={cn(
               "group overflow-hidden transition-all duration-300 animate-slide-up",
               "shadow-md hover:shadow-lg border-0",
               "bg-gradient-to-br from-card via-card to-blue-500/5"
-            )} style={{ animationDelay: '220ms' }}>
+            )} style={{ animationDelay: '200ms' }}>
               <div className={cn("absolute top-0 left-0 w-1 h-full bg-blue-500")} />
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -1022,6 +994,34 @@ export function LessonDetail({
               )}
             </CardContent>
           </Card>
+
+          {/* Mental Model - Thinking Framework - Moved to Sidebar */}
+          {lesson.mental_model && (
+            <Card className={cn(
+              "group overflow-hidden transition-all duration-300 animate-slide-up",
+              "shadow-md hover:shadow-lg border-0"
+            )} style={{ animationDelay: '220ms' }}>
+              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
+                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+                      <Brain className={cn("h-5 w-5", phase.textLight)} />
+                    </div>
+                    Mental Model
+                  </CardTitle>
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
+                    Thinking Framework
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="text-foreground leading-relaxed">
+                  <MarkdownContent content={lesson.mental_model} className="text-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Next Unlock Preview */}
           {nextLesson && (
