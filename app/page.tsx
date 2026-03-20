@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -74,12 +75,33 @@ const phases = [
   { letter: "L", name: "Leadership Identity", days: "76-90", description: "Cement your evolved leadership presence", bg: "bg-signal-l", bgLight: "bg-signal-l-light", text: "text-signal-l" },
 ]
 
-const leaders = [
+const staticLeaders = [
   "Satya Nadella", "Jensen Huang", "Howard Schultz", "Tim Cook", "Reed Hastings", "Pat Gelsinger", "Ray Dalio", "Bob Iger", "Karen Lynch",
   "Jamie Dimon", "Mary Barra", "Sundar Pichai", "Ginni Rometty", "Jeff Bezos"
 ]
 
-export default function LandingPage() {
+async function getDistinctLeaders(): Promise<string[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("V2_daily_lessons")
+    .select("leader_example")
+    .not("leader_example", "is", null)
+    .not("leader_example", "eq", "")
+
+  if (error || !data || data.length === 0) {
+    return staticLeaders
+  }
+
+  // Extract unique leader names
+  const uniqueLeaders = [...new Set(data.map((row) => row.leader_example as string))]
+  const filteredLeaders = uniqueLeaders.filter(Boolean).sort()
+  
+  // Return database leaders if any found, otherwise fall back to static list
+  return filteredLeaders.length > 0 ? filteredLeaders : staticLeaders
+}
+
+export default async function LandingPage() {
+  const leaders = await getDistinctLeaders()
   return (
     <div className="min-h-screen bg-background">
       {/* OAuth Handler - catches code parameter from SSO redirect */}

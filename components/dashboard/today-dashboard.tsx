@@ -474,8 +474,12 @@ export function TodayDashboard({
                     dayNumber={currentDay}
                     phaseName={todayLesson.phase_name || "Self Awareness"}
                     phaseLabel={`SIGNAL Phase ${todayLesson.phase || "S"}`}
+                    phaseSubtitle={todayLesson.phase_subtitle}
+                    focusReframeTechnique={todayLesson.focus_reframe_technique}
                     quote={todayLesson.quote || ""}
                     mentalModel={todayLesson.mental_model || ""}
+                    reflectionQuestion={todayLesson.reflection_question}
+                    leaderExample={todayLesson.leader_example}
                     scoreMetric={todayLesson.score_metric || ""}
                     phaseColor=""
                     variant="outline"
