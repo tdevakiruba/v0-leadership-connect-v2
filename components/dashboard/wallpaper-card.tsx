@@ -15,9 +15,11 @@ interface WallpaperCardProps {
   dayNumber: number
   phaseName: string
   phaseLabel: string
+  phaseSubtitle?: string | null
+  focusReframeTitle?: string | null
   quote: string | null
   mentalModel: string | null
-  scoreMetric: string | null
+  leaderExample?: string | null
   phaseColor: string
 }
 
@@ -121,10 +123,12 @@ export function WallpaperPreview({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTitle,
   quote,
   mentalModel,
-  scoreMetric,
-}: WallpaperPreviewProps) {
+  leaderExample,
+}: WallpaperCardProps) {
   const colors = getPhaseColors(phaseName)
 
   return (
@@ -298,10 +302,12 @@ function WallpaperExport({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTitle,
   quote,
   mentalModel,
-  scoreMetric,
-}: WallpaperPreviewProps) {
+  leaderExample,
+}: WallpaperCardProps) {
   const colors = getPhaseColors(phaseName)
 
   return (
@@ -382,6 +388,15 @@ function WallpaperExport({
 
       {/* Content sections */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "70px 80px", gap: "50px" }}>
+        {/* Title: Phase Subtitle : Focus Reframe */}
+        {(phaseSubtitle || focusReframeTitle) && (
+          <div style={{ fontSize: "54px", fontWeight: 700, color: "#ffffff", lineHeight: 1.4 }}>
+            {phaseSubtitle && <span>{phaseSubtitle}</span>}
+            {phaseSubtitle && focusReframeTitle && <span>: </span>}
+            {focusReframeTitle && <span style={{ color: colors.accent }}>{focusReframeTitle}</span>}
+          </div>
+        )}
+
         {/* Quote section */}
         {quote && (
           <div
@@ -440,26 +455,11 @@ function WallpaperExport({
           </div>
         )}
 
-        {/* Success Metric section */}
-        {scoreMetric && (
-          <div
-            style={{
-              background: `linear-gradient(135deg, ${colors.bg}18 0%, ${colors.bg}08 100%)`,
-              borderRadius: "32px",
-              padding: "50px",
-              border: `2px solid ${colors.bg}40`,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
-              <div style={{ background: `${colors.bg}30`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <TargetIcon color={colors.bg} size={40} />
-              </div>
-              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
-                Success Metric
-              </span>
-            </div>
-            <div style={{ fontSize: "48px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.35 }}>
-              {extractMetricMeasure(scoreMetric)}
+        {/* Call-to-action with leader example */}
+        {leaderExample && (
+          <div style={{ marginTop: "auto", paddingTop: "30px" }}>
+            <div style={{ fontSize: "32px", fontWeight: 600, color: "#f8fafc", lineHeight: 1.5 }}>
+              Learn how <span style={{ color: colors.accent }}>{leaderExample}</span> applied this leadership framework by registering at <span style={{ color: colors.accent }}>Reboot.TransformerHub.com</span>
             </div>
           </div>
         )}
@@ -495,9 +495,11 @@ export function WallpaperDownloadButton({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTitle,
   quote,
   mentalModel,
-  scoreMetric,
+  leaderExample,
   variant = "outline",
 }: WallpaperCardProps & { variant?: "outline" | "ghost" | "default" }) {
   const [open, setOpen] = useState(false)
@@ -556,9 +558,12 @@ export function WallpaperDownloadButton({
               dayNumber={dayNumber}
               phaseName={phaseName}
               phaseLabel={phaseLabel}
+              phaseSubtitle={phaseSubtitle}
+              focusReframeTitle={focusReframeTitle}
               quote={quote}
               mentalModel={mentalModel}
-              scoreMetric={scoreMetric}
+              leaderExample={leaderExample}
+              phaseColor=""
             />
           </div>
 
@@ -598,9 +603,12 @@ export function WallpaperDownloadButton({
             dayNumber={dayNumber}
             phaseName={phaseName}
             phaseLabel={phaseLabel}
+            phaseSubtitle={phaseSubtitle}
+            focusReframeTitle={focusReframeTitle}
             quote={quote}
             mentalModel={mentalModel}
-            scoreMetric={scoreMetric}
+            leaderExample={leaderExample}
+            phaseColor=""
           />
         </div>
       </div>

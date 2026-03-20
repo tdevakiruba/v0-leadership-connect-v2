@@ -445,9 +445,11 @@ export function LessonDetail({
                   dayNumber={lesson.day_number}
                   phaseName={lesson.phase_name || phase.name}
                   phaseLabel={`SIGNAL Phase ${lesson.phase || phase.letter}`}
+                  phaseSubtitle={lesson.phase_subtitle}
+                  focusReframeTitle={lesson.focus_reframe_technique}
                   quote={lesson.quote || ""}
                   mentalModel={lesson.mental_model || ""}
-                  scoreMetric={lesson.score_metric || ""}
+                  leaderExample={lesson.leader_example || ""}
                   phaseColor={phase.bg}
                   variant="outline"
                 />
