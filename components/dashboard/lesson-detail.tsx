@@ -41,6 +41,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
+import { WallpaperDownloadButton } from "@/components/dashboard/wallpaper-card"
 
 interface Lesson {
   id: string
@@ -438,8 +439,18 @@ export function LessonDetail({
                 </div>
               </div>
 
-              {/* Right Column: Day Badge */}
-              <div className="hidden lg:flex items-center justify-end">
+              {/* Right Column: Day Badge + Download */}
+              <div className="hidden lg:flex flex-col items-end justify-between gap-4 self-stretch">
+                <WallpaperDownloadButton
+                  dayNumber={lesson.day_number}
+                  phaseName={lesson.phase_name || phase.name}
+                  phaseLabel={`SIGNAL Phase ${lesson.phase || phase.letter}`}
+                  quote={lesson.quote}
+                  mentalModel={lesson.mental_model}
+                  scoreMetric={lesson.score_metric}
+                  phaseColor={phase.bg}
+                  variant="outline"
+                />
                 <div className={cn(
                   "flex flex-col items-center justify-center w-44 h-44 rounded-3xl shadow-md",
                   phase.bg
