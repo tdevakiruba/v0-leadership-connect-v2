@@ -672,28 +672,114 @@ export function LessonDetail({
             </Card>
           )}
 
-          {/* 8. Score Metric - NEW V2 Section */}
+          {/* 8. Score Metric - Milestone Design */}
           {lesson.score_metric && (
             <Card className={cn(
               "group overflow-hidden transition-all duration-300 animate-slide-up",
               "shadow-md hover:shadow-lg border-0"
             )} style={{ animationDelay: '290ms' }}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-3 text-lg font-bold">
-                    <div className={cn("p-2 rounded-xl", phase.bgLight)}>
+              {/* Phase accent bar */}
+              <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
+
+              <CardContent className="p-0">
+                {/* Top header row */}
+                <div className={cn("flex items-center justify-between px-6 py-4 border-b border-border/30", phase.bgLight)}>
+                  <div className="flex items-center gap-3">
+                    <div className={cn("p-2 rounded-xl bg-background/60")}>
                       <BarChart3 className={cn("h-5 w-5", phase.textLight)} />
                     </div>
-                    Success Metric
-                  </CardTitle>
-                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
-                    Measure Progress
+                    <span className="text-base font-bold text-foreground">Success Metric</span>
+                  </div>
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-semibold", phase.textLight, phase.border)}>
+                    Day {lesson.day_number} / 90
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className={cn("rounded-xl p-5 border-2 border-dashed", phase.border)}>
-                  <MarkdownContent content={lesson.score_metric} className="text-foreground leading-relaxed" />
+
+                {/* Milestone track */}
+                <div className="px-6 pt-5 pb-2">
+                  {/* Progress track — 90 dots, grouped in sets of 15 per phase */}
+                  <div className="flex items-center gap-[3px] flex-wrap">
+                    {Array.from({ length: 90 }, (_, i) => {
+                      const dotDay = i + 1
+                      const isCurrent = dotDay === lesson.day_number
+                      const isPast = dotDay < lesson.day_number
+                      // Phase boundaries every 15 days
+                      const isPhaseStart = dotDay > 1 && (dotDay - 1) % 15 === 0
+                      return (
+                        <div key={dotDay} className="flex items-center gap-[3px]">
+                          {isPhaseStart && (
+                            <div className="w-px h-3 bg-border/50 mx-1 self-center" />
+                          )}
+                          <div
+                            className={cn(
+                              "rounded-full transition-all duration-200",
+                              isCurrent
+                                ? cn("w-3 h-3 ring-2 ring-offset-1", phase.bg, `ring-[var(--phase-color)]`)
+                                : isPast
+                                  ? cn("w-2 h-2", phase.bg, "opacity-70")
+                                  : "w-2 h-2 bg-muted"
+                            )}
+                            style={isCurrent ? { ['--phase-color' as string]: 'currentColor' } : undefined}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Phase label row */}
+                  <div className="flex justify-between mt-2 mb-1">
+                    {['S', 'I', 'G', 'N', 'A', 'L'].map((letter, idx) => (
+                      <span key={letter} className={cn(
+                        "text-[10px] font-semibold uppercase tracking-widest",
+                        Math.floor((lesson.day_number - 1) / 15) === idx
+                          ? phase.textLight
+                          : "text-muted-foreground/50"
+                      )}>
+                        {letter}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Metric content */}
+                <div className="px-6 pb-6 pt-2">
+                  <div className={cn(
+                    "relative rounded-2xl p-5 border",
+                    phase.bgLight,
+                    phase.border.replace('/30', '/40')
+                  )}>
+                    {/* Milestone number stamp */}
+                    <div className="flex items-start gap-4">
+                      <div className={cn(
+                        "flex-shrink-0 flex flex-col items-center justify-center w-14 h-14 rounded-2xl text-white font-bold shadow-sm",
+                        phase.bg
+                      )}>
+                        <span className="text-[10px] uppercase tracking-wider opacity-80 leading-none">Day</span>
+                        <span className="text-xl leading-tight">{lesson.day_number}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn("text-[10px] uppercase tracking-widest font-semibold mb-1", phase.textLight)}>
+                          Today&apos;s Measure
+                        </p>
+                        <div className="text-foreground leading-relaxed font-medium">
+                          <MarkdownContent content={lesson.score_metric} className="text-foreground" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom milestone counter */}
+                  <div className="flex items-center justify-between mt-3 px-1">
+                    <div className="flex items-center gap-1.5">
+                      <div className={cn("w-1.5 h-1.5 rounded-full", phase.bg)} />
+                      <span className="text-xs text-muted-foreground">
+                        {lesson.day_number} of 90 milestones
+                      </span>
+                    </div>
+                    <span className={cn("text-xs font-semibold tabular-nums", phase.textLight)}>
+                      {Math.round((lesson.day_number / 90) * 100)}% through the journey
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
