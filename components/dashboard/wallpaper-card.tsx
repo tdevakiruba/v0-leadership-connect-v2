@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { toPng } from "html-to-image"
-import { Download, Loader2, X, Smartphone } from "lucide-react"
+import { Download, Loader2, Smartphone, Brain, Target, Quote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
 
 interface WallpaperCardProps {
   dayNumber: number
@@ -19,21 +18,20 @@ interface WallpaperCardProps {
   quote: string | null
   mentalModel: string | null
   scoreMetric: string | null
-  phaseColor: string // e.g. "teal", "blue" etc — used for inline styles
+  phaseColor: string
 }
 
 // Phase hex colors keyed by phase letter
-const PHASE_COLORS: Record<string, { bg: string; text: string; accent: string }> = {
-  S: { bg: "#0d9488", text: "#ffffff", accent: "#99f6e4" },
-  I: { bg: "#2563eb", text: "#ffffff", accent: "#bfdbfe" },
-  G: { bg: "#7c3aed", text: "#ffffff", accent: "#ddd6fe" },
-  N: { bg: "#d97706", text: "#ffffff", accent: "#fde68a" },
-  A: { bg: "#dc2626", text: "#ffffff", accent: "#fecaca" },
-  L: { bg: "#0f766e", text: "#ffffff", accent: "#99f6e4" },
+const PHASE_COLORS: Record<string, { bg: string; text: string; accent: string; gradient: string }> = {
+  S: { bg: "#0d9488", text: "#ffffff", accent: "#5eead4", gradient: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)" },
+  I: { bg: "#2563eb", text: "#ffffff", accent: "#93c5fd", gradient: "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)" },
+  G: { bg: "#7c3aed", text: "#ffffff", accent: "#c4b5fd", gradient: "linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)" },
+  N: { bg: "#d97706", text: "#ffffff", accent: "#fcd34d", gradient: "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)" },
+  A: { bg: "#dc2626", text: "#ffffff", accent: "#fca5a5", gradient: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)" },
+  L: { bg: "#0f766e", text: "#ffffff", accent: "#5eead4", gradient: "linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)" },
 }
 
 function getPhaseColors(phaseName: string) {
-  // Map phase name to letter
   const map: Record<string, string> = {
     "Self Awareness": "S",
     "Inner Clarity": "I",
@@ -46,7 +44,6 @@ function getPhaseColors(phaseName: string) {
   return PHASE_COLORS[letter] || PHASE_COLORS["S"]
 }
 
-// Strip markdown formatting for clean wallpaper text
 function stripMarkdown(text: string): string {
   return text
     .replace(/\*\*(.*?)\*\*/g, "$1")
@@ -58,13 +55,11 @@ function stripMarkdown(text: string): string {
     .trim()
 }
 
-// Extract just the metric measure (first sentence or short phrase)
 function extractMetricMeasure(scoreMetric: string): string {
   const stripped = stripMarkdown(scoreMetric)
-  // Take up to the first period or 120 chars
   const firstSentence = stripped.split(/[.!?]/)[0]
-  return firstSentence.length > 120
-    ? firstSentence.substring(0, 117) + "..."
+  return firstSentence.length > 100
+    ? firstSentence.substring(0, 97) + "..."
     : firstSentence
 }
 
@@ -77,6 +72,42 @@ interface WallpaperPreviewProps {
   scoreMetric: string | null
 }
 
+// SVG Icons for inline rendering (html-to-image compatible)
+const QuoteIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21" />
+    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1" />
+  </svg>
+)
+
+const BrainIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
+    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
+    <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4" />
+    <path d="M12 18v-1a1 1 0 0 0-1-1H9a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 0-1 1v1" />
+  </svg>
+)
+
+const TargetIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+  </svg>
+)
+
+// Reboot Logo SVG (simplified version)
+const RebootLogoSVG = ({ size = 40 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <rect width="40" height="40" rx="8" fill="#0d9488" />
+    <path d="M12 14h6v6h-6z" fill="#ffffff" opacity="0.9" />
+    <path d="M20 14h8v3h-8z" fill="#ffffff" opacity="0.7" />
+    <path d="M20 19h8v3h-8z" fill="#ffffff" opacity="0.5" />
+    <path d="M12 22h16v4h-16z" fill="#ffffff" opacity="0.9" />
+  </svg>
+)
+
 export function WallpaperPreview({
   dayNumber,
   phaseName,
@@ -88,12 +119,11 @@ export function WallpaperPreview({
   const colors = getPhaseColors(phaseName)
 
   return (
-    // 9:16 phone wallpaper ratio at a preview scale
     <div
       style={{
         width: "270px",
         height: "480px",
-        backgroundColor: "#0f172a",
+        background: "linear-gradient(180deg, #0a0f1a 0%, #111827 50%, #0f172a 100%)",
         borderRadius: "20px",
         overflow: "hidden",
         position: "relative",
@@ -102,236 +132,151 @@ export function WallpaperPreview({
         flexDirection: "column",
       }}
     >
-      {/* Top phase color bar */}
+      {/* Premium header with gradient */}
       <div
         style={{
-          backgroundColor: colors.bg,
-          padding: "20px 20px 16px",
+          background: colors.gradient,
+          padding: "20px 18px 18px",
           position: "relative",
         }}
       >
-        {/* Brand row */}
+        {/* Subtle pattern overlay */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "14px",
+            position: "absolute",
+            inset: 0,
+            background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)",
           }}
-        >
+        />
+        
+        {/* Logo + Brand */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px", position: "relative" }}>
+          <RebootLogoSVG size={28} />
           <div>
-            <div
-              style={{
-                fontSize: "9px",
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: colors.accent,
-                marginBottom: "2px",
-              }}
-            >
+            <div style={{ fontSize: "8px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>
               Leadership Reboot
             </div>
-            <div
-              style={{
-                fontSize: "11px",
-                fontWeight: 800,
-                color: colors.text,
-                letterSpacing: "0.08em",
-              }}
-            >
+            <div style={{ fontSize: "12px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.08em" }}>
               SIGNAL™
             </div>
           </div>
-          {/* Day badge */}
-          <div
-            style={{
-              backgroundColor: "rgba(255,255,255,0.2)",
-              borderRadius: "10px",
-              padding: "6px 10px",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "8px",
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: colors.accent,
-              }}
-            >
-              DAY
-            </div>
-            <div
-              style={{
-                fontSize: "22px",
-                fontWeight: 900,
-                color: colors.text,
-                lineHeight: 1,
-              }}
-            >
-              {dayNumber}
-            </div>
-          </div>
         </div>
 
-        {/* Phase label */}
-        <div
-          style={{
-            fontSize: "8px",
-            fontWeight: 600,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            color: colors.accent,
-          }}
-        >
-          {phaseLabel} · {phaseName}
+        {/* Day badge */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
+          <div style={{ fontSize: "7px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent }}>
+            {phaseLabel} · {phaseName}
+          </div>
+          <div
+            style={{
+              background: "rgba(0,0,0,0.25)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "10px",
+              padding: "6px 12px",
+              textAlign: "center",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
+            <div style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
+            <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
+          </div>
         </div>
       </div>
 
-      {/* Content area */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          padding: "20px",
-          gap: "16px",
-          overflowY: "hidden",
-        }}
-      >
-        {/* Quote */}
+      {/* Content sections */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 18px", gap: "14px" }}>
+        {/* Quote section */}
         {quote && (
-          <div>
-            <div
-              style={{
-                fontSize: "8px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "6px",
-              }}
-            >
-              Today's Quote
+          <div
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: "12px",
+              padding: "12px",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+              <QuoteIcon color={colors.bg} size={12} />
+              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Today&apos;s Quote
+              </span>
             </div>
             <div
               style={{
-                fontSize: "12px",
+                fontSize: "10px",
                 fontWeight: 500,
                 color: "#e2e8f0",
-                lineHeight: 1.55,
+                lineHeight: 1.5,
                 fontStyle: "italic",
-                borderLeft: `3px solid ${colors.bg}`,
-                paddingLeft: "10px",
+                paddingLeft: "8px",
+                borderLeft: `2px solid ${colors.bg}`,
               }}
             >
-              &ldquo;{stripMarkdown(quote).substring(0, 160)}&rdquo;
+              &ldquo;{stripMarkdown(quote).substring(0, 120)}&rdquo;
             </div>
           </div>
         )}
 
-        {/* Divider */}
-        <div
-          style={{
-            height: "1px",
-            backgroundColor: "rgba(255,255,255,0.08)",
-          }}
-        />
-
-        {/* Mental Model */}
+        {/* Mental Model section */}
         {mentalModel && (
-          <div>
-            <div
-              style={{
-                fontSize: "8px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "6px",
-              }}
-            >
-              Mental Model
+          <div
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: "12px",
+              padding: "12px",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+              <BrainIcon color={colors.bg} size={12} />
+              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Mental Model
+              </span>
             </div>
-            <div
-              style={{
-                fontSize: "11px",
-                fontWeight: 500,
-                color: "#e2e8f0",
-                lineHeight: 1.55,
-              }}
-            >
-              {stripMarkdown(mentalModel).substring(0, 140)}
+            <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
+              {stripMarkdown(mentalModel).substring(0, 100)}
             </div>
           </div>
         )}
 
-        {/* Divider */}
-        <div
-          style={{
-            height: "1px",
-            backgroundColor: "rgba(255,255,255,0.08)",
-          }}
-        />
-
-        {/* Success Metric */}
+        {/* Success Metric section */}
         {scoreMetric && (
-          <div>
-            <div
-              style={{
-                fontSize: "8px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "6px",
-              }}
-            >
-              Success Metric
+          <div
+            style={{
+              background: `linear-gradient(135deg, ${colors.bg}15 0%, ${colors.bg}08 100%)`,
+              borderRadius: "12px",
+              padding: "12px",
+              border: `1px solid ${colors.bg}30`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+              <TargetIcon color={colors.bg} size={12} />
+              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Success Metric
+              </span>
             </div>
-            <div
-              style={{
-                fontSize: "12px",
-                fontWeight: 700,
-                color: "#f8fafc",
-                lineHeight: 1.4,
-              }}
-            >
+            <div style={{ fontSize: "10px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.4 }}>
               {extractMetricMeasure(scoreMetric)}
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer */}
+      {/* Premium footer */}
       <div
         style={{
-          backgroundColor: "rgba(255,255,255,0.04)",
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          padding: "10px 20px",
+          background: "rgba(0,0,0,0.3)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "12px 18px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <div
-          style={{
-            fontSize: "8px",
-            color: "#64748b",
-            fontWeight: 500,
-          }}
-        >
-          leadershipreboot.com
+        <div style={{ fontSize: "7px", color: colors.accent, fontWeight: 600, letterSpacing: "0.05em" }}>
+          Reboot.TransformerHub.com
         </div>
-        <div
-          style={{
-            fontSize: "8px",
-            color: "#64748b",
-            fontWeight: 500,
-          }}
-        >
+        <div style={{ fontSize: "7px", color: "#64748b", fontWeight: 500 }}>
           Day {dayNumber} / 90
         </div>
       </div>
@@ -339,7 +284,7 @@ export function WallpaperPreview({
   )
 }
 
-// Full-resolution wallpaper for download (1080×1920)
+// Full-resolution wallpaper for download (1080×1920) - LinkedIn ready
 function WallpaperExport({
   dayNumber,
   phaseName,
@@ -355,219 +300,180 @@ function WallpaperExport({
       style={{
         width: "1080px",
         height: "1920px",
-        backgroundColor: "#0f172a",
+        background: "linear-gradient(180deg, #0a0f1a 0%, #111827 40%, #0f172a 100%)",
         position: "relative",
         fontFamily: "system-ui, -apple-system, sans-serif",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Top phase color section */}
+      {/* Premium header with gradient */}
       <div
         style={{
-          backgroundColor: colors.bg,
-          padding: "100px 90px 80px",
+          background: colors.gradient,
+          padding: "80px 80px 70px",
+          position: "relative",
         }}
       >
-        {/* Brand row */}
+        {/* Decorative elements */}
         <div
           style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: "60px",
+            position: "absolute",
+            inset: 0,
+            background: "radial-gradient(circle at 85% 15%, rgba(255,255,255,0.15) 0%, transparent 40%)",
           }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: "36px",
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: colors.accent,
-                marginBottom: "8px",
-              }}
-            >
-              Leadership Reboot
-            </div>
-            <div
-              style={{
-                fontSize: "48px",
-                fontWeight: 900,
-                color: colors.text,
-                letterSpacing: "0.1em",
-              }}
-            >
-              SIGNAL™
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "120px",
+            background: "linear-gradient(to top, rgba(0,0,0,0.15), transparent)",
+          }}
+        />
+
+        {/* Logo + Brand row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "50px", position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+            <RebootLogoSVG size={80} />
+            <div>
+              <div style={{ fontSize: "28px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)", marginBottom: "4px" }}>
+                Leadership Reboot
+              </div>
+              <div style={{ fontSize: "52px", fontWeight: 900, color: "#ffffff", letterSpacing: "0.12em" }}>
+                SIGNAL™
+              </div>
             </div>
           </div>
+
           {/* Day badge */}
           <div
             style={{
-              backgroundColor: "rgba(255,255,255,0.2)",
-              borderRadius: "40px",
-              padding: "24px 40px",
+              background: "rgba(0,0,0,0.25)",
+              backdropFilter: "blur(20px)",
+              borderRadius: "32px",
+              padding: "28px 48px",
               textAlign: "center",
+              border: "2px solid rgba(255,255,255,0.15)",
               minWidth: "180px",
             }}
           >
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.accent,
-              }}
-            >
-              DAY
-            </div>
-            <div
-              style={{
-                fontSize: "100px",
-                fontWeight: 900,
-                color: colors.text,
-                lineHeight: 1,
-              }}
-            >
-              {dayNumber}
-            </div>
+            <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
+            <div style={{ fontSize: "88px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
           </div>
         </div>
 
         {/* Phase label */}
-        <div
-          style={{
-            fontSize: "30px",
-            fontWeight: 600,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: colors.accent,
-          }}
-        >
+        <div style={{ fontSize: "26px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent, position: "relative" }}>
           {phaseLabel} · {phaseName}
         </div>
       </div>
 
-      {/* Content */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          padding: "80px 90px",
-          gap: "70px",
-        }}
-      >
-        {/* Quote */}
+      {/* Content sections */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "70px 80px", gap: "50px" }}>
+        {/* Quote section */}
         {quote && (
-          <div>
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "28px",
-              }}
-            >
-              Today's Quote
+          <div
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: "32px",
+              padding: "50px",
+              border: "2px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
+              <div style={{ background: `${colors.bg}20`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <QuoteIcon color={colors.bg} size={40} />
+              </div>
+              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Today&apos;s Quote
+              </span>
             </div>
             <div
               style={{
-                fontSize: "48px",
+                fontSize: "42px",
                 fontWeight: 500,
                 color: "#e2e8f0",
                 lineHeight: 1.5,
                 fontStyle: "italic",
-                borderLeft: `8px solid ${colors.bg}`,
-                paddingLeft: "40px",
+                paddingLeft: "36px",
+                borderLeft: `6px solid ${colors.bg}`,
               }}
             >
-              &ldquo;{stripMarkdown(quote).substring(0, 280)}&rdquo;
+              &ldquo;{stripMarkdown(quote).substring(0, 200)}&rdquo;
             </div>
           </div>
         )}
 
-        {/* Divider */}
-        <div style={{ height: "2px", backgroundColor: "rgba(255,255,255,0.08)" }} />
-
-        {/* Mental Model */}
+        {/* Mental Model section */}
         {mentalModel && (
-          <div>
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "28px",
-              }}
-            >
-              Mental Model
+          <div
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: "32px",
+              padding: "50px",
+              border: "2px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
+              <div style={{ background: `${colors.bg}20`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <BrainIcon color={colors.bg} size={40} />
+              </div>
+              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Mental Model
+              </span>
             </div>
-            <div
-              style={{
-                fontSize: "44px",
-                fontWeight: 500,
-                color: "#e2e8f0",
-                lineHeight: 1.5,
-              }}
-            >
-              {stripMarkdown(mentalModel).substring(0, 240)}
+            <div style={{ fontSize: "38px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
+              {stripMarkdown(mentalModel).substring(0, 180)}
             </div>
           </div>
         )}
 
-        {/* Divider */}
-        <div style={{ height: "2px", backgroundColor: "rgba(255,255,255,0.08)" }} />
-
-        {/* Success Metric */}
+        {/* Success Metric section */}
         {scoreMetric && (
-          <div>
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: colors.bg,
-                marginBottom: "28px",
-              }}
-            >
-              Success Metric
+          <div
+            style={{
+              background: `linear-gradient(135deg, ${colors.bg}18 0%, ${colors.bg}08 100%)`,
+              borderRadius: "32px",
+              padding: "50px",
+              border: `2px solid ${colors.bg}40`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
+              <div style={{ background: `${colors.bg}30`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <TargetIcon color={colors.bg} size={40} />
+              </div>
+              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Success Metric
+              </span>
             </div>
-            <div
-              style={{
-                fontSize: "54px",
-                fontWeight: 800,
-                color: "#f8fafc",
-                lineHeight: 1.3,
-              }}
-            >
+            <div style={{ fontSize: "48px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.35 }}>
               {extractMetricMeasure(scoreMetric)}
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer */}
+      {/* Premium footer */}
       <div
         style={{
-          borderTop: "2px solid rgba(255,255,255,0.08)",
-          padding: "50px 90px",
+          background: "rgba(0,0,0,0.4)",
+          borderTop: "2px solid rgba(255,255,255,0.06)",
+          padding: "50px 80px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <div style={{ fontSize: "32px", color: "#475569", fontWeight: 500 }}>
-          leadershipreboot.com
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <RebootLogoSVG size={48} />
+          <div style={{ fontSize: "28px", color: colors.accent, fontWeight: 600, letterSpacing: "0.08em" }}>
+            Reboot.TransformerHub.com
+          </div>
         </div>
-        <div style={{ fontSize: "32px", color: "#475569", fontWeight: 500 }}>
+        <div style={{ fontSize: "28px", color: "#64748b", fontWeight: 500 }}>
           Day {dayNumber} / 90
         </div>
       </div>
@@ -632,7 +538,7 @@ export function WallpaperDownloadButton({
           </DialogHeader>
 
           <p className="text-sm text-muted-foreground -mt-2">
-            Preview your wallpaper below. Download saves as 1080×1920 px, optimised for modern phone screens.
+            Preview your wallpaper below. Perfect for LinkedIn sharing or as a phone wallpaper (1080×1920 px).
           </p>
 
           {/* Preview (scaled down) */}
