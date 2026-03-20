@@ -38,6 +38,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
+import Image from "next/image"
 import { toggleActionCompleted } from "@/app/actions/ai-actions"
 import { MarkdownContent } from "@/components/ui/markdown-content"
 
@@ -373,63 +374,106 @@ export function LessonDetail({
         )}>
           <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
           <CardContent className="p-6 sm:p-8">
-            {/* Top Row: Badge + Day indicator */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <Badge className={cn(
-                  "px-3 py-1.5 text-xs font-semibold tracking-wide border-0",
-                  phase.bg, phase.text
-                )}>
-                  {lesson.phase_name || phase.name}
-                </Badge>
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                  SIGNAL Phase {lesson.phase || phase.letter}
-                </span>
+            {/* Grid layout: content on left, day badge on right */}
+            <div className="grid gap-8 lg:grid-cols-2 items-start">
+              {/* Left Column: Content */}
+              <div>
+                {/* Top Row: Badge + Day indicator */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3">
+                    <Badge className={cn(
+                      "px-3 py-1.5 text-xs font-semibold tracking-wide border-0",
+                      phase.bg, phase.text
+                    )}>
+                      {lesson.phase_name || phase.name}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                      SIGNAL Phase {lesson.phase || phase.letter}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="font-medium">Day {lesson.day_number}</span>
+                    <span className="text-muted-foreground/50">/</span>
+                    <span>90</span>
+                    {isCompleted && (
+                      <Badge variant="secondary" className="gap-1 ml-2 animate-bounce-once">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Complete
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Session Label */}
+                <p className={cn("text-xs uppercase tracking-widest font-medium mb-3", phase.textLight)}>
+                  Today&apos;s Leadership Signal
+                </p>
+
+                {/* Main Title */}
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-balance leading-tight mb-4">
+                  <MarkdownContent content={lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`} inline />
+                </h1>
+
+                {/* Phase Goal & Context */}
+                <div className="text-muted-foreground leading-relaxed max-w-2xl space-y-2">
+                  {lesson.phase_goal && (
+                    <p className="text-sm"><span className="font-medium text-foreground">Phase Goal:</span> {lesson.phase_goal}</p>
+                  )}
+                  {lesson.focus_area ? (
+                    <p>Today we explore how leaders <span className={cn("font-medium", phase.textLight)}><MarkdownContent content={lesson.focus_area.toLowerCase()} inline /></span>.</p>
+                  ) : (
+                    <p>Building pattern recognition through focused leadership practice.</p>
+                  )}
+                  {lesson.phase_key_question && (
+                    <p className="text-sm italic border-l-2 border-muted pl-3 mt-3">{lesson.phase_key_question}</p>
+                  )}
+                </div>
+
+                {/* Streak indicator */}
+                <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border/50">
+                  <Flame className={cn("h-4 w-4", phase.textLight)} />
+                  <span className="text-sm text-muted-foreground">
+                    Consistency builds executive intuition. <span className="font-medium text-foreground">Day {lesson.day_number} active.</span>
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="font-medium">Day {lesson.day_number}</span>
-                <span className="text-muted-foreground/50">/</span>
-                <span>90</span>
-                {isCompleted && (
-                  <Badge variant="secondary" className="gap-1 ml-2 animate-bounce-once">
-                    <CheckCircle2 className="h-3 w-3" />
-                    Complete
-                  </Badge>
-                )}
+
+              {/* Right Column: Day Badge */}
+              <div className="hidden lg:flex items-center justify-end">
+                <div className="relative">
+                  {/* Subtle background circle */}
+                  <div className={cn(
+                    "absolute inset-0 rounded-full blur-2xl opacity-20",
+                    phase.bg
+                  )} style={{
+                    width: '300px',
+                    height: '300px',
+                    transform: 'translate(-50%, -50%)',
+                    right: '-50px',
+                    top: '50%'
+                  }} />
+                  
+                  {/* Day badge image */}
+                  <div className={cn(
+                    "relative w-48 h-48 rounded-3xl shadow-lg overflow-hidden",
+                    phase.bgLight
+                  )}>
+                    <Image
+                      src="/images/day-badge-template.jpg"
+                      alt={`Day ${lesson.day_number}`}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                    
+                    {/* Day number overlay text */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-transparent to-black/10">
+                      <span className={cn("text-sm font-bold uppercase tracking-widest", phase.textLight)}>Day</span>
+                      <span className={cn("text-6xl font-bold", phase.text)}>{lesson.day_number}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Session Label */}
-            <p className={cn("text-xs uppercase tracking-widest font-medium mb-3", phase.textLight)}>
-              Today&apos;s Leadership Signal
-            </p>
-
-            {/* Main Title */}
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-balance leading-tight mb-4">
-              <MarkdownContent content={lesson.focus_reframe_technique || `Day ${lesson.day_number} Focus`} inline />
-            </h1>
-
-            {/* Phase Goal & Context */}
-            <div className="text-muted-foreground leading-relaxed max-w-2xl space-y-2">
-              {lesson.phase_goal && (
-                <p className="text-sm"><span className="font-medium text-foreground">Phase Goal:</span> {lesson.phase_goal}</p>
-              )}
-              {lesson.focus_area ? (
-                <p>Today we explore how leaders <span className={cn("font-medium", phase.textLight)}><MarkdownContent content={lesson.focus_area.toLowerCase()} inline /></span>.</p>
-              ) : (
-                <p>Building pattern recognition through focused leadership practice.</p>
-              )}
-              {lesson.phase_key_question && (
-                <p className="text-sm italic border-l-2 border-muted pl-3 mt-3">{lesson.phase_key_question}</p>
-              )}
-            </div>
-
-            {/* Streak indicator */}
-            <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border/50">
-              <Flame className={cn("h-4 w-4", phase.textLight)} />
-              <span className="text-sm text-muted-foreground">
-                Consistency builds executive intuition. <span className="font-medium text-foreground">Day {lesson.day_number} active.</span>
-              </span>
             </div>
           </CardContent>
         </Card>
