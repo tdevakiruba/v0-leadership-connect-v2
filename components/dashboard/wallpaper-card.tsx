@@ -101,47 +101,19 @@ const TargetIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
 const RebootLogoImage = ({ size = 40 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Black circle background */}
-    <circle cx="20" cy="20" r="20" fill="#000000" />
+    <circle cx="20" cy="20" r="20" fill="#1a1a1a" />
     
-    {/* Power button symbol - white */}
-    <g>
-      {/* Outer circle arc (top 3/4 of circle) */}
-      <path
-        d="M 20 6 A 14 14 0 0 1 31.2 8.8 A 14 14 0 0 1 32.2 12"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 32.2 12 A 14 14 0 0 1 31.2 31.2"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 31.2 31.2 A 14 14 0 0 1 8.8 31.2"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 8.8 31.2 A 14 14 0 0 1 8.8 8.8"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      
-      {/* Vertical line at top */}
-      <line x1="20" y1="6" x2="20" y2="14" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-    </g>
+    {/* Power button symbol - white arc with gap at top */}
+    <path
+      d="M 13 12 A 10 10 0 1 0 27 12"
+      fill="none"
+      stroke="#ffffff"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    
+    {/* Vertical line from top */}
+    <line x1="20" y1="8" x2="20" y2="20" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
   </svg>
 )
 
