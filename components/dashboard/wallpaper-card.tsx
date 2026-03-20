@@ -97,20 +97,13 @@ const TargetIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
   </svg>
 )
 
-// Reboot Logo SVG (simplified version)
-const RebootLogoSVG = ({ size = 40 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-    <circle cx="20" cy="20" r="20" fill="#000000" />
-    <path
-      d="M20 8C13.4 8 8 13.4 8 20c0 6.6 5.4 12 12 12s12-5.4 12-12c0-2.4-0.7-4.6-1.9-6.5"
-      fill="none"
-      stroke="#ffffff"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <polygon points="24,12 24,6 28,9" fill="#ffffff" />
-  </svg>
+// Reboot Logo - uses exact PNG image
+const RebootLogoImage = ({ size = 40 }: { size?: number }) => (
+  <img 
+    src="/images/reset-logo-exact.png" 
+    alt="Reboot Logo" 
+    style={{ width: `${size}px`, height: `${size}px` }}
+  />
 )
 
 export function WallpaperPreview({
@@ -156,7 +149,7 @@ export function WallpaperPreview({
         
         {/* Logo + Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px", position: "relative" }}>
-          <RebootLogoSVG size={28} />
+          <RebootLogoImage size={28} />
           <div>
             <div style={{ fontSize: "8px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>
               Leadership Reboot
@@ -342,7 +335,7 @@ function WallpaperExport({
         {/* Logo + Brand row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "50px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-            <RebootLogoSVG size={80} />
+            <RebootLogoImage size={80} />
             <div>
               <div style={{ fontSize: "28px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)", marginBottom: "4px" }}>
                 Leadership Reboot
