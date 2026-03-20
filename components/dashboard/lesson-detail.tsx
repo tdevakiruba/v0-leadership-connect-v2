@@ -1062,16 +1062,16 @@ export function LessonDetail({
             )} style={{ animationDelay: '180ms' }}>
               <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2">
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium w-fit", phase.textLight, phase.border)}>
+                    Thinking Framework
+                  </Badge>
                   <CardTitle className="flex items-center gap-3 text-lg font-bold">
                     <div className={cn("p-2 rounded-xl", phase.bgLight)}>
                       <Brain className={cn("h-5 w-5", phase.textLight)} />
                     </div>
                     Mental Model
                   </CardTitle>
-                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
-                    Thinking Framework
-                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
