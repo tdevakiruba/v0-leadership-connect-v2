@@ -440,38 +440,16 @@ export function LessonDetail({
 
               {/* Right Column: Day Badge */}
               <div className="hidden lg:flex items-center justify-end">
-                <div className="relative">
-                  {/* Subtle background circle */}
-                  <div className={cn(
-                    "absolute inset-0 rounded-full blur-2xl opacity-20",
-                    phase.bg
-                  )} style={{
-                    width: '300px',
-                    height: '300px',
-                    transform: 'translate(-50%, -50%)',
-                    right: '-50px',
-                    top: '50%'
-                  }} />
-                  
-                  {/* Day badge image */}
-                  <div className={cn(
-                    "relative w-48 h-48 rounded-3xl shadow-lg overflow-hidden",
-                    phase.bgLight
-                  )}>
-                    <Image
-                      src="/images/day-badge-template.jpg"
-                      alt={`Day ${lesson.day_number}`}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                    
-                    {/* Day number overlay text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-transparent to-black/10">
-                      <span className={cn("text-sm font-bold uppercase tracking-widest", phase.textLight)}>Day</span>
-                      <span className={cn("text-6xl font-bold", phase.text)}>{lesson.day_number}</span>
-                    </div>
-                  </div>
+                <div className={cn(
+                  "flex flex-col items-center justify-center w-44 h-44 rounded-3xl shadow-md",
+                  phase.bg
+                )}>
+                  <span className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
+                    DAY
+                  </span>
+                  <span className="text-8xl font-bold leading-none text-white tabular-nums">
+                    {lesson.day_number}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1062,16 +1040,16 @@ export function LessonDetail({
             )} style={{ animationDelay: '180ms' }}>
               <div className={cn("absolute top-0 left-0 w-1 h-full", phase.bg)} />
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2">
+                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium w-fit", phase.textLight, phase.border)}>
+                    Thinking Framework
+                  </Badge>
                   <CardTitle className="flex items-center gap-3 text-lg font-bold">
                     <div className={cn("p-2 rounded-xl", phase.bgLight)}>
                       <Brain className={cn("h-5 w-5", phase.textLight)} />
                     </div>
                     Mental Model
                   </CardTitle>
-                  <Badge variant="outline" className={cn("text-[10px] uppercase tracking-wider font-medium", phase.textLight, phase.border)}>
-                    Thinking Framework
-                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
