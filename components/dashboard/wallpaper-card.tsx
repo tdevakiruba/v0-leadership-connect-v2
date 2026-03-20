@@ -20,6 +20,7 @@ interface WallpaperCardProps {
   quote: string | null
   mentalModel: string | null
   reflectionQuestion?: string | null
+  aiLeadershipLens?: string | null
   leaderExample?: string | null
   scoreMetric: string | null
   phaseColor: string
@@ -68,6 +69,7 @@ interface WallpaperPreviewProps {
   quote: string | null
   mentalModel: string | null
   reflectionQuestion?: string | null
+  aiLeadershipLens?: string | null
   leaderExample?: string | null
   scoreMetric: string | null
 }
@@ -94,6 +96,16 @@ const HelpCircleIcon = ({ color, size = 24 }: { color: string; size?: number }) 
     <circle cx="12" cy="12" r="10" />
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
     <path d="M12 17h.01" />
+  </svg>
+)
+
+const AIIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2v20" />
+    <path d="M2 12h20" />
+    <circle cx="12" cy="12" r="3" fill={color} />
+    <path d="M7.5 7.5l8.5 8.5" />
+    <path d="M16.5 7.5l-8.5 8.5" />
   </svg>
 )
 
@@ -128,6 +140,7 @@ export function WallpaperPreview({
   quote,
   mentalModel,
   reflectionQuestion,
+  aiLeadershipLens,
   leaderExample,
 }: WallpaperPreviewProps) {
   const colors = getPhaseColors(phaseName)
@@ -249,6 +262,21 @@ export function WallpaperPreview({
             </div>
           </div>
         )}
+
+        {/* AI Leadership Lens card */}
+        {aiLeadershipLens && (
+          <div style={{ background: "rgba(168, 85, 247, 0.08)", borderRadius: "10px", padding: "10px", border: "1px solid rgba(168, 85, 247, 0.2)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "6px" }}>
+              <AIIcon color="#a855f7" size={10} />
+              <span style={{ fontSize: "6px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d8b4fe" }}>
+                AI Lens
+              </span>
+            </div>
+            <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
+              {stripMarkdown(aiLeadershipLens).substring(0, 85)}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CTA Footer */}
@@ -286,6 +314,7 @@ function WallpaperExport({
   quote,
   mentalModel,
   reflectionQuestion,
+  aiLeadershipLens,
   leaderExample,
 }: WallpaperPreviewProps) {
   const colors = getPhaseColors(phaseName)
@@ -404,6 +433,23 @@ function WallpaperExport({
             </div>
           </div>
         )}
+
+        {/* AI Leadership Lens card */}
+        {aiLeadershipLens && (
+          <div style={{ background: "linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%)", borderRadius: "28px", padding: "46px", border: "2px solid rgba(168, 85, 247, 0.25)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "28px" }}>
+              <div style={{ background: "rgba(168, 85, 247, 0.2)", borderRadius: "14px", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <AIIcon color="#a855f7" size={36} />
+              </div>
+              <span style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d8b4fe" }}>
+                AI Lens
+              </span>
+            </div>
+            <div style={{ fontSize: "36px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
+              {stripMarkdown(aiLeadershipLens).substring(0, 250)}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CTA Footer */}
@@ -442,6 +488,7 @@ export function WallpaperDownloadButton({
   quote,
   mentalModel,
   reflectionQuestion,
+  aiLeadershipLens,
   leaderExample,
   scoreMetric,
   variant = "outline",
@@ -507,6 +554,7 @@ export function WallpaperDownloadButton({
               quote={quote}
               mentalModel={mentalModel}
               reflectionQuestion={reflectionQuestion}
+              aiLeadershipLens={aiLeadershipLens}
               leaderExample={leaderExample}
               scoreMetric={scoreMetric}
             />
@@ -553,6 +601,7 @@ export function WallpaperDownloadButton({
             quote={quote}
             mentalModel={mentalModel}
             reflectionQuestion={reflectionQuestion}
+            aiLeadershipLens={aiLeadershipLens}
             leaderExample={leaderExample}
             scoreMetric={scoreMetric}
           />

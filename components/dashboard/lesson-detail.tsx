@@ -450,6 +450,7 @@ export function LessonDetail({
                   quote={lesson.quote || ""}
                   mentalModel={lesson.mental_model || ""}
                   reflectionQuestion={lesson.reflection_question}
+                  aiLeadershipLens={lesson.ai_leadership_lens}
                   leaderExample={lesson.leader_example}
                   scoreMetric={lesson.score_metric || ""}
                   phaseColor={phase.bg}
