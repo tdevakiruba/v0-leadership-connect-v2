@@ -445,9 +445,9 @@ export function LessonDetail({
                   dayNumber={lesson.day_number}
                   phaseName={lesson.phase_name || phase.name}
                   phaseLabel={`SIGNAL Phase ${lesson.phase || phase.letter}`}
-                  quote={lesson.quote}
-                  mentalModel={lesson.mental_model}
-                  scoreMetric={lesson.score_metric}
+                  quote={lesson.quote || ""}
+                  mentalModel={lesson.mental_model || ""}
+                  scoreMetric={lesson.score_metric || ""}
                   phaseColor={phase.bg}
                   variant="outline"
                 />
