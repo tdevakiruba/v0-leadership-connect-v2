@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { toPng } from "html-to-image"
-import { Download, Loader2, Smartphone, Brain, Target, Quote } from "lucide-react"
+import { Download, Loader2, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -15,8 +15,12 @@ interface WallpaperCardProps {
   dayNumber: number
   phaseName: string
   phaseLabel: string
+  phaseSubtitle?: string | null
+  focusReframeTechnique?: string | null
   quote: string | null
   mentalModel: string | null
+  reflectionQuestion?: string | null
+  leaderExample?: string | null
   scoreMetric: string | null
   phaseColor: string
 }
@@ -55,20 +59,16 @@ function stripMarkdown(text: string): string {
     .trim()
 }
 
-function extractMetricMeasure(scoreMetric: string): string {
-  const stripped = stripMarkdown(scoreMetric)
-  const firstSentence = stripped.split(/[.!?]/)[0]
-  return firstSentence.length > 100
-    ? firstSentence.substring(0, 97) + "..."
-    : firstSentence
-}
-
 interface WallpaperPreviewProps {
   dayNumber: number
   phaseName: string
   phaseLabel: string
+  phaseSubtitle?: string | null
+  focusReframeTechnique?: string | null
   quote: string | null
   mentalModel: string | null
+  reflectionQuestion?: string | null
+  leaderExample?: string | null
   scoreMetric: string | null
 }
 
@@ -89,21 +89,25 @@ const BrainIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
   </svg>
 )
 
-const TargetIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+const HelpCircleIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="6" />
-    <circle cx="12" cy="12" r="2" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
+  </svg>
+)
+
+const ArrowRightIcon = ({ color, size = 24 }: { color: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14" />
+    <path d="m12 5 7 7-7 7" />
   </svg>
 )
 
 // Reboot Logo - Power Button Design (embedded SVG for html-to-image compatibility)
 const RebootLogoImage = ({ size = 40 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Black circle background */}
     <circle cx="20" cy="20" r="20" fill="#1a1a1a" />
-    
-    {/* Power button symbol - white arc with gap at top */}
     <path
       d="M 13 12 A 10 10 0 1 0 27 12"
       fill="none"
@@ -111,8 +115,6 @@ const RebootLogoImage = ({ size = 40 }: { size?: number }) => (
       strokeWidth="3"
       strokeLinecap="round"
     />
-    
-    {/* Vertical line from top */}
     <line x1="20" y1="8" x2="20" y2="20" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
   </svg>
 )
@@ -121,17 +123,30 @@ export function WallpaperPreview({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTechnique,
   quote,
   mentalModel,
-  scoreMetric,
+  reflectionQuestion,
+  leaderExample,
 }: WallpaperPreviewProps) {
   const colors = getPhaseColors(phaseName)
+
+  // Build the title from phase subtitle + focus reframe technique
+  const titleLine1 = phaseSubtitle ? stripMarkdown(phaseSubtitle).substring(0, 40) : phaseName
+  const titleLine2 = focusReframeTechnique ? stripMarkdown(focusReframeTechnique).substring(0, 50) : null
+
+  // CTA text using leader name extracted from leaderExample
+  const leaderName = leaderExample
+    ? stripMarkdown(leaderExample).split(/\s+/).slice(0, 3).join(" ")
+    : "this leader"
+  const ctaText = `Learn how ${leaderName} used this mental model to level-up leadership`
 
   return (
     <div
       style={{
         width: "270px",
-        height: "480px",
+        height: "580px",
         background: "linear-gradient(180deg, #0a0f1a 0%, #111827 50%, #0f172a 100%)",
         borderRadius: "20px",
         overflow: "hidden",
@@ -141,168 +156,147 @@ export function WallpaperPreview({
         flexDirection: "column",
       }}
     >
-      {/* Premium header with gradient */}
+      {/* Header with gradient */}
       <div
         style={{
           background: colors.gradient,
-          padding: "20px 18px 18px",
+          padding: "16px 16px 14px",
           position: "relative",
+          flexShrink: 0,
         }}
       >
-        {/* Subtle pattern overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)",
-          }}
-        />
-        
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)" }} />
+
         {/* Logo + Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px", position: "relative" }}>
-          <RebootLogoImage size={28} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", position: "relative" }}>
+          <RebootLogoImage size={24} />
           <div>
-            <div style={{ fontSize: "8px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>
+            <div style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>
               Leadership Reboot
             </div>
-            <div style={{ fontSize: "12px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.08em" }}>
+            <div style={{ fontSize: "11px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.08em" }}>
               SIGNAL™
             </div>
           </div>
+          {/* Day badge inline */}
+          <div style={{ marginLeft: "auto", background: "rgba(0,0,0,0.25)", borderRadius: "8px", padding: "4px 10px", textAlign: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+            <div style={{ fontSize: "6px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
+            <div style={{ fontSize: "18px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
+          </div>
         </div>
 
-        {/* Day badge */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-          <div style={{ fontSize: "7px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent }}>
-            {phaseLabel} · {phaseName}
+        {/* Phase label */}
+        <div style={{ fontSize: "6px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent, marginBottom: "6px", position: "relative" }}>
+          {phaseLabel}
+        </div>
+
+        {/* Title block */}
+        <div style={{ position: "relative" }}>
+          <div style={{ fontSize: "9px", fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: "0.05em", marginBottom: "2px" }}>
+            {titleLine1}
           </div>
-          <div
-            style={{
-              background: "rgba(0,0,0,0.25)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "10px",
-              padding: "6px 12px",
-              textAlign: "center",
-              border: "1px solid rgba(255,255,255,0.15)",
-            }}
-          >
-            <div style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
-            <div style={{ fontSize: "20px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
-          </div>
+          {titleLine2 && (
+            <div style={{ fontSize: "12px", fontWeight: 900, color: "#ffffff", lineHeight: 1.2, letterSpacing: "-0.01em" }}>
+              {titleLine2}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Content sections */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 18px", gap: "14px" }}>
-        {/* Quote section */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "12px 14px", gap: "10px", overflow: "hidden" }}>
+        {/* Quote card */}
         {quote && (
-          <div
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              borderRadius: "12px",
-              padding: "12px",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
-              <QuoteIcon color={colors.bg} size={12} />
-              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
-                Today&apos;s Quote
+          <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "10px", border: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "6px" }}>
+              <QuoteIcon color={colors.accent} size={10} />
+              <span style={{ fontSize: "6px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Quote
               </span>
             </div>
-            <div
-              style={{
-                fontSize: "10px",
-                fontWeight: 500,
-                color: "#e2e8f0",
-                lineHeight: 1.5,
-                fontStyle: "italic",
-                paddingLeft: "8px",
-                borderLeft: `2px solid ${colors.bg}`,
-              }}
-            >
-              &ldquo;{stripMarkdown(quote).substring(0, 120)}&rdquo;
+            <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5, fontStyle: "italic", paddingLeft: "7px", borderLeft: `2px solid ${colors.bg}` }}>
+              &ldquo;{stripMarkdown(quote).substring(0, 110)}&rdquo;
             </div>
           </div>
         )}
 
-        {/* Mental Model section */}
+        {/* Mental Model card */}
         {mentalModel && (
-          <div
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              borderRadius: "12px",
-              padding: "12px",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
-              <BrainIcon color={colors.bg} size={12} />
-              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+          <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "10px", border: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "6px" }}>
+              <BrainIcon color={colors.accent} size={10} />
+              <span style={{ fontSize: "6px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
                 Mental Model
               </span>
             </div>
             <div style={{ fontSize: "9px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
-              {stripMarkdown(mentalModel).substring(0, 100)}
+              {stripMarkdown(mentalModel).substring(0, 90)}
             </div>
           </div>
         )}
 
-        {/* Success Metric section */}
-        {scoreMetric && (
-          <div
-            style={{
-              background: `linear-gradient(135deg, ${colors.bg}15 0%, ${colors.bg}08 100%)`,
-              borderRadius: "12px",
-              padding: "12px",
-              border: `1px solid ${colors.bg}30`,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
-              <TargetIcon color={colors.bg} size={12} />
-              <span style={{ fontSize: "7px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
-                Success Metric
+        {/* Reflection Question card */}
+        {reflectionQuestion && (
+          <div style={{ background: `linear-gradient(135deg, ${colors.bg}18 0%, ${colors.bg}08 100%)`, borderRadius: "10px", padding: "10px", border: `1px solid ${colors.bg}35`, flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "6px" }}>
+              <HelpCircleIcon color={colors.accent} size={10} />
+              <span style={{ fontSize: "6px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Reflect
               </span>
             </div>
-            <div style={{ fontSize: "10px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.4 }}>
-              {extractMetricMeasure(scoreMetric)}
+            <div style={{ fontSize: "9px", fontWeight: 600, color: "#f1f5f9", lineHeight: 1.5, fontStyle: "italic" }}>
+              {stripMarkdown(reflectionQuestion).substring(0, 90)}
             </div>
           </div>
         )}
       </div>
 
-      {/* Premium footer */}
+      {/* CTA Footer */}
       <div
         style={{
-          background: "rgba(0,0,0,0.3)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          padding: "12px 18px",
+          background: `linear-gradient(135deg, ${colors.bg}cc 0%, ${colors.bg}ee 100%)`,
+          padding: "10px 14px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: "8px",
+          flexShrink: 0,
         }}
       >
-        <div style={{ fontSize: "7px", color: colors.accent, fontWeight: 600, letterSpacing: "0.05em" }}>
-          Reboot.TransformerHub.com
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: "7px", fontWeight: 700, color: "#ffffff", lineHeight: 1.4, letterSpacing: "0.01em" }}>
+            {ctaText}
+          </div>
+          <div style={{ fontSize: "6px", color: colors.accent, marginTop: "2px", fontWeight: 600 }}>
+            Reboot.TransformerHub.com
+          </div>
         </div>
-        <div style={{ fontSize: "7px", color: "#64748b", fontWeight: 500 }}>
-          Day {dayNumber} / 90
-        </div>
+        <ArrowRightIcon color="#ffffff" size={14} />
       </div>
     </div>
   )
 }
 
-// Full-resolution wallpaper for download (1080×1920) - LinkedIn ready
+// Full-resolution wallpaper for download (1080×1920)
 function WallpaperExport({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTechnique,
   quote,
   mentalModel,
-  scoreMetric,
+  reflectionQuestion,
+  leaderExample,
 }: WallpaperPreviewProps) {
   const colors = getPhaseColors(phaseName)
+
+  const titleLine1 = phaseSubtitle ? stripMarkdown(phaseSubtitle).substring(0, 60) : phaseName
+  const titleLine2 = focusReframeTechnique ? stripMarkdown(focusReframeTechnique).substring(0, 70) : null
+
+  const leaderName = leaderExample
+    ? stripMarkdown(leaderExample).split(/\s+/).slice(0, 3).join(" ")
+    : "this leader"
+  const ctaText = `Learn how ${leaderName} used this mental model to level-up leadership`
 
   return (
     <div
@@ -316,175 +310,123 @@ function WallpaperExport({
         flexDirection: "column",
       }}
     >
-      {/* Premium header with gradient */}
-      <div
-        style={{
-          background: colors.gradient,
-          padding: "80px 80px 70px",
-          position: "relative",
-        }}
-      >
-        {/* Decorative elements */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "radial-gradient(circle at 85% 15%, rgba(255,255,255,0.15) 0%, transparent 40%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "120px",
-            background: "linear-gradient(to top, rgba(0,0,0,0.15), transparent)",
-          }}
-        />
+      {/* Header */}
+      <div style={{ background: colors.gradient, padding: "72px 80px 60px", position: "relative", flexShrink: 0 }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 85% 15%, rgba(255,255,255,0.15) 0%, transparent 40%)" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "100px", background: "linear-gradient(to top, rgba(0,0,0,0.15), transparent)" }} />
 
-        {/* Logo + Brand row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "50px", position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-            <RebootLogoImage size={80} />
+        {/* Logo + Brand + Day badge */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "44px", position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+            <RebootLogoImage size={72} />
             <div>
-              <div style={{ fontSize: "28px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)", marginBottom: "4px" }}>
+              <div style={{ fontSize: "26px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.85)", marginBottom: "4px" }}>
                 Leadership Reboot
               </div>
-              <div style={{ fontSize: "52px", fontWeight: 900, color: "#ffffff", letterSpacing: "0.12em" }}>
+              <div style={{ fontSize: "48px", fontWeight: 900, color: "#ffffff", letterSpacing: "0.12em" }}>
                 SIGNAL™
               </div>
             </div>
           </div>
-
-          {/* Day badge */}
-          <div
-            style={{
-              background: "rgba(0,0,0,0.25)",
-              backdropFilter: "blur(20px)",
-              borderRadius: "32px",
-              padding: "28px 48px",
-              textAlign: "center",
-              border: "2px solid rgba(255,255,255,0.15)",
-              minWidth: "180px",
-            }}
-          >
-            <div style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
-            <div style={{ fontSize: "88px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
+          <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: "28px", padding: "24px 44px", textAlign: "center", border: "2px solid rgba(255,255,255,0.15)", minWidth: "160px" }}>
+            <div style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase", color: colors.accent }}>DAY</div>
+            <div style={{ fontSize: "80px", fontWeight: 900, color: "#ffffff", lineHeight: 1 }}>{dayNumber}</div>
           </div>
         </div>
 
         {/* Phase label */}
-        <div style={{ fontSize: "26px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent, position: "relative" }}>
-          {phaseLabel} · {phaseName}
+        <div style={{ fontSize: "24px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent, marginBottom: "14px", position: "relative" }}>
+          {phaseLabel}
+        </div>
+
+        {/* Title block */}
+        <div style={{ position: "relative" }}>
+          <div style={{ fontSize: "30px", fontWeight: 600, color: "rgba(255,255,255,0.75)", marginBottom: "8px" }}>
+            {titleLine1}
+          </div>
+          {titleLine2 && (
+            <div style={{ fontSize: "52px", fontWeight: 900, color: "#ffffff", lineHeight: 1.15, letterSpacing: "-0.01em" }}>
+              {titleLine2}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Content sections */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "70px 80px", gap: "50px" }}>
-        {/* Quote section */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "60px 80px", gap: "40px" }}>
+        {/* Quote card */}
         {quote && (
-          <div
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              borderRadius: "32px",
-              padding: "50px",
-              border: "2px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
-              <div style={{ background: `${colors.bg}20`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <QuoteIcon color={colors.bg} size={40} />
+          <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "28px", padding: "46px", border: "2px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "28px" }}>
+              <div style={{ background: `${colors.bg}22`, borderRadius: "14px", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <QuoteIcon color={colors.bg} size={36} />
               </div>
-              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
-                Today&apos;s Quote
+              <span style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Quote
               </span>
             </div>
-            <div
-              style={{
-                fontSize: "42px",
-                fontWeight: 500,
-                color: "#e2e8f0",
-                lineHeight: 1.5,
-                fontStyle: "italic",
-                paddingLeft: "36px",
-                borderLeft: `6px solid ${colors.bg}`,
-              }}
-            >
+            <div style={{ fontSize: "40px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5, fontStyle: "italic", paddingLeft: "32px", borderLeft: `6px solid ${colors.bg}` }}>
               &ldquo;{stripMarkdown(quote).substring(0, 200)}&rdquo;
             </div>
           </div>
         )}
 
-        {/* Mental Model section */}
+        {/* Mental Model card */}
         {mentalModel && (
-          <div
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              borderRadius: "32px",
-              padding: "50px",
-              border: "2px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
-              <div style={{ background: `${colors.bg}20`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <BrainIcon color={colors.bg} size={40} />
+          <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "28px", padding: "46px", border: "2px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "28px" }}>
+              <div style={{ background: `${colors.bg}22`, borderRadius: "14px", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <BrainIcon color={colors.bg} size={36} />
               </div>
-              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+              <span style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
                 Mental Model
               </span>
             </div>
-            <div style={{ fontSize: "38px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
+            <div style={{ fontSize: "36px", fontWeight: 500, color: "#e2e8f0", lineHeight: 1.5 }}>
               {stripMarkdown(mentalModel).substring(0, 180)}
             </div>
           </div>
         )}
 
-        {/* Success Metric section */}
-        {scoreMetric && (
-          <div
-            style={{
-              background: `linear-gradient(135deg, ${colors.bg}18 0%, ${colors.bg}08 100%)`,
-              borderRadius: "32px",
-              padding: "50px",
-              border: `2px solid ${colors.bg}40`,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "30px" }}>
-              <div style={{ background: `${colors.bg}30`, borderRadius: "16px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <TargetIcon color={colors.bg} size={40} />
+        {/* Reflection Question card */}
+        {reflectionQuestion && (
+          <div style={{ background: `linear-gradient(135deg, ${colors.bg}18 0%, ${colors.bg}08 100%)`, borderRadius: "28px", padding: "46px", border: `2px solid ${colors.bg}40` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "28px" }}>
+              <div style={{ background: `${colors.bg}30`, borderRadius: "14px", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <HelpCircleIcon color={colors.bg} size={36} />
               </div>
-              <span style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
-                Success Metric
+              <span style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: colors.accent }}>
+                Reflect
               </span>
             </div>
-            <div style={{ fontSize: "48px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.35 }}>
-              {extractMetricMeasure(scoreMetric)}
+            <div style={{ fontSize: "44px", fontWeight: 700, color: "#f8fafc", lineHeight: 1.35, fontStyle: "italic" }}>
+              {stripMarkdown(reflectionQuestion).substring(0, 180)}
             </div>
           </div>
         )}
       </div>
 
-      {/* Premium footer */}
+      {/* CTA Footer */}
       <div
         style={{
-          background: "rgba(0,0,0,0.4)",
-          borderTop: "2px solid rgba(255,255,255,0.06)",
-          padding: "50px 80px",
+          background: `linear-gradient(135deg, ${colors.bg}dd 0%, ${colors.bg}ff 100%)`,
+          padding: "44px 80px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: "32px",
+          flexShrink: 0,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <RebootLogoImage size={48} />
-          <div style={{ fontSize: "28px", color: colors.accent, fontWeight: 600, letterSpacing: "0.08em" }}>
+        <RebootLogoImage size={52} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: "30px", fontWeight: 700, color: "#ffffff", lineHeight: 1.35 }}>
+            {ctaText}
+          </div>
+          <div style={{ fontSize: "22px", color: colors.accent, marginTop: "6px", fontWeight: 600 }}>
             Reboot.TransformerHub.com
           </div>
         </div>
-        <div style={{ fontSize: "28px", color: "#64748b", fontWeight: 500 }}>
-          Day {dayNumber} / 90
-        </div>
+        <ArrowRightIcon color="#ffffff" size={52} />
       </div>
     </div>
   )
@@ -495,8 +437,12 @@ export function WallpaperDownloadButton({
   dayNumber,
   phaseName,
   phaseLabel,
+  phaseSubtitle,
+  focusReframeTechnique,
   quote,
   mentalModel,
+  reflectionQuestion,
+  leaderExample,
   scoreMetric,
   variant = "outline",
 }: WallpaperCardProps & { variant?: "outline" | "ghost" | "default" }) {
@@ -556,8 +502,12 @@ export function WallpaperDownloadButton({
               dayNumber={dayNumber}
               phaseName={phaseName}
               phaseLabel={phaseLabel}
+              phaseSubtitle={phaseSubtitle}
+              focusReframeTechnique={focusReframeTechnique}
               quote={quote}
               mentalModel={mentalModel}
+              reflectionQuestion={reflectionQuestion}
+              leaderExample={leaderExample}
               scoreMetric={scoreMetric}
             />
           </div>
@@ -598,8 +548,12 @@ export function WallpaperDownloadButton({
             dayNumber={dayNumber}
             phaseName={phaseName}
             phaseLabel={phaseLabel}
+            phaseSubtitle={phaseSubtitle}
+            focusReframeTechnique={focusReframeTechnique}
             quote={quote}
             mentalModel={mentalModel}
+            reflectionQuestion={reflectionQuestion}
+            leaderExample={leaderExample}
             scoreMetric={scoreMetric}
           />
         </div>
