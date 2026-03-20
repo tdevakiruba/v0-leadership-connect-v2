@@ -479,6 +479,7 @@ export function TodayDashboard({
                     quote={todayLesson.quote || ""}
                     mentalModel={todayLesson.mental_model || ""}
                     reflectionQuestion={todayLesson.reflection_question}
+                    aiLeadershipLens={todayLesson.ai_leadership_lens}
                     leaderExample={todayLesson.leader_example}
                     scoreMetric={todayLesson.score_metric || ""}
                     phaseColor=""
