@@ -157,7 +157,6 @@ export function LessonDetail({
   const [isCompleted, setIsCompleted] = useState(progress?.completed || false)
   const [completedActions, setCompletedActions] = useState<number[]>(progress?.actions_completed || [])
   const [showJournal, setShowJournal] = useState(false)
-  const [journalNote, setJournalNote] = useState("")
   const [expandedTip, setExpandedTip] = useState<number | null>(null)
   const [justCompleted, setJustCompleted] = useState<number | null>(null)
   const router = useRouter()
@@ -591,13 +590,13 @@ export function LessonDetail({
                     <div className="p-4 space-y-3">
                       <Textarea
                         placeholder="How does this thought challenge or resonate with your current leadership approach?"
-                        value={journalNote}
-                        onChange={(e) => setJournalNote(e.target.value)}
+                        value={reflection}
+                        onChange={(e) => setReflection(e.target.value)}
                         rows={4}
                         className="resize-none border-0 bg-transparent focus-visible:ring-0 p-0 text-foreground placeholder:text-muted-foreground/60"
                       />
                       <div className="flex items-center justify-between pt-2 border-t border-border/30">
-                        <span className="text-xs text-muted-foreground">Auto-saves as you type</span>
+                        <span className="text-xs text-muted-foreground">Auto-saves when you complete</span>
                         <Button
                           variant="ghost"
                           size="sm"
