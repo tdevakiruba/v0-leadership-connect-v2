@@ -27,7 +27,7 @@ import type { User } from "@supabase/supabase-js"
 interface Question {
   id: string
   title: string
-  scenario: string
+  scenario_description: string
   category: string
   status: "pending" | "addressed" | "scheduled"
   created_at: string
@@ -115,17 +115,27 @@ export function DecisionLabSubmit({ user, profile }: DecisionLabSubmitProps) {
     setIsSubmitting(true)
 
     try {
+      console.log("[v0] Submitting question with:", {
+        user_id: user.id,
+        title: title.trim(),
+        scenario_description: scenario.trim(),
+        category,
+        status: "pending"
+      })
+      
       const { data, error } = await supabase
         .from("leader_questions")
         .insert({
           user_id: user.id,
           title: title.trim(),
-          scenario: scenario.trim(),
+          scenario_description: scenario.trim(),
           category,
           status: "pending"
         })
         .select()
         .single()
+
+      console.log("[v0] Insert result:", { data, error })
 
       if (error) throw error
 
@@ -340,7 +350,7 @@ export function DecisionLabSubmit({ user, profile }: DecisionLabSubmitProps) {
                         {getStatusBadge(question.status)}
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2">
-                        {question.scenario}
+                        {question.scenario_description}
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
                         {new Date(question.created_at).toLocaleDateString()}
