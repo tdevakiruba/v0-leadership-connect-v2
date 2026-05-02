@@ -348,8 +348,8 @@ export default async function LandingPage() {
                 </div>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">$149</span>
-                    <span className="text-lg text-muted-foreground line-through">$299</span>
+                    <span className="text-3xl font-bold">$349</span>
+                    <span className="text-lg text-muted-foreground line-through">$499</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">one-time payment</p>
                 </div>
