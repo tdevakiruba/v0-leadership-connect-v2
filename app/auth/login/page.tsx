@@ -83,15 +83,14 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.1),transparent)]" />
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
           <div>
-            <Link href="/" className="flex items-center gap-3 mb-2">
+            <Link href="/" className="flex items-center mb-2">
               <Image 
-                src="/images/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={40} 
-                height={40}
-                className="rounded-full"
+                src="/images/leadership-reboot-logo.png" 
+                alt="Leadership Reboot SIGNAL™ Framework" 
+                width={280}
+                height={70}
+                className="h-16 w-auto brightness-0 invert"
               />
-              <span className="text-xl font-bold">Leadership Reboot SIGNAL™</span>
             </Link>
             <p className="text-primary-foreground/70 text-sm">90-Day Executive Transformation</p>
           </div>
@@ -141,15 +140,14 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-8">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <Link href="/" className="inline-flex items-center justify-center gap-3 mb-2">
+            <Link href="/" className="inline-flex items-center justify-center mb-2">
               <Image 
-                src="/images/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={40} 
-                height={40}
-                className="rounded-full"
+                src="/images/leadership-reboot-logo.png" 
+                alt="Leadership Reboot SIGNAL™ Framework" 
+                width={280}
+                height={70}
+                className="h-14 w-auto"
               />
-              <span className="text-xl font-bold text-[#0f2a4a]">Leadership Reboot SIGNAL™</span>
             </Link>
           </div>
 

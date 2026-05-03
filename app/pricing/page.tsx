@@ -39,15 +39,14 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center">
             <Image 
-              src="/images/reboot-logo.png" 
-              alt="Leadership Reboot" 
-              width={40} 
-              height={40}
-              className="rounded-full"
+              src="/images/leadership-reboot-logo.png" 
+              alt="Leadership Reboot SIGNAL™ Framework" 
+              width={200}
+              height={50}
+              className="h-10 w-auto"
             />
-            <span className="font-bold text-xl text-[#0f2a4a]">Leadership Reboot SIGNAL™</span>
           </Link>
           {user ? (
             <div className="flex items-center gap-4">
