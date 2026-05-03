@@ -80,18 +80,15 @@ export function DashboardShell({
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-card border-r border-border pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0 px-6 mb-8">
-            <Link href="/" className="flex items-center gap-3">
+          <div className="flex items-center flex-shrink-0 px-4 mb-8">
+            <Link href="/" className="flex items-center">
               <Image 
-                src="/images/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={40} 
-                height={40}
-                className="rounded-xl"
+                src="/images/leadership-reboot-logo.png" 
+                alt="Leadership Reboot SIGNAL™ Framework" 
+                width={220}
+                height={55}
+                className="h-12 w-auto"
               />
-              <span className="font-bold text-[#0f2a4a] text-lg leading-tight">
-                Leadership Reboot SIGNAL™
-              </span>
             </Link>
           </div>
 
@@ -162,16 +159,15 @@ export function DashboardShell({
       )}>
         <div className="flex flex-col h-full pt-5 pb-4 overflow-y-auto">
           {/* Logo & Close */}
-          <div className="flex items-center justify-between px-6 mb-8">
-            <Link href="/" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
+          <div className="flex items-center justify-between px-4 mb-8">
+            <Link href="/" className="flex items-center" onClick={() => setSidebarOpen(false)}>
               <Image 
-                src="/reboot-logo.png" 
-                alt="Leadership Reboot" 
-                width={40} 
-                height={40}
-                className="rounded-xl"
+                src="/images/leadership-reboot-logo.png" 
+                alt="Leadership Reboot SIGNAL™ Framework" 
+                width={180}
+                height={45}
+                className="h-10 w-auto"
               />
-              <span className="font-semibold text-foreground">Leadership Reboot</span>
             </Link>
             <button onClick={() => setSidebarOpen(false)} className="p-2 -m-2 text-muted-foreground">
               <X className="h-5 w-5" />

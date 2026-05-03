@@ -112,15 +112,14 @@ export default async function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center">
             <Image
-              src="/reboot-logo.png"
-              alt="Leadership Reboot"
-              width={36}
-              height={36}
-              className="rounded-lg"
+              src="/images/leadership-reboot-logo.png"
+              alt="Leadership Reboot SIGNAL™ Framework"
+              width={200}
+              height={50}
+              className="h-10 w-auto"
             />
-            <span className="font-semibold">Leadership Reboot SIGNAL™ Framework</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -160,18 +159,14 @@ export default async function LandingPage() {
             <br></br>
             <div className="flex justify-center mb-6">
               <Image
-                src="/reboot-logo.png"
-                alt="Leadership Reboot"
-                width={76}
-                height={76}
-                className="rounded-lg"
+                src="/images/leadership-reboot-logo.png"
+                alt="Leadership Reboot SIGNAL™ Framework"
+                width={500}
+                height={150}
+                className="w-full max-w-lg h-auto"
               />
             </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-balance mb-6">
-              Leadership Reboot<br></br>
-              <span className="text-primary">SIGNAL™ Framework</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-center">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-justify">
               Leadership Reboot SIGNAL™ — a 90-day micro-learning leadership transformation designed to help you lead in the age of AI. <span className="font-bold italic">Helping mid-career leaders, emerging executives, and high performers shifting from domain expertise into people, strategy, and solution leadership</span>. Using the SIGNAL™ framework, micro-learning, daily reflection, and performance-aligned action, this experience rewires how leaders interpret pressure, navigate complexity, and make decisions that move teams forward. What begins in our workshops as awareness becomes permanent behavior here. Think of the workshop as the spark. Leadership Reboot SIGNAL™ is the fuel that keeps the fire burning — every day, for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
