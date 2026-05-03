@@ -166,7 +166,7 @@ export default async function LandingPage() {
                 className="w-full max-w-lg h-auto"
               />
             </div>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-center">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 text-justify">
               Leadership Reboot SIGNAL™ — a 90-day micro-learning leadership transformation designed to help you lead in the age of AI. <span className="font-bold italic">Helping mid-career leaders, emerging executives, and high performers shifting from domain expertise into people, strategy, and solution leadership</span>. Using the SIGNAL™ framework, micro-learning, daily reflection, and performance-aligned action, this experience rewires how leaders interpret pressure, navigate complexity, and make decisions that move teams forward. What begins in our workshops as awareness becomes permanent behavior here. Think of the workshop as the spark. Leadership Reboot SIGNAL™ is the fuel that keeps the fire burning — every day, for the long haul.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
