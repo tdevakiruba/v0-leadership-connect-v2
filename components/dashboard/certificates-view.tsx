@@ -287,23 +287,9 @@ export function CertificatesView({
     ctx.lineWidth = 2
     ctx.strokeRect(45, 45, 1710, 1110)
 
-    // Subtle teal vertical divider line
-    const dividerGradient = ctx.createLinearGradient(0, 150, 0, 1050)
-    dividerGradient.addColorStop(0, 'transparent')
-    dividerGradient.addColorStop(0.15, '#14b8a6')
-    dividerGradient.addColorStop(0.5, '#0d9488')
-    dividerGradient.addColorStop(0.85, '#14b8a6')
-    dividerGradient.addColorStop(1, 'transparent')
-    ctx.strokeStyle = dividerGradient
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.moveTo(550, 150)
-    ctx.lineTo(550, 1050)
-    ctx.stroke()
-
-    // Seal size and position (LEFT middle - 400px)
+    // Seal size and position (LEFT middle - 400px, moved closer to content)
     const sealSize = 400
-    const sealX = 75
+    const sealX = 180
     const sealY = (1200 - sealSize) / 2
 
     // Load and draw the LARGE seal on left (no dark background)
@@ -315,12 +301,12 @@ export function CertificatesView({
       ctx.strokeStyle = '#b8964c'
       ctx.lineWidth = 4
       ctx.beginPath()
-      ctx.arc(275, 600, 180, 0, Math.PI * 2)
+      ctx.arc(380, 600, 180, 0, Math.PI * 2)
       ctx.stroke()
       ctx.fillStyle = '#b8964c'
       ctx.font = 'bold 36px Georgia, "Times New Roman", serif'
       ctx.textAlign = 'center'
-      ctx.fillText('CERTIFIED', 275, 610)
+      ctx.fillText('CERTIFIED', 380, 610)
     }
 
     // Right content area center
