@@ -234,6 +234,24 @@ export function CertificatesView({
     })
   }
 
+  // Generate a verifiable certificate number
+  const generateCertificateNumber = (milestone: typeof milestones[0], odId: string) => {
+    const phaseCode = milestone.phase
+    const timestamp = Date.now().toString(36).toUpperCase()
+    const userHash = odId.slice(0, 8).toUpperCase()
+    return `LR-${phaseCode}-${timestamp}-${userHash}`
+  }
+
+  // SIGNAL phase colors for the journey map
+  const signalColors: Record<string, string> = {
+    'S': '#4ade80', // green
+    'I': '#2dd4bf', // teal
+    'G': '#22d3ee', // cyan
+    'N': '#3b82f6', // blue
+    'A': '#6366f1', // indigo
+    'L': '#8b5cf6', // violet
+  }
+
   // Handle certificate download
   const handleDownloadCertificate = async (milestone: typeof milestones[0], profile: Profile | null) => {
     const userName = profile?.full_name || 'Leadership Professional'
@@ -242,102 +260,235 @@ export function CertificatesView({
       month: 'long',
       day: 'numeric'
     })
+    const certificateNumber = generateCertificateNumber(milestone, user.id)
 
     // Create a canvas for the certificate
     const canvas = document.createElement('canvas')
-    canvas.width = 1200
-    canvas.height = 800
+    canvas.width = 1400
+    canvas.height = 900
     const ctx = canvas.getContext('2d')
     
     if (!ctx) return
 
     // Background gradient
-    const gradient = ctx.createLinearGradient(0, 0, 1200, 800)
+    const gradient = ctx.createLinearGradient(0, 0, 1400, 900)
     gradient.addColorStop(0, '#0f172a')
-    gradient.addColorStop(1, '#1e293b')
+    gradient.addColorStop(0.5, '#1e293b')
+    gradient.addColorStop(1, '#0f172a')
     ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, 1200, 800)
+    ctx.fillRect(0, 0, 1400, 900)
 
-    // Load and draw watermark logo (centered, faded)
+    // Subtle watermark in center (faded logo)
     try {
-      const logoImg = await loadImage('/images/leadership-reboot-logo.png')
+      const watermarkImg = await loadImage('/images/leadership-reboot-logo.png')
       ctx.save()
-      ctx.globalAlpha = 0.08 // Very subtle watermark
-      const logoWidth = 600
-      const logoHeight = (logoImg.height / logoImg.width) * logoWidth
-      ctx.drawImage(logoImg, (1200 - logoWidth) / 2, (800 - logoHeight) / 2, logoWidth, logoHeight)
+      ctx.globalAlpha = 0.03
+      const wmWidth = 700
+      const wmHeight = (watermarkImg.height / watermarkImg.width) * wmWidth
+      ctx.drawImage(watermarkImg, (1400 - wmWidth) / 2, (900 - wmHeight) / 2, wmWidth, wmHeight)
       ctx.restore()
     } catch (e) {
-      console.log('[v0] Could not load logo watermark:', e)
+      // Watermark is optional
     }
 
-    // Border
+    // Decorative border
     ctx.strokeStyle = '#0d9488'
-    ctx.lineWidth = 4
-    ctx.strokeRect(40, 40, 1120, 720)
-
+    ctx.lineWidth = 3
+    ctx.strokeRect(30, 30, 1340, 840)
+    
     // Inner border
     ctx.strokeStyle = '#134e4a'
     ctx.lineWidth = 1
-    ctx.strokeRect(60, 60, 1080, 680)
+    ctx.strokeRect(45, 45, 1310, 810)
 
-    // Title
+    // Load and draw white logo at top
+    try {
+      const logoImg = await loadImage('/images/leadership-reboot-logo-white.png')
+      const logoWidth = 280
+      const logoHeight = (logoImg.height / logoImg.width) * logoWidth
+      ctx.drawImage(logoImg, (1400 - logoWidth) / 2, 60, logoWidth, logoHeight)
+    } catch (e) {
+      // Fallback text if logo doesn't load
+      ctx.fillStyle = '#f8fafc'
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('LEADERSHIP REBOOT', 700, 90)
+    }
+
+    // Certificate title
     ctx.fillStyle = '#f8fafc'
-    ctx.font = 'bold 48px system-ui, -apple-system, sans-serif'
+    ctx.font = 'bold 42px system-ui, -apple-system, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText('Certificate of Achievement', 600, 150)
+    ctx.fillText('Certificate of Achievement', 700, 200)
 
     // Subtitle
     ctx.fillStyle = '#94a3b8'
-    ctx.font = '24px system-ui, -apple-system, sans-serif'
-    ctx.fillText('Leadership Reboot 90-Day Program', 600, 200)
-
-    // This certifies
-    ctx.fillStyle = '#94a3b8'
     ctx.font = '20px system-ui, -apple-system, sans-serif'
-    ctx.fillText('This certifies that', 600, 280)
+    ctx.fillText('90-Day Leadership Transformation Program', 700, 235)
 
-    // Name
+    // "This certifies that"
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '18px system-ui, -apple-system, sans-serif'
+    ctx.fillText('This certifies that', 700, 290)
+
+    // Name in cursive style
     ctx.fillStyle = '#0d9488'
-    ctx.font = 'bold 40px system-ui, -apple-system, sans-serif'
-    ctx.fillText(userName, 600, 340)
+    ctx.font = 'italic 48px Georgia, "Times New Roman", serif'
+    ctx.fillText(userName, 700, 350)
 
-    // Has completed
+    // Decorative line under name
+    ctx.strokeStyle = '#0d9488'
+    ctx.lineWidth = 1
+    const nameWidth = ctx.measureText(userName).width
+    ctx.beginPath()
+    ctx.moveTo(700 - nameWidth / 2 - 20, 365)
+    ctx.lineTo(700 + nameWidth / 2 + 20, 365)
+    ctx.stroke()
+
+    // "has successfully completed"
     ctx.fillStyle = '#94a3b8'
-    ctx.font = '20px system-ui, -apple-system, sans-serif'
-    ctx.fillText('has successfully completed', 600, 400)
+    ctx.font = '18px system-ui, -apple-system, sans-serif'
+    ctx.fillText('has successfully completed', 700, 400)
 
     // Phase name
     ctx.fillStyle = '#f8fafc'
-    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, 600, 460)
+    ctx.font = 'bold 32px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, 700, 450)
 
     // Outcome
     ctx.fillStyle = '#94a3b8'
-    ctx.font = '18px system-ui, -apple-system, sans-serif'
-    ctx.fillText(milestone.outcome, 600, 520)
-
-    // Date
-    ctx.fillStyle = '#64748b'
     ctx.font = '16px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Awarded on ${completionDate}`, 600, 620)
+    ctx.fillText(milestone.outcome, 700, 485)
 
-    // Load and draw the seal (bottom right corner)
+    // Draw SIGNAL Journey Map
+    const journeyY = 560
+    const journeyStartX = 400
+    const journeySpacing = 100
+    const circleRadius = 22
+
+    // Journey map title
+    ctx.fillStyle = '#64748b'
+    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillText('SIGNAL FRAMEWORK JOURNEY', 700, journeyY - 45)
+
+    // Find the current milestone index
+    const currentMilestoneIndex = milestones.findIndex(m => m.id === milestone.id)
+
+    // Draw connecting line
+    ctx.strokeStyle = '#334155'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(journeyStartX, journeyY)
+    ctx.lineTo(journeyStartX + (5 * journeySpacing), journeyY)
+    ctx.stroke()
+
+    // Draw completed portion of line
+    if (currentMilestoneIndex >= 0) {
+      ctx.strokeStyle = '#0d9488'
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.moveTo(journeyStartX, journeyY)
+      ctx.lineTo(journeyStartX + (currentMilestoneIndex * journeySpacing), journeyY)
+      ctx.stroke()
+    }
+
+    // Draw phase circles
+    milestones.forEach((m, index) => {
+      const x = journeyStartX + (index * journeySpacing)
+      const isCompleted = index <= currentMilestoneIndex
+      const isCurrent = index === currentMilestoneIndex
+
+      // Circle
+      ctx.beginPath()
+      ctx.arc(x, journeyY, circleRadius, 0, Math.PI * 2)
+      
+      if (isCompleted) {
+        ctx.fillStyle = signalColors[m.phase] || '#0d9488'
+        ctx.fill()
+        
+        if (isCurrent) {
+          // Highlight current phase with outer ring
+          ctx.strokeStyle = '#ffffff'
+          ctx.lineWidth = 3
+          ctx.stroke()
+        }
+      } else {
+        ctx.fillStyle = '#1e293b'
+        ctx.fill()
+        ctx.strokeStyle = '#475569'
+        ctx.lineWidth = 2
+        ctx.stroke()
+      }
+
+      // Phase letter
+      ctx.fillStyle = isCompleted ? '#ffffff' : '#64748b'
+      ctx.font = 'bold 16px system-ui, -apple-system, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(m.phase, x, journeyY)
+      
+      // Phase name below
+      ctx.textBaseline = 'alphabetic'
+      ctx.fillStyle = isCompleted ? '#94a3b8' : '#475569'
+      ctx.font = '10px system-ui, -apple-system, sans-serif'
+      
+      // Abbreviated phase names
+      const phaseNames: Record<string, string> = {
+        'S': 'Self-Awareness',
+        'I': 'Interpretation',
+        'G': 'Goals',
+        'N': 'Navigation',
+        'A': 'Action',
+        'L': 'Leadership'
+      }
+      ctx.fillText(phaseNames[m.phase] || '', x, journeyY + 40)
+    })
+
+    // Reset text baseline
+    ctx.textBaseline = 'alphabetic'
+
+    // Load and draw the seal (left center)
     try {
       const sealImg = await loadImage('/images/leadership-reboot-seal.png')
-      const sealSize = 160
-      ctx.drawImage(sealImg, 1200 - sealSize - 60, 800 - sealSize - 60, sealSize, sealSize)
+      const sealSize = 150
+      const sealX = 80
+      const sealY = (900 - sealSize) / 2
+      ctx.drawImage(sealImg, sealX, sealY, sealSize, sealSize)
     } catch (e) {
-      console.log('[v0] Could not load seal:', e)
-      // Fallback: draw a simple phase badge if seal doesn't load
-      ctx.fillStyle = '#0d9488'
+      // Fallback seal
+      ctx.fillStyle = '#b8860b'
       ctx.beginPath()
-      ctx.arc(1060, 680, 40, 0, Math.PI * 2)
+      ctx.arc(155, 450, 60, 0, Math.PI * 2)
       ctx.fill()
-      ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif'
-      ctx.fillText(milestone.icon, 1060, 690)
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(milestone.icon, 155, 458)
     }
+
+    // Date
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '14px system-ui, -apple-system, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(`Awarded on ${completionDate}`, 700, 680)
+
+    // Certificate number (verifiable)
+    ctx.fillStyle = '#475569'
+    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Certificate No: ${certificateNumber}`, 700, 720)
+
+    // Verification URL with certificate number for easy verification
+    ctx.fillStyle = '#64748b'
+    ctx.font = '10px system-ui, -apple-system, sans-serif'
+    const verifyUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/verify?cert=${certificateNumber}`
+      : `leadershipreboot.com/verify?cert=${certificateNumber}`
+    ctx.fillText(`Verify at: ${verifyUrl}`, 700, 740)
+
+    // Footer
+    ctx.fillStyle = '#334155'
+    ctx.font = '10px system-ui, -apple-system, sans-serif'
+    ctx.fillText('SIGNAL™ Framework | Transformer Hub', 700, 850)
 
     // Download
     const link = document.createElement('a')
