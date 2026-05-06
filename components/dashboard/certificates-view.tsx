@@ -330,7 +330,7 @@ export function CertificatesView({
     }
 
     // Certificate title - positioned below logo with proper spacing
-    const titleY = Math.max(logoBottomY + 50, 280)
+    const titleY = Math.max(logoBottomY + 80, 320)
     ctx.fillStyle = '#0f172a'
     ctx.font = '54px Georgia, "Times New Roman", serif'
     ctx.textAlign = 'center'
