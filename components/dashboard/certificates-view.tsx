@@ -453,15 +453,18 @@ export function CertificatesView({
       ctx.fillText(phaseNames[m.phase] || '', x, journeyY + 32)
     })
 
+    // Footer content - positioned to the left
+    const footerX = 850
+
     // Date
     ctx.fillStyle = '#64748b'
     ctx.font = 'italic 22px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Awarded on ${completionDate}`, contentX, 920)
+    ctx.fillText(`Awarded on ${completionDate}`, footerX, 920)
 
     // Certificate number
     ctx.fillStyle = '#64748b'
     ctx.font = '18px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Certificate No: ${certificateNumber}`, contentX, 960)
+    ctx.fillText(`Certificate No: ${certificateNumber}`, footerX, 960)
 
     // Verification URL
     ctx.fillStyle = '#64748b'
@@ -469,7 +472,7 @@ export function CertificatesView({
     const verifyUrl = typeof window !== 'undefined' 
       ? `${window.location.origin}/verify?cert=${certificateNumber}`
       : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 1000)
+    ctx.fillText(`Verify: ${verifyUrl}`, footerX, 1000)
 
     // Footer divider
     ctx.strokeStyle = '#e2e8f0'
@@ -482,7 +485,7 @@ export function CertificatesView({
     // Footer text
     ctx.fillStyle = '#64748b'
     ctx.font = '16px Georgia, "Times New Roman", serif'
-    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', contentX, 1090)
+    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', footerX, 1090)
 
     // Download
     const link = document.createElement('a')
