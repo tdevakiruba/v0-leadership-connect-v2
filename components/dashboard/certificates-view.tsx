@@ -223,6 +223,135 @@ export function CertificatesView({
     return !status.isEarned && status.percentage > 0
   }) || milestones.find(m => !getMilestoneStatus(m).isEarned) || milestones[milestones.length - 1]
 
+  // Handle certificate download
+  const handleDownloadCertificate = async (milestone: typeof milestones[0], profile: Profile | null) => {
+    const userName = profile?.full_name || 'Leadership Professional'
+    const completionDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    // Create a canvas for the certificate
+    const canvas = document.createElement('canvas')
+    canvas.width = 1200
+    canvas.height = 800
+    const ctx = canvas.getContext('2d')
+    
+    if (!ctx) return
+
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 1200, 800)
+    gradient.addColorStop(0, '#0f172a')
+    gradient.addColorStop(1, '#1e293b')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, 1200, 800)
+
+    // Border
+    ctx.strokeStyle = '#0d9488'
+    ctx.lineWidth = 4
+    ctx.strokeRect(40, 40, 1120, 720)
+
+    // Inner border
+    ctx.strokeStyle = '#134e4a'
+    ctx.lineWidth = 1
+    ctx.strokeRect(60, 60, 1080, 680)
+
+    // Title
+    ctx.fillStyle = '#f8fafc'
+    ctx.font = 'bold 48px system-ui, -apple-system, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('Certificate of Achievement', 600, 150)
+
+    // Subtitle
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '24px system-ui, -apple-system, sans-serif'
+    ctx.fillText('Leadership Connect 90-Day Program', 600, 200)
+
+    // This certifies
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '20px system-ui, -apple-system, sans-serif'
+    ctx.fillText('This certifies that', 600, 280)
+
+    // Name
+    ctx.fillStyle = '#0d9488'
+    ctx.font = 'bold 40px system-ui, -apple-system, sans-serif'
+    ctx.fillText(userName, 600, 340)
+
+    // Has completed
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '20px system-ui, -apple-system, sans-serif'
+    ctx.fillText('has successfully completed', 600, 400)
+
+    // Phase name
+    ctx.fillStyle = '#f8fafc'
+    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, 600, 460)
+
+    // Outcome
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '18px system-ui, -apple-system, sans-serif'
+    ctx.fillText(milestone.outcome, 600, 520)
+
+    // Date
+    ctx.fillStyle = '#64748b'
+    ctx.font = '16px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Awarded on ${completionDate}`, 600, 620)
+
+    // Phase badge
+    ctx.fillStyle = '#0d9488'
+    ctx.beginPath()
+    ctx.arc(600, 700, 30, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+    ctx.fillText(milestone.icon, 600, 710)
+
+    // Download
+    const link = document.createElement('a')
+    link.download = `${milestone.capability.replace(/\s+/g, '-')}-Certificate.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  }
+
+  // Handle certificate share
+  const handleShareCertificate = async (milestone: typeof milestones[0], profile: Profile | null) => {
+    const userName = profile?.full_name || 'Leadership Professional'
+    const shareText = `I just earned the "${milestone.capability}" certificate in the Leadership Connect 90-Day Program! ${milestone.outcome}`
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+    // Check if Web Share API is supported
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${milestone.capability} Certificate`,
+          text: shareText,
+          url: shareUrl,
+        })
+      } catch (error) {
+        // User cancelled or share failed, fall back to clipboard
+        if ((error as Error).name !== 'AbortError') {
+          await fallbackShare(shareText, shareUrl)
+        }
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      await fallbackShare(shareText, shareUrl)
+    }
+  }
+
+  // Fallback share function - copy to clipboard
+  const fallbackShare = async (text: string, url: string) => {
+    const fullText = `${text}\n\n${url}`
+    try {
+      await navigator.clipboard.writeText(fullText)
+      alert('Certificate details copied to clipboard!')
+    } catch {
+      // Final fallback - show a prompt
+      prompt('Copy this to share:', fullText)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Executive Header */}
@@ -474,11 +603,21 @@ export function CertificatesView({
                   {/* Actions for earned milestones */}
                   {status.isEarned && (
                     <div className="flex gap-2 mt-4">
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs bg-transparent">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 h-8 text-xs bg-transparent"
+                        onClick={() => handleDownloadCertificate(milestone, profile)}
+                      >
                         <Download className="mr-1.5 h-3.5 w-3.5" />
                         Download
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 h-8 text-xs bg-transparent">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 h-8 text-xs bg-transparent"
+                        onClick={() => handleShareCertificate(milestone, profile)}
+                      >
                         <Share2 className="mr-1.5 h-3.5 w-3.5" />
                         Share
                       </Button>
