@@ -270,240 +270,250 @@ export function CertificatesView({
     
     if (!ctx) return
 
-    // Clean, elegant cream/off-white background
-    ctx.fillStyle = '#faf8f5'
+    // === INNOVATIVE SPLIT DESIGN ===
+    // Left side: Large seal on gradient background
+    // Right side: Clean white content area
+
+    // Full background - soft gradient
+    const bgGradient = ctx.createLinearGradient(0, 0, 1800, 0)
+    bgGradient.addColorStop(0, '#0a1628')
+    bgGradient.addColorStop(0.35, '#0d1f35')
+    bgGradient.addColorStop(0.35, '#ffffff')
+    bgGradient.addColorStop(1, '#f8fafc')
+    ctx.fillStyle = bgGradient
     ctx.fillRect(0, 0, 1800, 1200)
 
-    // Subtle texture overlay
-    ctx.save()
-    ctx.globalAlpha = 0.03
-    for (let i = 0; i < 1800; i += 4) {
-      for (let j = 0; j < 1200; j += 4) {
-        if (Math.random() > 0.5) {
-          ctx.fillStyle = '#000000'
-          ctx.fillRect(i, j, 1, 1)
-        }
-      }
-    }
-    ctx.restore()
+    // Left dark section with subtle radial glow
+    const leftGlow = ctx.createRadialGradient(300, 600, 0, 300, 600, 500)
+    leftGlow.addColorStop(0, 'rgba(13, 148, 136, 0.15)')
+    leftGlow.addColorStop(1, 'transparent')
+    ctx.fillStyle = leftGlow
+    ctx.fillRect(0, 0, 630, 1200)
 
-    // Main content area (left side) - dark elegant panel
-    const panelWidth = 1350
-    const panelMargin = 60
-    ctx.fillStyle = '#0c1829'
-    ctx.fillRect(panelMargin, panelMargin, panelWidth, 1200 - panelMargin * 2)
+    // Vertical divider line with gradient
+    const dividerGradient = ctx.createLinearGradient(0, 100, 0, 1100)
+    dividerGradient.addColorStop(0, 'transparent')
+    dividerGradient.addColorStop(0.2, '#14b8a6')
+    dividerGradient.addColorStop(0.5, '#0d9488')
+    dividerGradient.addColorStop(0.8, '#14b8a6')
+    dividerGradient.addColorStop(1, 'transparent')
+    ctx.strokeStyle = dividerGradient
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(630, 100)
+    ctx.lineTo(630, 1100)
+    ctx.stroke()
 
-    // Teal accent strip on left edge of panel
-    ctx.fillStyle = '#0d9488'
-    ctx.fillRect(panelMargin, panelMargin, 8, 1200 - panelMargin * 2)
+    // Seal size and position (LEFT middle - 400px)
+    const sealSize = 400
+    const sealX = 115
+    const sealY = (1200 - sealSize) / 2
 
-    // Gold border around dark panel
-    ctx.strokeStyle = '#b8964c'
-    ctx.lineWidth = 2
-    ctx.strokeRect(panelMargin, panelMargin, panelWidth, 1200 - panelMargin * 2)
-
-    // Inner gold accent line
-    ctx.strokeStyle = '#b8964c'
-    ctx.lineWidth = 1
-    ctx.globalAlpha = 0.4
-    ctx.strokeRect(panelMargin + 15, panelMargin + 15, panelWidth - 30, 1200 - panelMargin * 2 - 30)
-    ctx.globalAlpha = 1
-
-    // Content center X (accounting for seal space on right)
-    const contentCenterX = panelMargin + panelWidth / 2
-
-    // Load and draw white logo at top
+    // Load and draw the LARGE seal on left
     try {
-      const logoImg = await loadImage('/images/leadership-reboot-logo-white.png')
-      const logoWidth = 260
-      const logoHeight = (logoImg.height / logoImg.width) * logoWidth
-      ctx.drawImage(logoImg, contentCenterX - logoWidth / 2, 100, logoWidth, logoHeight)
+      const sealImg = await loadImage('/images/leadership-reboot-seal.png')
+      ctx.drawImage(sealImg, sealX, sealY, sealSize, sealSize)
     } catch (e) {
-      ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 32px system-ui, -apple-system, sans-serif'
+      // Fallback seal
+      ctx.strokeStyle = '#b8964c'
+      ctx.lineWidth = 4
+      ctx.beginPath()
+      ctx.arc(315, 600, 180, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.fillStyle = '#b8964c'
+      ctx.font = 'bold 36px Georgia, "Times New Roman", serif'
       ctx.textAlign = 'center'
-      ctx.fillText('LEADERSHIP REBOOT', contentCenterX, 150)
+      ctx.fillText('CERTIFIED', 315, 610)
     }
 
-    // Certificate title
-    ctx.fillStyle = '#b8964c'
-    ctx.font = '600 58px Georgia, "Times New Roman", serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('Certificate of Achievement', contentCenterX, 300)
+    // Right content area center
+    const contentX = 1180
 
-    // Elegant gold line under title
-    ctx.strokeStyle = '#b8964c'
+    // Logo at top right section
+    try {
+      const logoImg = await loadImage('/images/leadership-reboot-logo.png')
+      const logoWidth = 280
+      const logoHeight = (logoImg.height / logoImg.width) * logoWidth
+      ctx.drawImage(logoImg, contentX - logoWidth / 2, 70, logoWidth, logoHeight)
+    } catch (e) {
+      ctx.fillStyle = '#0d1f35'
+      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('LEADERSHIP REBOOT', contentX, 120)
+    }
+
+    // Thin decorative line
+    ctx.strokeStyle = '#e2e8f0'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(contentCenterX - 280, 325)
-    ctx.lineTo(contentCenterX + 280, 325)
+    ctx.moveTo(contentX - 300, 220)
+    ctx.lineTo(contentX + 300, 220)
+    ctx.stroke()
+
+    // Certificate title
+    ctx.fillStyle = '#0f172a'
+    ctx.font = '54px Georgia, "Times New Roman", serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('Certificate of Achievement', contentX, 290)
+
+    // Teal accent line under title
+    ctx.strokeStyle = '#0d9488'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(contentX - 180, 310)
+    ctx.lineTo(contentX + 180, 310)
     ctx.stroke()
 
     // Subtitle
     ctx.fillStyle = '#64748b'
-    ctx.font = 'italic 22px Georgia, "Times New Roman", serif'
-    ctx.fillText('90-Day Leadership Transformation Program', contentCenterX, 370)
+    ctx.font = 'italic 20px Georgia, "Times New Roman", serif'
+    ctx.fillText('90-Day Leadership Transformation Program', contentX, 355)
 
-    // "This certifies that" text
+    // "This certifies that"
     ctx.fillStyle = '#94a3b8'
-    ctx.font = '20px Georgia, "Times New Roman", serif'
-    ctx.fillText('This is to certify that', contentCenterX, 450)
+    ctx.font = '18px Georgia, "Times New Roman", serif'
+    ctx.fillText('This is to certify that', contentX, 420)
 
-    // Name in elegant script style
-    ctx.fillStyle = '#14b8a6'
-    ctx.font = 'italic 64px Georgia, "Times New Roman", serif'
-    ctx.fillText(userName, contentCenterX, 540)
+    // Name in elegant teal cursive
+    ctx.fillStyle = '#0d9488'
+    ctx.font = 'italic 58px Georgia, "Times New Roman", serif'
+    ctx.fillText(userName, contentX, 500)
 
-    // Decorative line under name
+    // Elegant underline
     const nameWidth = ctx.measureText(userName).width
-    ctx.strokeStyle = '#14b8a6'
+    ctx.strokeStyle = '#0d9488'
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(contentCenterX - nameWidth / 2 - 20, 560)
-    ctx.lineTo(contentCenterX + nameWidth / 2 + 20, 560)
+    ctx.moveTo(contentX - nameWidth / 2, 520)
+    ctx.lineTo(contentX + nameWidth / 2, 520)
     ctx.stroke()
 
     // "has successfully completed"
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '20px Georgia, "Times New Roman", serif'
-    ctx.fillText('has successfully completed', contentCenterX, 620)
-
-    // Phase name
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 38px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, contentCenterX, 690)
-
-    // Outcome in quotes
     ctx.fillStyle = '#64748b'
-    ctx.font = 'italic 18px Georgia, "Times New Roman", serif'
-    ctx.fillText(`"${milestone.outcome}"`, contentCenterX, 740)
+    ctx.font = '18px Georgia, "Times New Roman", serif'
+    ctx.fillText('has successfully completed', contentX, 570)
 
-    // SIGNAL Journey Map
-    const journeyY = 850
-    const journeyStartX = contentCenterX - 275
-    const journeySpacing = 110
-    const badgeRadius = 24
+    // Phase badge
+    ctx.fillStyle = '#0d9488'
+    ctx.beginPath()
+    ctx.roundRect(contentX - 220, 600, 440, 60, 8)
+    ctx.fill()
+    
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 28px Georgia, "Times New Roman", serif'
+    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, contentX, 640)
+
+    // Outcome
+    ctx.fillStyle = '#475569'
+    ctx.font = 'italic 16px Georgia, "Times New Roman", serif'
+    ctx.fillText(`"${milestone.outcome}"`, contentX, 700)
+
+    // SIGNAL Journey - horizontal pills design
+    const journeyY = 780
+    const pillWidth = 85
+    const pillHeight = 36
+    const pillSpacing = 95
+    const journeyStartX = contentX - (5 * pillSpacing) / 2
     const currentMilestoneIndex = milestones.findIndex(m => m.id === milestone.id)
 
     // Journey title
-    ctx.fillStyle = '#475569'
-    ctx.font = '14px Georgia, "Times New Roman", serif'
-    ctx.fillText('SIGNAL FRAMEWORK JOURNEY', contentCenterX, journeyY - 50)
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillText('SIGNAL FRAMEWORK JOURNEY', contentX, journeyY - 30)
 
-    // Draw connecting line
-    ctx.strokeStyle = '#1e3a5f'
-    ctx.lineWidth = 3
-    ctx.beginPath()
-    ctx.moveTo(journeyStartX, journeyY)
-    ctx.lineTo(journeyStartX + (5 * journeySpacing), journeyY)
-    ctx.stroke()
-
-    // Completed progress line
-    if (currentMilestoneIndex >= 0) {
-      ctx.strokeStyle = '#14b8a6'
-      ctx.lineWidth = 4
-      ctx.beginPath()
-      ctx.moveTo(journeyStartX, journeyY)
-      ctx.lineTo(journeyStartX + (currentMilestoneIndex * journeySpacing), journeyY)
-      ctx.stroke()
-    }
-
-    // Phase badges
+    // Draw phase pills
     milestones.forEach((m, index) => {
-      const x = journeyStartX + (index * journeySpacing)
+      const x = journeyStartX + (index * pillSpacing)
       const isCompleted = index <= currentMilestoneIndex
       const isCurrent = index === currentMilestoneIndex
 
-      // Badge circle
+      // Pill background
       ctx.beginPath()
-      ctx.arc(x, journeyY, badgeRadius, 0, Math.PI * 2)
+      ctx.roundRect(x - pillWidth / 2, journeyY - pillHeight / 2, pillWidth, pillHeight, pillHeight / 2)
       
       if (isCompleted) {
-        ctx.fillStyle = signalColors[m.phase] || '#14b8a6'
+        ctx.fillStyle = signalColors[m.phase] || '#0d9488'
         ctx.fill()
         if (isCurrent) {
-          ctx.strokeStyle = '#b8964c'
-          ctx.lineWidth = 3
+          ctx.strokeStyle = '#0f172a'
+          ctx.lineWidth = 2
           ctx.stroke()
         }
       } else {
-        ctx.fillStyle = '#1e3a5f'
+        ctx.fillStyle = '#f1f5f9'
         ctx.fill()
-        ctx.strokeStyle = '#334155'
+        ctx.strokeStyle = '#e2e8f0'
         ctx.lineWidth = 1
         ctx.stroke()
       }
 
       // Phase letter
-      ctx.fillStyle = isCompleted ? '#ffffff' : '#475569'
-      ctx.font = 'bold 16px Georgia, "Times New Roman", serif'
+      ctx.fillStyle = isCompleted ? '#ffffff' : '#94a3b8'
+      ctx.font = 'bold 14px system-ui, -apple-system, sans-serif'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(m.phase, x, journeyY)
-      
-      // Phase name
-      ctx.textBaseline = 'alphabetic'
-      ctx.fillStyle = isCompleted ? '#94a3b8' : '#334155'
-      ctx.font = '10px Georgia, "Times New Roman", serif'
-      
-      const phaseNames: Record<string, string> = {
-        'S': 'Self-Awareness',
-        'I': 'Interpretation',
-        'G': 'Goals',
-        'N': 'Navigation',
-        'A': 'Action',
-        'L': 'Leadership'
-      }
-      ctx.fillText(phaseNames[m.phase] || '', x, journeyY + 42)
     })
 
     ctx.textBaseline = 'alphabetic'
 
+    // Phase names below pills
+    ctx.font = '9px system-ui, -apple-system, sans-serif'
+    const phaseNames: Record<string, string> = {
+      'S': 'Self-Awareness',
+      'I': 'Interpretation', 
+      'G': 'Goals',
+      'N': 'Navigation',
+      'A': 'Action',
+      'L': 'Leadership'
+    }
+    milestones.forEach((m, index) => {
+      const x = journeyStartX + (index * pillSpacing)
+      const isCompleted = index <= currentMilestoneIndex
+      ctx.fillStyle = isCompleted ? '#64748b' : '#cbd5e1'
+      ctx.fillText(phaseNames[m.phase] || '', x, journeyY + 32)
+    })
+
     // Date
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '16px Georgia, "Times New Roman", serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(`Awarded on ${completionDate}`, contentCenterX, 980)
+    ctx.fillStyle = '#64748b'
+    ctx.font = '15px Georgia, "Times New Roman", serif'
+    ctx.fillText(`Awarded on ${completionDate}`, contentX, 890)
 
     // Certificate number
-    ctx.fillStyle = '#475569'
-    ctx.font = '13px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Certificate No: ${certificateNumber}`, contentCenterX, 1015)
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Certificate No: ${certificateNumber}`, contentX, 930)
 
     // Verification URL
-    ctx.fillStyle = '#334155'
-    ctx.font = '11px system-ui, -apple-system, sans-serif'
+    ctx.fillStyle = '#cbd5e1'
+    ctx.font = '10px system-ui, -apple-system, sans-serif'
     const verifyUrl = typeof window !== 'undefined' 
       ? `${window.location.origin}/verify?cert=${certificateNumber}`
       : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify: ${verifyUrl}`, contentCenterX, 1045)
+    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 960)
 
-    // Footer
-    ctx.fillStyle = '#334155'
+    // Footer divider
+    ctx.strokeStyle = '#e2e8f0'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(700, 1020)
+    ctx.lineTo(1660, 1020)
+    ctx.stroke()
+
+    // Footer text
+    ctx.fillStyle = '#94a3b8'
     ctx.font = '11px Georgia, "Times New Roman", serif'
-    ctx.fillText('SIGNAL™ Framework  •  Transformer Hub  •  Leadership Reboot', contentCenterX, 1100)
+    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', contentX, 1060)
 
-    // Load and draw the LARGE seal (right-middle) - 400px (doubled)
-    try {
-      const sealImg = await loadImage('/images/leadership-reboot-seal.png')
-      const sealSize = 400
-      const sealX = 1800 - sealSize - 40
-      const sealY = (1200 - sealSize) / 2
-      ctx.drawImage(sealImg, sealX, sealY, sealSize, sealSize)
-    } catch (e) {
-      // Fallback seal
-      const sealX = 1560
-      const sealY = 600
-      ctx.strokeStyle = '#b8964c'
-      ctx.lineWidth = 4
-      ctx.beginPath()
-      ctx.arc(sealX, sealY, 150, 0, Math.PI * 2)
-      ctx.stroke()
-      ctx.fillStyle = '#b8964c'
-      ctx.font = 'bold 32px Georgia, "Times New Roman", serif'
-      ctx.textAlign = 'center'
-      ctx.fillText('CERTIFIED', sealX, sealY + 10)
-    }
+    // Left side branding text (vertical)
+    ctx.save()
+    ctx.translate(50, 600)
+    ctx.rotate(-Math.PI / 2)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
+    ctx.font = '14px system-ui, -apple-system, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('LEADERSHIP REBOOT  |  SIGNAL FRAMEWORK', 0, 0)
+    ctx.restore()
 
     // Download
     const link = document.createElement('a')
