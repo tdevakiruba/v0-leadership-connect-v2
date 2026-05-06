@@ -223,6 +223,17 @@ export function CertificatesView({
     return !status.isEarned && status.percentage > 0
   }) || milestones.find(m => !getMilestoneStatus(m).isEarned) || milestones[milestones.length - 1]
 
+  // Helper function to load an image
+  const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => resolve(img)
+      img.onerror = reject
+      img.src = src
+    })
+  }
+
   // Handle certificate download
   const handleDownloadCertificate = async (milestone: typeof milestones[0], profile: Profile | null) => {
     const userName = profile?.full_name || 'Leadership Professional'
@@ -247,6 +258,19 @@ export function CertificatesView({
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, 1200, 800)
 
+    // Load and draw watermark logo (centered, faded)
+    try {
+      const logoImg = await loadImage('/images/leadership-reboot-logo.png')
+      ctx.save()
+      ctx.globalAlpha = 0.08 // Very subtle watermark
+      const logoWidth = 600
+      const logoHeight = (logoImg.height / logoImg.width) * logoWidth
+      ctx.drawImage(logoImg, (1200 - logoWidth) / 2, (800 - logoHeight) / 2, logoWidth, logoHeight)
+      ctx.restore()
+    } catch (e) {
+      console.log('[v0] Could not load logo watermark:', e)
+    }
+
     // Border
     ctx.strokeStyle = '#0d9488'
     ctx.lineWidth = 4
@@ -266,7 +290,7 @@ export function CertificatesView({
     // Subtitle
     ctx.fillStyle = '#94a3b8'
     ctx.font = '24px system-ui, -apple-system, sans-serif'
-    ctx.fillText('Leadership Connect 90-Day Program', 600, 200)
+    ctx.fillText('Leadership Reboot 90-Day Program', 600, 200)
 
     // This certifies
     ctx.fillStyle = '#94a3b8'
@@ -298,14 +322,22 @@ export function CertificatesView({
     ctx.font = '16px system-ui, -apple-system, sans-serif'
     ctx.fillText(`Awarded on ${completionDate}`, 600, 620)
 
-    // Phase badge
-    ctx.fillStyle = '#0d9488'
-    ctx.beginPath()
-    ctx.arc(600, 700, 30, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
-    ctx.fillText(milestone.icon, 600, 710)
+    // Load and draw the seal (bottom right corner)
+    try {
+      const sealImg = await loadImage('/images/leadership-reboot-seal.png')
+      const sealSize = 160
+      ctx.drawImage(sealImg, 1200 - sealSize - 60, 800 - sealSize - 60, sealSize, sealSize)
+    } catch (e) {
+      console.log('[v0] Could not load seal:', e)
+      // Fallback: draw a simple phase badge if seal doesn't load
+      ctx.fillStyle = '#0d9488'
+      ctx.beginPath()
+      ctx.arc(1060, 680, 40, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif'
+      ctx.fillText(milestone.icon, 1060, 690)
+    }
 
     // Download
     const link = document.createElement('a')
