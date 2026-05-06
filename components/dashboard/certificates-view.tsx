@@ -304,64 +304,64 @@ export function CertificatesView({
     // Load and draw white logo at top
     try {
       const logoImg = await loadImage('/images/leadership-reboot-logo-white.png')
-      const logoWidth = 280
+      const logoWidth = 240
       const logoHeight = (logoImg.height / logoImg.width) * logoWidth
-      ctx.drawImage(logoImg, (1400 - logoWidth) / 2, 60, logoWidth, logoHeight)
+      ctx.drawImage(logoImg, (1400 - logoWidth) / 2, 50, logoWidth, logoHeight)
     } catch (e) {
       // Fallback text if logo doesn't load
       ctx.fillStyle = '#f8fafc'
       ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
       ctx.textAlign = 'center'
-      ctx.fillText('LEADERSHIP REBOOT', 700, 90)
+      ctx.fillText('LEADERSHIP REBOOT', 700, 80)
     }
 
-    // Certificate title
+    // Certificate title - moved down to avoid overlapping with logo
     ctx.fillStyle = '#f8fafc'
     ctx.font = 'bold 42px system-ui, -apple-system, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText('Certificate of Achievement', 700, 200)
+    ctx.fillText('Certificate of Achievement', 700, 230)
 
     // Subtitle
     ctx.fillStyle = '#94a3b8'
     ctx.font = '20px system-ui, -apple-system, sans-serif'
-    ctx.fillText('90-Day Leadership Transformation Program', 700, 235)
+    ctx.fillText('90-Day Leadership Transformation Program', 700, 265)
 
     // "This certifies that"
     ctx.fillStyle = '#94a3b8'
     ctx.font = '18px system-ui, -apple-system, sans-serif'
-    ctx.fillText('This certifies that', 700, 290)
+    ctx.fillText('This certifies that', 700, 320)
 
     // Name in cursive style
     ctx.fillStyle = '#0d9488'
     ctx.font = 'italic 48px Georgia, "Times New Roman", serif'
-    ctx.fillText(userName, 700, 350)
+    ctx.fillText(userName, 700, 380)
 
     // Decorative line under name
     ctx.strokeStyle = '#0d9488'
     ctx.lineWidth = 1
     const nameWidth = ctx.measureText(userName).width
     ctx.beginPath()
-    ctx.moveTo(700 - nameWidth / 2 - 20, 365)
-    ctx.lineTo(700 + nameWidth / 2 + 20, 365)
+    ctx.moveTo(700 - nameWidth / 2 - 20, 395)
+    ctx.lineTo(700 + nameWidth / 2 + 20, 395)
     ctx.stroke()
 
     // "has successfully completed"
     ctx.fillStyle = '#94a3b8'
     ctx.font = '18px system-ui, -apple-system, sans-serif'
-    ctx.fillText('has successfully completed', 700, 400)
+    ctx.fillText('has successfully completed', 700, 430)
 
     // Phase name
     ctx.fillStyle = '#f8fafc'
     ctx.font = 'bold 32px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, 700, 450)
+    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, 700, 480)
 
     // Outcome
     ctx.fillStyle = '#94a3b8'
     ctx.font = '16px system-ui, -apple-system, sans-serif'
-    ctx.fillText(milestone.outcome, 700, 485)
+    ctx.fillText(milestone.outcome, 700, 515)
 
     // Draw SIGNAL Journey Map
-    const journeyY = 560
+    const journeyY = 590
     const journeyStartX = 400
     const journeySpacing = 100
     const circleRadius = 22
@@ -447,35 +447,35 @@ export function CertificatesView({
     // Reset text baseline
     ctx.textBaseline = 'alphabetic'
 
-    // Load and draw the seal (left center)
+    // Load and draw the seal (left center) - doubled size
     try {
       const sealImg = await loadImage('/images/leadership-reboot-seal.png')
-      const sealSize = 150
-      const sealX = 80
+      const sealSize = 300
+      const sealX = 30
       const sealY = (900 - sealSize) / 2
       ctx.drawImage(sealImg, sealX, sealY, sealSize, sealSize)
     } catch (e) {
       // Fallback seal
       ctx.fillStyle = '#b8860b'
       ctx.beginPath()
-      ctx.arc(155, 450, 60, 0, Math.PI * 2)
+      ctx.arc(180, 450, 100, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = '#0f172a'
-      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+      ctx.font = 'bold 40px system-ui, -apple-system, sans-serif'
       ctx.textAlign = 'center'
-      ctx.fillText(milestone.icon, 155, 458)
+      ctx.fillText(milestone.icon, 180, 460)
     }
 
     // Date
     ctx.fillStyle = '#94a3b8'
     ctx.font = '14px system-ui, -apple-system, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText(`Awarded on ${completionDate}`, 700, 680)
+    ctx.fillText(`Awarded on ${completionDate}`, 700, 720)
 
     // Certificate number (verifiable)
     ctx.fillStyle = '#475569'
     ctx.font = '12px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Certificate No: ${certificateNumber}`, 700, 720)
+    ctx.fillText(`Certificate No: ${certificateNumber}`, 700, 760)
 
     // Verification URL with certificate number for easy verification
     ctx.fillStyle = '#64748b'
@@ -483,7 +483,7 @@ export function CertificatesView({
     const verifyUrl = typeof window !== 'undefined' 
       ? `${window.location.origin}/verify?cert=${certificateNumber}`
       : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify at: ${verifyUrl}`, 700, 740)
+    ctx.fillText(`Verify at: ${verifyUrl}`, 700, 780)
 
     // Footer
     ctx.fillStyle = '#334155'
