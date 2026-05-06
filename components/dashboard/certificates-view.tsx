@@ -477,10 +477,13 @@ export function CertificatesView({
     ctx.font = '12px system-ui, -apple-system, sans-serif'
     ctx.fillText(`Certificate No: ${certificateNumber}`, 700, 720)
 
-    // Verification URL
+    // Verification URL with certificate number for easy verification
     ctx.fillStyle = '#64748b'
     ctx.font = '10px system-ui, -apple-system, sans-serif'
-    ctx.fillText('Verify at: leadershipreboot.com/verify', 700, 740)
+    const verifyUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/verify?cert=${certificateNumber}`
+      : `leadershipreboot.com/verify?cert=${certificateNumber}`
+    ctx.fillText(`Verify at: ${verifyUrl}`, 700, 740)
 
     // Footer
     ctx.fillStyle = '#334155'
