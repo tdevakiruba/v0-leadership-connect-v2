@@ -477,21 +477,21 @@ export function CertificatesView({
 
     // Date
     ctx.fillStyle = '#64748b'
-    ctx.font = '15px Georgia, "Times New Roman", serif'
+    ctx.font = 'italic 22px Georgia, "Times New Roman", serif'
     ctx.fillText(`Awarded on ${completionDate}`, contentX, 920)
 
     // Certificate number
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillStyle = '#64748b'
+    ctx.font = '18px system-ui, -apple-system, sans-serif'
     ctx.fillText(`Certificate No: ${certificateNumber}`, contentX, 960)
 
     // Verification URL
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '10px system-ui, -apple-system, sans-serif'
+    ctx.fillStyle = '#64748b'
+    ctx.font = '16px system-ui, -apple-system, sans-serif'
     const verifyUrl = typeof window !== 'undefined' 
       ? `${window.location.origin}/verify?cert=${certificateNumber}`
       : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 990)
+    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 1000)
 
     // Footer divider
     ctx.strokeStyle = '#e2e8f0'
@@ -502,8 +502,8 @@ export function CertificatesView({
     ctx.stroke()
 
     // Footer text
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '11px Georgia, "Times New Roman", serif'
+    ctx.fillStyle = '#64748b'
+    ctx.font = '16px Georgia, "Times New Roman", serif'
     ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', contentX, 1090)
 
     // Download
