@@ -458,39 +458,44 @@ export function CertificatesView({
       ctx.fillText(phaseNames[m.phase] || '', x, journeyY + 32)
     })
 
-    // Footer content - positioned to the left
-    const footerX = 850
+    // Footer content - positioned UNDER THE SEAL on the left
+    const sealCenterX = sealX + sealSize / 2  // Center under the seal
+    const sealBottomY = sealY + sealSize  // Below the seal
 
-    // Date
+    // Date - centered under seal
     ctx.fillStyle = '#64748b'
-    ctx.font = 'italic 22px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Awarded on ${completionDate}`, footerX, 920)
+    ctx.font = 'italic 18px Georgia, "Times New Roman", serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(`Awarded on ${completionDate}`, sealCenterX, sealBottomY + 40)
 
     // Certificate number
     ctx.fillStyle = '#64748b'
-    ctx.font = '18px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Certificate No: ${certificateNumber}`, footerX, 960)
+    ctx.font = '14px system-ui, -apple-system, sans-serif'
+    ctx.fillText(`Certificate No:`, sealCenterX, sealBottomY + 70)
+    ctx.font = '12px system-ui, -apple-system, sans-serif'
+    ctx.fillText(certificateNumber, sealCenterX, sealBottomY + 90)
 
     // Verification URL
     ctx.fillStyle = '#64748b'
-    ctx.font = '16px system-ui, -apple-system, sans-serif'
+    ctx.font = '10px system-ui, -apple-system, sans-serif'
     const verifyUrl = typeof window !== 'undefined' 
-      ? `${window.location.origin}/verify?cert=${certificateNumber}`
-      : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify: ${verifyUrl}`, footerX, 1000)
+      ? `${window.location.origin}/verify`
+      : `leadershipreboot.com/verify`
+    ctx.fillText(`Verify: ${verifyUrl}`, sealCenterX, sealBottomY + 115)
 
-    // Footer divider
+    // Footer divider - spans full width at bottom
     ctx.strokeStyle = '#e2e8f0'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(600, 1050)
-    ctx.lineTo(1700, 1050)
+    ctx.moveTo(60, 1100)
+    ctx.lineTo(1740, 1100)
     ctx.stroke()
 
-    // Footer text
-    ctx.fillStyle = '#64748b'
-    ctx.font = '16px Georgia, "Times New Roman", serif'
-    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', footerX, 1090)
+    // Footer text - centered at bottom
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '14px Georgia, "Times New Roman", serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', 900, 1140)
 
     // Download
     const link = document.createElement('a')
