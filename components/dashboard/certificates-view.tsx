@@ -270,46 +270,43 @@ export function CertificatesView({
     
     if (!ctx) return
 
-    // === INNOVATIVE SPLIT DESIGN ===
-    // Left side: Large seal on gradient background
-    // Right side: Clean white content area
+    // === CLEAN SPLIT DESIGN WITH GOLD BORDER ===
+    // White/cream background with seal on left, content on right
 
-    // Full background - soft gradient
-    const bgGradient = ctx.createLinearGradient(0, 0, 1800, 0)
-    bgGradient.addColorStop(0, '#0a1628')
-    bgGradient.addColorStop(0.35, '#0d1f35')
-    bgGradient.addColorStop(0.35, '#ffffff')
-    bgGradient.addColorStop(1, '#f8fafc')
-    ctx.fillStyle = bgGradient
+    // Clean white/cream background
+    ctx.fillStyle = '#fefdfb'
     ctx.fillRect(0, 0, 1800, 1200)
 
-    // Left dark section with subtle radial glow
-    const leftGlow = ctx.createRadialGradient(300, 600, 0, 300, 600, 500)
-    leftGlow.addColorStop(0, 'rgba(13, 148, 136, 0.15)')
-    leftGlow.addColorStop(1, 'transparent')
-    ctx.fillStyle = leftGlow
-    ctx.fillRect(0, 0, 630, 1200)
+    // Gold border around entire page
+    ctx.strokeStyle = '#b8964c'
+    ctx.lineWidth = 8
+    ctx.strokeRect(30, 30, 1740, 1140)
 
-    // Vertical divider line with gradient
-    const dividerGradient = ctx.createLinearGradient(0, 100, 0, 1100)
+    // Inner gold accent border
+    ctx.strokeStyle = '#d4af37'
+    ctx.lineWidth = 2
+    ctx.strokeRect(45, 45, 1710, 1110)
+
+    // Subtle teal vertical divider line
+    const dividerGradient = ctx.createLinearGradient(0, 150, 0, 1050)
     dividerGradient.addColorStop(0, 'transparent')
-    dividerGradient.addColorStop(0.2, '#14b8a6')
+    dividerGradient.addColorStop(0.15, '#14b8a6')
     dividerGradient.addColorStop(0.5, '#0d9488')
-    dividerGradient.addColorStop(0.8, '#14b8a6')
+    dividerGradient.addColorStop(0.85, '#14b8a6')
     dividerGradient.addColorStop(1, 'transparent')
     ctx.strokeStyle = dividerGradient
-    ctx.lineWidth = 3
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(630, 100)
-    ctx.lineTo(630, 1100)
+    ctx.moveTo(550, 150)
+    ctx.lineTo(550, 1050)
     ctx.stroke()
 
     // Seal size and position (LEFT middle - 400px)
     const sealSize = 400
-    const sealX = 115
+    const sealX = 75
     const sealY = (1200 - sealSize) / 2
 
-    // Load and draw the LARGE seal on left
+    // Load and draw the LARGE seal on left (no dark background)
     try {
       const sealImg = await loadImage('/images/leadership-reboot-seal.png')
       ctx.drawImage(sealImg, sealX, sealY, sealSize, sealSize)
@@ -318,98 +315,102 @@ export function CertificatesView({
       ctx.strokeStyle = '#b8964c'
       ctx.lineWidth = 4
       ctx.beginPath()
-      ctx.arc(315, 600, 180, 0, Math.PI * 2)
+      ctx.arc(275, 600, 180, 0, Math.PI * 2)
       ctx.stroke()
       ctx.fillStyle = '#b8964c'
       ctx.font = 'bold 36px Georgia, "Times New Roman", serif'
       ctx.textAlign = 'center'
-      ctx.fillText('CERTIFIED', 315, 610)
+      ctx.fillText('CERTIFIED', 275, 610)
     }
 
     // Right content area center
-    const contentX = 1180
+    const contentX = 1150
 
-    // Logo at top right section
+    // Logo at top right section - DOUBLED SIZE (560px)
     try {
       const logoImg = await loadImage('/images/leadership-reboot-logo.png')
-      const logoWidth = 280
+      const logoWidth = 560
       const logoHeight = (logoImg.height / logoImg.width) * logoWidth
-      ctx.drawImage(logoImg, contentX - logoWidth / 2, 70, logoWidth, logoHeight)
+      ctx.drawImage(logoImg, contentX - logoWidth / 2, 60, logoWidth, logoHeight)
     } catch (e) {
       ctx.fillStyle = '#0d1f35'
-      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif'
+      ctx.font = 'bold 48px system-ui, -apple-system, sans-serif'
       ctx.textAlign = 'center'
-      ctx.fillText('LEADERSHIP REBOOT', contentX, 120)
+      ctx.fillText('LEADERSHIP REBOOT', contentX, 140)
     }
 
-    // Thin decorative line
+    // Thin decorative line under logo
     ctx.strokeStyle = '#e2e8f0'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(contentX - 300, 220)
-    ctx.lineTo(contentX + 300, 220)
+    ctx.moveTo(contentX - 350, 260)
+    ctx.lineTo(contentX + 350, 260)
     ctx.stroke()
 
     // Certificate title
     ctx.fillStyle = '#0f172a'
     ctx.font = '54px Georgia, "Times New Roman", serif'
     ctx.textAlign = 'center'
-    ctx.fillText('Certificate of Achievement', contentX, 290)
+    ctx.fillText('Certificate of Achievement', contentX, 330)
 
     // Teal accent line under title
     ctx.strokeStyle = '#0d9488'
     ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.moveTo(contentX - 180, 310)
-    ctx.lineTo(contentX + 180, 310)
+    ctx.moveTo(contentX - 180, 350)
+    ctx.lineTo(contentX + 180, 350)
     ctx.stroke()
 
     // Subtitle
     ctx.fillStyle = '#64748b'
     ctx.font = 'italic 20px Georgia, "Times New Roman", serif'
-    ctx.fillText('90-Day Leadership Transformation Program', contentX, 355)
+    ctx.fillText('90-Day Leadership Transformation Program', contentX, 395)
 
     // "This certifies that"
     ctx.fillStyle = '#94a3b8'
     ctx.font = '18px Georgia, "Times New Roman", serif'
-    ctx.fillText('This is to certify that', contentX, 420)
+    ctx.fillText('This is to certify that', contentX, 455)
 
     // Name in elegant teal cursive
     ctx.fillStyle = '#0d9488'
     ctx.font = 'italic 58px Georgia, "Times New Roman", serif'
-    ctx.fillText(userName, contentX, 500)
+    ctx.fillText(userName, contentX, 530)
 
     // Elegant underline
     const nameWidth = ctx.measureText(userName).width
     ctx.strokeStyle = '#0d9488'
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(contentX - nameWidth / 2, 520)
-    ctx.lineTo(contentX + nameWidth / 2, 520)
+    ctx.moveTo(contentX - nameWidth / 2, 550)
+    ctx.lineTo(contentX + nameWidth / 2, 550)
     ctx.stroke()
 
     // "has successfully completed"
     ctx.fillStyle = '#64748b'
     ctx.font = '18px Georgia, "Times New Roman", serif'
-    ctx.fillText('has successfully completed', contentX, 570)
+    ctx.fillText('has successfully completed', contentX, 600)
 
-    // Phase badge
-    ctx.fillStyle = '#0d9488'
-    ctx.beginPath()
-    ctx.roundRect(contentX - 220, 600, 440, 60, 8)
-    ctx.fill()
+    // Phase text with gold underline accent (no solid background)
+    ctx.fillStyle = '#0f172a'
+    ctx.font = 'bold 32px Georgia, "Times New Roman", serif'
+    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, contentX, 660)
     
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 28px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Phase ${milestone.phase}: ${milestone.capability}`, contentX, 640)
+    // Gold underline under phase text
+    const phaseTextWidth = ctx.measureText(`Phase ${milestone.phase}: ${milestone.capability}`).width
+    ctx.strokeStyle = '#b8964c'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(contentX - phaseTextWidth / 2, 675)
+    ctx.lineTo(contentX + phaseTextWidth / 2, 675)
+    ctx.stroke()
 
     // Outcome
     ctx.fillStyle = '#475569'
     ctx.font = 'italic 16px Georgia, "Times New Roman", serif'
-    ctx.fillText(`"${milestone.outcome}"`, contentX, 700)
+    ctx.fillText(`"${milestone.outcome}"`, contentX, 720)
 
     // SIGNAL Journey - horizontal pills design
-    const journeyY = 780
+    const journeyY = 810
     const pillWidth = 85
     const pillHeight = 36
     const pillSpacing = 95
@@ -477,43 +478,33 @@ export function CertificatesView({
     // Date
     ctx.fillStyle = '#64748b'
     ctx.font = '15px Georgia, "Times New Roman", serif'
-    ctx.fillText(`Awarded on ${completionDate}`, contentX, 890)
+    ctx.fillText(`Awarded on ${completionDate}`, contentX, 920)
 
     // Certificate number
     ctx.fillStyle = '#94a3b8'
     ctx.font = '12px system-ui, -apple-system, sans-serif'
-    ctx.fillText(`Certificate No: ${certificateNumber}`, contentX, 930)
+    ctx.fillText(`Certificate No: ${certificateNumber}`, contentX, 960)
 
     // Verification URL
-    ctx.fillStyle = '#cbd5e1'
+    ctx.fillStyle = '#94a3b8'
     ctx.font = '10px system-ui, -apple-system, sans-serif'
     const verifyUrl = typeof window !== 'undefined' 
       ? `${window.location.origin}/verify?cert=${certificateNumber}`
       : `leadershipreboot.com/verify?cert=${certificateNumber}`
-    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 960)
+    ctx.fillText(`Verify: ${verifyUrl}`, contentX, 990)
 
     // Footer divider
     ctx.strokeStyle = '#e2e8f0'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(700, 1020)
-    ctx.lineTo(1660, 1020)
+    ctx.moveTo(600, 1050)
+    ctx.lineTo(1700, 1050)
     ctx.stroke()
 
     // Footer text
     ctx.fillStyle = '#94a3b8'
     ctx.font = '11px Georgia, "Times New Roman", serif'
-    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', contentX, 1060)
-
-    // Left side branding text (vertical)
-    ctx.save()
-    ctx.translate(50, 600)
-    ctx.rotate(-Math.PI / 2)
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
-    ctx.font = '14px system-ui, -apple-system, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('LEADERSHIP REBOOT  |  SIGNAL FRAMEWORK', 0, 0)
-    ctx.restore()
+    ctx.fillText('SIGNAL Framework  |  Transformer Hub  |  Leadership Reboot', contentX, 1090)
 
     // Download
     const link = document.createElement('a')
