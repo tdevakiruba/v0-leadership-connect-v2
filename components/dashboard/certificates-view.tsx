@@ -504,42 +504,34 @@ export function CertificatesView({
     link.click()
   }
 
-  // Handle certificate share
+  // Handle certificate share - Opens LinkedIn Add Certification page
   const handleShareCertificate = async (milestone: typeof milestones[0], profile: Profile | null) => {
-    const userName = profile?.full_name || 'Leadership Professional'
-    const shareText = `I just earned the "${milestone.capability}" certificate in the Leadership Connect 90-Day Program! ${milestone.outcome}`
-    const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
-
-    // Check if Web Share API is supported
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${milestone.capability} Certificate`,
-          text: shareText,
-          url: shareUrl,
-        })
-      } catch (error) {
-        // User cancelled or share failed, fall back to clipboard
-        if ((error as Error).name !== 'AbortError') {
-          await fallbackShare(shareText, shareUrl)
-        }
-      }
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      await fallbackShare(shareText, shareUrl)
-    }
-  }
-
-  // Fallback share function - copy to clipboard
-  const fallbackShare = async (text: string, url: string) => {
-    const fullText = `${text}\n\n${url}`
-    try {
-      await navigator.clipboard.writeText(fullText)
-      alert('Certificate details copied to clipboard!')
-    } catch {
-      // Final fallback - show a prompt
-      prompt('Copy this to share:', fullText)
-    }
+    const certificateNumber = generateCertificateNumber(milestone, user.id)
+    
+    // Get current date for issue date
+    const now = new Date()
+    const issueMonth = now.getMonth() + 1 // LinkedIn uses 1-12
+    const issueYear = now.getFullYear()
+    
+    // Build LinkedIn Add Certification URL
+    // LinkedIn certification URL parameters:
+    // - name: Certificate name
+    // - organizationName: Issuing organization
+    // - issueMonth/issueYear: When issued
+    // - certUrl: URL to verify the certificate
+    // - certId: Certificate ID/number
+    
+    const certName = encodeURIComponent(`Phase ${milestone.phase}: ${milestone.capability}`)
+    const orgName = encodeURIComponent('Leadership Reboot - Transformer Hub')
+    const certUrl = typeof window !== 'undefined' 
+      ? encodeURIComponent(`${window.location.origin}/verify?cert=${certificateNumber}`)
+      : ''
+    const certId = encodeURIComponent(certificateNumber)
+    
+    const linkedInUrl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${certName}&organizationName=${orgName}&issueMonth=${issueMonth}&issueYear=${issueYear}&certUrl=${certUrl}&certId=${certId}`
+    
+    // Open LinkedIn in a new tab
+    window.open(linkedInUrl, '_blank', 'noopener,noreferrer')
   }
 
   return (
