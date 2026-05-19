@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -21,14 +21,57 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isAppleLoading, setIsAppleLoading] = useState(false)
   const [agreedToIP, setAgreedToIP] = useState(false)
+  const [hasExistingAgreement, setHasExistingAgreement] = useState<boolean | null>(null)
+  const [isCheckingAgreement, setIsCheckingAgreement] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
+  // Check if user already has an IP agreement (for users who are already logged in but came back to login page)
+  useEffect(() => {
+    async function checkExistingSession() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // User is already logged in, check if they have an agreement
+        const { data: agreement } = await supabase
+          .from('ip_agreement_acceptance')
+          .select('id')
+          .eq('user_id', user.id)
+          .limit(1)
+          .single()
+        
+        if (agreement) {
+          // Already agreed, redirect to dashboard
+          router.push('/dashboard')
+        }
+      }
+    }
+    checkExistingSession()
+  }, [supabase, router])
+
+  // Check if a specific email has an existing IP agreement
+  async function checkIPAgreementForUser(userId: string): Promise<boolean> {
+    const { data } = await supabase
+      .from('ip_agreement_acceptance')
+      .select('id')
+      .eq('user_id', userId)
+      .limit(1)
+      .single()
+    
+    return !!data
+  }
+
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault()
+    
+    // If user hasn't agreed and checkbox is shown (no existing agreement), block login
+    if (hasExistingAgreement === false && !agreedToIP) {
+      toast.error('Please accept the IP terms to continue')
+      return
+    }
+    
     setIsLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -39,10 +82,60 @@ export default function LoginPage() {
       return
     }
 
+    if (data.user) {
+      // Check if user has existing IP agreement
+      const hasAgreement = await checkIPAgreementForUser(data.user.id)
+      
+      if (!hasAgreement) {
+        if (!agreedToIP) {
+          // User needs to agree - show checkbox and stop
+          setHasExistingAgreement(false)
+          setIsLoading(false)
+          toast.error('Please accept the IP terms to continue')
+          return
+        }
+        
+        // Record the IP agreement
+        try {
+          const response = await fetch('/api/auth/record-ip-agreement', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          })
+          if (!response.ok) {
+            console.error('Failed to record IP agreement')
+          }
+        } catch (err) {
+          console.error('Failed to record IP agreement:', err)
+        }
+      }
+    }
+
     toast.success('Welcome back!')
     router.push('/dashboard')
     router.refresh()
   }
+
+  // Check agreement status when email changes (with debounce)
+  useEffect(() => {
+    if (!email || !email.includes('@')) {
+      setHasExistingAgreement(null)
+      return
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsCheckingAgreement(true)
+      try {
+        // We can't check agreement without knowing the user ID
+        // So we'll set it to false by default, meaning checkbox is shown
+        // The actual check happens after login
+        setHasExistingAgreement(false)
+      } finally {
+        setIsCheckingAgreement(false)
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [email])
 
   async function handleGoogleLogin() {
     if (!agreedToIP) {
@@ -85,6 +178,9 @@ export default function LoginPage() {
       setIsAppleLoading(false)
     }
   }
+
+  // Show checkbox for OAuth (always required) or if user has no existing agreement
+  const showIPCheckbox = hasExistingAgreement === false || hasExistingAgreement === null
 
   return (
     <div className="min-h-screen flex">
@@ -169,21 +265,23 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* IP Agreement Checkbox */}
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border">
-                <Checkbox 
-                  id="ip-agreement" 
-                  checked={agreedToIP}
-                  onCheckedChange={(checked) => setAgreedToIP(checked === true)}
-                  className="mt-1"
-                />
-                <Label 
-                  htmlFor="ip-agreement" 
-                  className="text-xs text-muted-foreground leading-relaxed cursor-pointer"
-                >
-                  I acknowledge and agree that all content, frameworks, methodologies, videos, prompts, templates, training materials, exercises, assessments, visuals, and program structures within Leadership Reboot SIGNAL&trade; are proprietary intellectual property owned by Transformer Hub and/or Transform AI. I agree not to copy, reproduce, distribute, teach, republish, resell, record, share, or create derivative works from the platform or its materials without prior written authorization. Unauthorized use may result in termination of access and legal action.
-                </Label>
-              </div>
+              {/* IP Agreement Checkbox - Only show if user hasn't agreed */}
+              {showIPCheckbox && (
+                <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border">
+                  <Checkbox 
+                    id="ip-agreement" 
+                    checked={agreedToIP}
+                    onCheckedChange={(checked) => setAgreedToIP(checked === true)}
+                    className="mt-1"
+                  />
+                  <Label 
+                    htmlFor="ip-agreement" 
+                    className="text-xs text-muted-foreground leading-relaxed cursor-pointer"
+                  >
+                    I acknowledge and agree that all content, frameworks, methodologies, videos, prompts, templates, training materials, exercises, assessments, visuals, and program structures within Leadership Reboot SIGNAL&trade; are proprietary intellectual property owned by Transformer Hub and/or Transform AI. I agree not to copy, reproduce, distribute, teach, republish, resell, record, share, or create derivative works from the platform or its materials without prior written authorization. Unauthorized use may result in termination of access and legal action.
+                  </Label>
+                </div>
+              )}
 
               {/* SSO Buttons */}
               <div className="grid gap-3">
@@ -191,7 +289,7 @@ export default function LoginPage() {
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary"
                   onClick={handleGoogleLogin}
-                  disabled={isGoogleLoading || !agreedToIP}
+                  disabled={isGoogleLoading || (showIPCheckbox && !agreedToIP)}
                 >
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -221,7 +319,7 @@ export default function LoginPage() {
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary"
                   onClick={handleAppleLogin}
-                  disabled={isAppleLoading || !agreedToIP}
+                  disabled={isAppleLoading || (showIPCheckbox && !agreedToIP)}
                 >
                   {isAppleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -280,7 +378,7 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={isLoading || !agreedToIP}
+                  disabled={isLoading || (showIPCheckbox && !agreedToIP)}
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
