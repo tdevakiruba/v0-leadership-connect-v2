@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isAppleLoading, setIsAppleLoading] = useState(false)
+  const [agreedToIP, setAgreedToIP] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -43,6 +45,10 @@ export default function LoginPage() {
   }
 
   async function handleGoogleLogin() {
+    if (!agreedToIP) {
+      toast.error('Please accept the IP terms to continue')
+      return
+    }
     setIsGoogleLoading(true)
     const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
@@ -62,6 +68,10 @@ export default function LoginPage() {
   }
 
   async function handleAppleLogin() {
+    if (!agreedToIP) {
+      toast.error('Please accept the IP terms to continue')
+      return
+    }
     setIsAppleLoading(true)
     const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
@@ -159,13 +169,29 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* IP Agreement Checkbox */}
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border">
+                <Checkbox 
+                  id="ip-agreement" 
+                  checked={agreedToIP}
+                  onCheckedChange={(checked) => setAgreedToIP(checked === true)}
+                  className="mt-1"
+                />
+                <Label 
+                  htmlFor="ip-agreement" 
+                  className="text-xs text-muted-foreground leading-relaxed cursor-pointer"
+                >
+                  I acknowledge and agree that all content, frameworks, methodologies, videos, prompts, templates, training materials, exercises, assessments, visuals, and program structures within Leadership Reboot SIGNAL&trade; are proprietary intellectual property owned by Transformer Hub and/or Transform AI. I agree not to copy, reproduce, distribute, teach, republish, resell, record, share, or create derivative works from the platform or its materials without prior written authorization. Unauthorized use may result in termination of access and legal action.
+                </Label>
+              </div>
+
               {/* SSO Buttons */}
               <div className="grid gap-3">
                 <Button 
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary"
                   onClick={handleGoogleLogin}
-                  disabled={isGoogleLoading}
+                  disabled={isGoogleLoading || !agreedToIP}
                 >
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -195,7 +221,7 @@ export default function LoginPage() {
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary"
                   onClick={handleAppleLogin}
-                  disabled={isAppleLoading}
+                  disabled={isAppleLoading || !agreedToIP}
                 >
                   {isAppleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -254,7 +280,7 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={isLoading}
+                  disabled={isLoading || !agreedToIP}
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
