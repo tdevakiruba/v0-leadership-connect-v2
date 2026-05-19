@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
@@ -20,7 +19,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isAppleLoading, setIsAppleLoading] = useState(false)
-  const [agreedToIP, setAgreedToIP] = useState(false)
   const [hasExistingAgreement, setHasExistingAgreement] = useState<boolean | null>(null)
   const [isCheckingAgreement, setIsCheckingAgreement] = useState(false)
   const router = useRouter()
@@ -63,12 +61,6 @@ export default function LoginPage() {
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault()
     
-    // If user hasn't agreed and checkbox is shown (no existing agreement), block login
-    if (hasExistingAgreement === false && !agreedToIP) {
-      toast.error('Please accept the IP terms to continue')
-      return
-    }
-    
     setIsLoading(true)
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -87,15 +79,7 @@ export default function LoginPage() {
       const hasAgreement = await checkIPAgreementForUser(data.user.id)
       
       if (!hasAgreement) {
-        if (!agreedToIP) {
-          // User needs to agree - show checkbox and stop
-          setHasExistingAgreement(false)
-          setIsLoading(false)
-          toast.error('Please accept the IP terms to continue')
-          return
-        }
-        
-        // Record the IP agreement
+        // Record the IP agreement (user implicitly agrees by signing in)
         try {
           const response = await fetch('/api/auth/record-ip-agreement', {
             method: 'POST',
@@ -138,10 +122,6 @@ export default function LoginPage() {
   }, [email])
 
   async function handleGoogleLogin() {
-    if (!agreedToIP) {
-      toast.error('Please accept the IP terms to continue')
-      return
-    }
     setIsGoogleLoading(true)
     const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
@@ -161,10 +141,6 @@ export default function LoginPage() {
   }
 
   async function handleAppleLogin() {
-    if (!agreedToIP) {
-      toast.error('Please accept the IP terms to continue')
-      return
-    }
     setIsAppleLoading(true)
     const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({
@@ -179,8 +155,8 @@ export default function LoginPage() {
     }
   }
 
-  // Show checkbox for OAuth (always required) or if user has no existing agreement
-  const showIPCheckbox = hasExistingAgreement === false || hasExistingAgreement === null
+  // Show statement for OAuth (always required) or if user has no existing agreement
+  const showIPStatement = hasExistingAgreement === false || hasExistingAgreement === null
 
   return (
     <div className="min-h-screen flex">
@@ -265,21 +241,12 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* IP Agreement Checkbox - Only show if user hasn't agreed */}
-              {showIPCheckbox && (
-                <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border">
-                  <Checkbox 
-                    id="ip-agreement" 
-                    checked={agreedToIP}
-                    onCheckedChange={(checked) => setAgreedToIP(checked === true)}
-                    className="mt-1"
-                  />
-                  <Label 
-                    htmlFor="ip-agreement" 
-                    className="text-xs text-muted-foreground leading-relaxed cursor-pointer"
-                  >
-                    I acknowledge and agree that all content, frameworks, methodologies, videos, prompts, templates, training materials, exercises, assessments, visuals, and program structures within Leadership Reboot SIGNAL&trade; are proprietary intellectual property owned by Transformer Hub and/or Transform AI. I agree not to copy, reproduce, distribute, teach, republish, resell, record, share, or create derivative works from the platform or its materials without prior written authorization. Unauthorized use may result in termination of access and legal action.
-                  </Label>
+              {/* IP Agreement Statement - Only show if user hasn't agreed */}
+              {showIPStatement && (
+                <div className="p-4 rounded-lg bg-muted/50 border border-border">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    By signing in, I acknowledge and agree that all content, frameworks, methodologies, videos, prompts, templates, training materials, exercises, assessments, visuals, and program structures within Leadership Reboot SIGNAL&trade; are proprietary intellectual property owned by Transformer Hub and/or Transform AI. I agree not to copy, reproduce, distribute, teach, republish, resell, record, share, or create derivative works from the platform or its materials without prior written authorization. Unauthorized use may result in termination of access and legal action.
+                  </p>
                 </div>
               )}
 
@@ -289,7 +256,7 @@ export default function LoginPage() {
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary hover:text-foreground"
                   onClick={handleGoogleLogin}
-                  disabled={isGoogleLoading || (showIPCheckbox && !agreedToIP)}
+                  disabled={isGoogleLoading}
                 >
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -319,7 +286,7 @@ export default function LoginPage() {
                   variant="outline" 
                   className="w-full h-12 text-foreground bg-card hover:bg-secondary hover:text-foreground"
                   onClick={handleAppleLogin}
-                  disabled={isAppleLoading || (showIPCheckbox && !agreedToIP)}
+                  disabled={isAppleLoading}
                 >
                   {isAppleLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -378,7 +345,7 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={isLoading || (showIPCheckbox && !agreedToIP)}
+                  disabled={isLoading}
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
