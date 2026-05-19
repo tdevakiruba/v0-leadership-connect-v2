@@ -287,7 +287,7 @@ export default function LoginPage() {
               <div className="grid gap-3">
                 <Button 
                   variant="outline" 
-                  className="w-full h-12 text-foreground bg-card hover:bg-secondary"
+                  className="w-full h-12 text-foreground bg-card hover:bg-secondary hover:text-foreground"
                   onClick={handleGoogleLogin}
                   disabled={isGoogleLoading || (showIPCheckbox && !agreedToIP)}
                 >
@@ -317,7 +317,7 @@ export default function LoginPage() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full h-12 text-foreground bg-card hover:bg-secondary"
+                  className="w-full h-12 text-foreground bg-card hover:bg-secondary hover:text-foreground"
                   onClick={handleAppleLogin}
                   disabled={isAppleLoading || (showIPCheckbox && !agreedToIP)}
                 >
